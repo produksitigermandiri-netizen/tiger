@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiger Production System - Main Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1C1814">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tiger System">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream:#FAF8F4; --amber:#C2550A; --amber-dark:#8B3A06; --amber-light:#E8874A;
+            --charcoal:#1C1814; --charcoal-2:#2E2822; --sage:#4A6741; --gold:#C8961E;
+            --sand:#D4B896; --warm-gray:#E8E2D9; --warm-gray-2:#D5CCBF; --text-muted:#8A7E72;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:var(--cream);font-family:'Plus Jakarta Sans',sans-serif;color:var(--charcoal);min-height:100vh;display:flex;flex-direction:column}
+        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+        /* LOGIN */
+        #loginOverlay{position:fixed;inset:0;z-index:9999;background:rgba(28,24,20,0.97);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px)}
+        #loginBox{background:white;border-top:5px solid var(--amber);padding:2.5rem 2rem;width:100%;max-width:400px;animation:fadeUp 0.4s ease both}
+        .login-logo{display:flex;justify-content:center;margin-bottom:1.5rem}
+        .login-logo img{width:64px;height:64px;object-fit:cover;border-radius:50%;border:3px solid var(--warm-gray);transition:transform 0.3s}
+        .login-logo img:hover{transform:scale(1.08)}
+        .login-title{text-align:center;margin-bottom:2rem}
+        .login-title h2{font-family:'DM Serif Display',serif;font-size:1.5rem;color:var(--charcoal)}
+        .login-title p{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:4px;font-weight:600}
+        .login-field{margin-bottom:1rem}
+        .login-field label{display:block;font-size:0.69rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+        .login-field .iw{position:relative}
+        .login-field .iw i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--warm-gray-2);font-size:0.85rem}
+        .login-field input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid var(--warm-gray-2);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;color:var(--charcoal);outline:none;transition:all 0.2s}
+        .login-field input:focus{border-color:var(--amber);border-left-width:4px;box-shadow:0 2px 6px rgba(194,85,10,0.1)}
+        #errorMsg{font-size:0.75rem;font-weight:700;color:#C0392B;text-align:center;background:#FEF2F2;border:1px solid #FECACA;padding:8px;margin-bottom:1rem}
+        .btn-login{width:100%;background:var(--amber);color:white;border:none;padding:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-login:hover{background:var(--amber-dark)}
+        .fade-out{opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease}
+        .shake{animation:shake 0.4s cubic-bezier(.36,.07,.19,.97) both}
+        @keyframes shake{10%,90%{transform:translate3d(-1px,0,0)}20%,80%{transform:translate3d(2px,0,0)}30%,50%,70%{transform:translate3d(-4px,0,0)}40%,60%{transform:translate3d(4px,0,0)}}
+
+        /* HEADER */
+        header{background:var(--charcoal);border-bottom:4px solid var(--amber);position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(28,24,20,0.3)}
+        .header-inner{max-width:1400px;margin:0 auto;padding:0.9rem 2rem;display:flex;justify-content:space-between;align-items:center}
+        .header-brand{display:flex;align-items:center;gap:14px}
+        .header-brand img{height:52px;width:auto;object-fit:contain;animation:float 3s ease-in-out infinite}
+        .header-brand h1{font-family:'DM Serif Display',serif;font-size:1.35rem;color:white;line-height:1.1}
+        .header-brand h1 span{color:var(--amber-light)}
+        .header-brand p{font-size:0.65rem;color:var(--sand);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px;font-weight:600}
+        .header-right{display:flex;align-items:center;gap:1rem}
+        .status-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sand)}
+        .pulse-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        .header-clock{text-align:right;border-left:1px solid rgba(255,255,255,0.1);padding-left:1rem}
+        #clock{font-size:0.9rem;font-weight:700;color:white}
+        #date{font-size:0.62rem;color:var(--sand);text-transform:uppercase;letter-spacing:0.08em}
+        .btn-logout{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--sand);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+        .btn-logout:hover{border-color:var(--amber);color:var(--amber-light)}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+        /* MAIN */
+        main{flex-grow:1;max-width:1400px;margin:0 auto;width:100%;padding:2.5rem 2rem 4rem;position:relative;z-index:1}
+        .section-title{display:flex;align-items:center;gap:12px;margin-bottom:1.75rem}
+        .section-title h2{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--charcoal);white-space:nowrap}
+        .section-title::after{content:'';flex:1;height:1px;background:var(--warm-gray)}
+        .section-badge{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);background:var(--warm-gray);padding:3px 10px;white-space:nowrap}
+
+        /* CARDS */
+        .cards-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
+        @media(max-width:1100px){.cards-grid{grid-template-columns:repeat(3,1fr)}}
+        @media(max-width:640px){.cards-grid{grid-template-columns:1fr}}
+
+        .app-card{background:white;border:1px solid var(--warm-gray);border-left:4px solid var(--warm-gray-2);padding:1.25rem;display:flex;flex-direction:column;min-height:200px;text-decoration:none;position:relative;overflow:hidden;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);animation:fadeUp 0.4s ease both}
+        .app-card:nth-child(1){animation-delay:.05s}.app-card:nth-child(2){animation-delay:.10s}.app-card:nth-child(3){animation-delay:.15s}.app-card:nth-child(4){animation-delay:.20s}.app-card:nth-child(5){animation-delay:.25s}.app-card:nth-child(6){animation-delay:.30s}.app-card:nth-child(7){animation-delay:.35s}.app-card:nth-child(8){animation-delay:.40s}.app-card:nth-child(9){animation-delay:.45s}
+        .app-card:hover{transform:translateY(-4px);border-left-color:var(--amber);box-shadow:0 8px 24px rgba(194,85,10,0.12)}
+        .card-bg{position:absolute;top:0;right:0;padding:1rem;font-size:3.5rem;color:var(--amber);opacity:0.06;transition:opacity 0.25s;line-height:1}
+        .app-card:hover .card-bg{opacity:0.12}
+        .card-icon{width:38px;height:38px;background:var(--cream);border:1px solid var(--warm-gray);display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;font-size:0.95rem;color:var(--amber);transition:all 0.25s;flex-shrink:0}
+        .app-card:hover .card-icon{background:var(--amber);color:white;border-color:var(--amber)}
+        .card-body{flex:1}
+        .card-title{font-size:0.82rem;font-weight:700;color:var(--charcoal);line-height:1.3;margin-bottom:5px;transition:color 0.2s}
+        .app-card:hover .card-title{color:var(--amber)}
+        .card-desc{font-size:0.71rem;color:var(--text-muted);line-height:1.5}
+        .card-cta{display:flex;align-items:center;gap:5px;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-top:0.85rem}
+        .card-cta i{transition:transform 0.2s}
+        .app-card:hover .card-cta i{transform:translateX(3px)}
+
+        .card-gold{border-left-color:var(--gold)}.card-gold .card-icon{color:var(--gold)}.card-gold:hover{border-left-color:var(--gold);box-shadow:0 8px 24px rgba(200,150,30,0.12)}.card-gold:hover .card-icon{background:var(--gold);border-color:var(--gold)}.card-gold .card-cta{color:var(--gold)}.card-gold:hover .card-title{color:var(--gold)}
+        .card-sage{border-left-color:var(--sage)}.card-sage .card-icon{color:var(--sage)}.card-sage:hover{border-left-color:var(--sage);box-shadow:0 8px 24px rgba(74,103,65,0.12)}.card-sage:hover .card-icon{background:var(--sage);border-color:var(--sage)}.card-sage .card-cta{color:var(--sage)}.card-sage:hover .card-title{color:var(--sage)}
+
+        /* FOOTER */
+        footer{background:var(--charcoal-2);border-top:4px solid var(--amber);padding:1rem 2rem;position:sticky;bottom:0;z-index:50}
+        .footer-inner{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.5rem}
+        .footer-left p,.footer-right p{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+        .footer-left p:first-child,.footer-right p:first-child{color:var(--sand)}
+        .footer-left p:last-child,.footer-right p:last-child{color:var(--text-muted);font-weight:500}
+        .footer-right{text-align:right}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+        /* INSTALL BANNER */
+        #installBanner {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 1.5rem;
+            z-index: 100;
+            background: white;
+            border: 1px solid var(--warm-gray);
+            border-left: 4px solid var(--gold);
+            padding: 12px 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            align-items: center;
+            gap: 12px;
+            max-width: 320px;
+            animation: fadeUp 0.3s ease both;
+        }
+        #installBanner .install-text { font-size: 0.78rem; color: var(--charcoal); flex: 1; }
+        #installBanner .install-text strong { display: block; font-size: 0.82rem; color: var(--charcoal); }
+        #installBanner .install-text span { color: var(--text-muted); font-size: 0.72rem; }
+        .btn-install {
+            background: var(--amber);
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .btn-install:hover { background: var(--amber-dark); }
+        .btn-dismiss { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 2px 4px; }
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+    <div id="loginBox">
+        <div class="login-logo">
+            <img src="logo3.png" alt="Tiger Logo" onerror="this.style.display='none'">
+        </div>
+        <div class="login-title">
+            <h2>System Login</h2>
+            <p>Tiger Production System V2.0</p>
+        </div>
+        <div class="login-field">
+            <label>Username</label>
+            <div class="iw"><i class="fas fa-user"></i><input type="text" id="username" placeholder="Enter username" autocomplete="off"></div>
+        </div>
+        <div class="login-field">
+            <label>Password</label>
+            <div class="iw"><i class="fas fa-lock"></i><input type="password" id="password" placeholder="••••••••"></div>
+        </div>
+        <p id="errorMsg" style="display:none"><i class="fas fa-exclamation-triangle"></i> Akses Ditolak! Coba lagi.</p>
+        <button class="btn-login" onclick="checkLogin()"><i class="fas fa-sign-in-alt"></i> Secure Login</button>
+    </div>
+</div>
+
+<header>
+    <div class="header-inner">
+        <div class="header-brand">
+            <img src="logo.png" alt="Tiger Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>PT TIGERMANDIRI <span>PRATAMA</span></h1>
+                <p>Integrated Production System</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="status-badge"><div class="pulse-dot"></div> System Online</div>
+            <div class="header-clock"><div id="clock">00:00:00</div><div id="date">Senin, 01 Jan 2024</div></div>
+            <button class="btn-logout" onclick="logout()"><i class="fas fa-power-off"></i> Logout</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="section-title">
+        <h2>Menu Aplikasi</h2>
+        <span class="section-badge">9 Tools</span>
+    </div>
+    <div class="cards-grid">
+
+        <a href="inputdkbt.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-flask"></i></div>
+            <div class="card-icon"><i class="fas fa-vial"></i></div>
+            <div class="card-body"><div class="card-title">Input DKBT (Mixing)</div><div class="card-desc">Laporan kekurangan bahan & request mixing.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="narikreject.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-magnet"></i></div>
+            <div class="card-icon"><i class="fas fa-file-import"></i></div>
+            <div class="card-body"><div class="card-title">Sistem Narik Reject</div><div class="card-desc">Konversi data Finac & Rapikan HTML.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="kiloanproduk.html" class="app-card card-sage">
+            <div class="card-bg"><i class="fas fa-balance-scale"></i></div>
+            <div class="card-icon"><i class="fas fa-weight-hanging"></i></div>
+            <div class="card-body"><div class="card-title">Kiloan Assembling</div><div class="card-desc">Kalkulator konversi Pcs ke Kg otomatis.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="mps.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-calendar-alt"></i></div>
+            <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="card-body"><div class="card-title">Rekap Bulanan (MPS)</div><div class="card-desc">Laporan produksi harian ke bulanan.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="cekfinacinjection.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-syringe"></i></div>
+            <div class="card-icon"><i class="fas fa-check-double"></i></div>
+            <div class="card-body"><div class="card-title">Checker Injection</div><div class="card-desc">Cek selisih Manual vs Sistem (Mesin).</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="cekfinacdecorasi.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-paint-brush"></i></div>
+            <div class="card-icon"><i class="fas fa-list-ol"></i></div>
+            <div class="card-body"><div class="card-title">Checker Decorasi</div><div class="card-desc">Cek bundel WC (Stamping/Assy).</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="daftarmesin.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-cogs"></i></div>
+            <div class="card-icon"><i class="fas fa-industry"></i></div>
+            <div class="card-body"><div class="card-title">Daftar Mesin Harian</div><div class="card-desc">Daftar mesin & generator gambar laporan.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="rekaptahunan.html" class="app-card card-gold">
+            <div class="card-bg"><i class="fas fa-file-invoice"></i></div>
+            <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
+            <div class="card-body"><div class="card-title">Rekap Reject Semua Work Center Tahunan</div><div class="card-desc">Versi Excel/Data biasa.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="rekaprejectinjectiontahunan.html" class="app-card card-gold">
+            <div class="card-bg"><i class="fas fa-chart-line"></i></div>
+            <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
+            <div class="card-body"><div class="card-title">Rekap Reject Injection Tahunan</div><div class="card-desc">Analisa Pareto 80/20 & Sortir Otomatis.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+    </div>
+</main>
+
+<footer>
+    <div class="footer-inner">
+        <div class="footer-left">
+            <p>Production Tools V2.0</p>
+            <p>Private Asset · Developer: Diyan Nurpriyanto</p>
+        </div>
+        <div class="footer-right">
+            <p>Tiger Production System</p>
+            <p id="copyright">© 2026 All Rights Reserved</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const VALID_USERNAME = 'dyansg8';
+    const VALID_PASSWORD = 'belahanjiwaku1';
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', {weekday:'long',year:'numeric',month:'short',day:'numeric'});
+        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID');
+    }
+
+    window.onload = function() {
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
+
+    function checkLogin() {
+        const userIn = document.getElementById('username').value;
+        const passIn = document.getElementById('password').value;
+        const errorBox = document.getElementById('errorMsg');
+        const loginBox = document.getElementById('loginBox');
+        if (userIn === VALID_USERNAME && passIn === VALID_PASSWORD) {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            document.getElementById('loginOverlay').classList.add('fade-out');
+            setTimeout(() => { document.getElementById('loginOverlay').style.display = 'none'; }, 400);
+        } else {
+            errorBox.style.display = 'block';
+            loginBox.classList.remove('shake');
+            void loginBox.offsetWidth;
+            loginBox.classList.add('shake');
+            document.getElementById('password').value = '';
+        }
+    }
+
+    function logout() {
+        sessionStorage.removeItem('isLoggedIn');
+        location.reload();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('password').addEventListener('keypress', e => { if(e.key==='Enter') checkLogin(); });
+        document.getElementById('username').addEventListener('keypress', e => { if(e.key==='Enter') document.getElementById('password').focus(); });
+    });
+</script>
+    <script>
+        // Register Service Worker (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+                    .catch(err => console.warn('[PWA] SW registration failed:', err));
+            });
+        }
+
+        // Tombol Install PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').style.display = 'flex';
+        });
+        function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                deferredPrompt = null;
+                document.getElementById('installBanner').style.display = 'none';
+            });
+        }
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installBanner').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

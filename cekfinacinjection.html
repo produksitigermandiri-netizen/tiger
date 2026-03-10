@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checker Injection V5 — Trinity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --parchment: #F0EBE1;
+            --warm-gray: #E8E2D9;
+            --stone: #8C7B6B;
+            --charcoal: #1C1814;
+            --ink: #2D2520;
+            --amber: #C2550A;
+            --amber-light: #F97316;
+            --amber-pale: #FEF3E2;
+            --sage: #4A6741;
+            --sage-light: #EEF4ED;
+            --rose: #9B2335;
+            --rose-light: #FDF2F4;
+            --slate: #3B4E6B;
+            --slate-light: #EFF3F9;
+            --sand: #D4B896;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 20% 0%, rgba(194,85,10,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(74,103,65,0.05) 0%, transparent 50%);
+        }
+
+        /* Grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .layout { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
+
+        /* ─── HEADER ─── */
+        .site-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            gap: 20px;
+        }
+        .header-left { flex: 1; }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--stone);
+            text-decoration: none;
+            border: 1.5px solid var(--warm-gray);
+            padding: 8px 16px;
+            border-radius: 4px;
+            background: white;
+            transition: all 0.2s;
+            margin-bottom: 24px;
+        }
+        .back-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+        .app-eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 10px;
+        }
+        .app-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(32px, 5vw, 52px);
+            line-height: 1.05;
+            color: var(--charcoal);
+            margin-bottom: 8px;
+        }
+        .app-title em { font-style: italic; color: var(--amber); }
+        .app-subtitle {
+            font-size: 13px;
+            color: var(--stone);
+            font-weight: 500;
+        }
+
+        .shift-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+        .shift-tag {
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'DM Serif Display', serif;
+            font-style: italic;
+            color: var(--stone);
+            background: white;
+            border: 1.5px solid var(--warm-gray);
+            padding: 5px 14px;
+            border-radius: 100px;
+        }
+
+        .version-badge {
+            background: var(--charcoal);
+            color: var(--sand);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 4px 12px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            align-self: flex-start;
+            margin-top: 4px;
+        }
+
+        /* ─── CARDS ─── */
+        .card {
+            background: white;
+            border: 1.5px solid var(--warm-gray);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 16px rgba(28,24,20,0.04);
+        }
+        .card-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 20px;
+            color: var(--charcoal);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-title .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+            flex-shrink: 0;
+        }
+
+        /* ─── INPUT CONTROLS ─── */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .field-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--stone);
+            margin-bottom: 6px;
+        }
+        .field-input {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            border: 1.5px solid var(--warm-gray);
+            border-radius: 8px;
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink);
+            transition: all 0.2s;
+            appearance: none;
+        }
+        .field-input:focus { outline: none; border-color: var(--amber); background: white; box-shadow: 0 0 0 3px rgba(194,85,10,0.1); }
+        .file-wrap { position: relative; }
+        .file-input {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .file-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 44px;
+            padding: 0 14px;
+            border: 1.5px dashed var(--warm-gray);
+            border-radius: 8px;
+            background: var(--cream);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--stone);
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+        .file-btn:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-pale); }
+        .file-btn .file-icon { font-size: 14px; flex-shrink: 0; }
+        .file-name { font-size: 11px; color: var(--sage); font-weight: 700; margin-top: 5px; }
+
+        .db-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-top: 5px;
+        }
+        .db-badge.empty { background: var(--rose-light); color: var(--rose); }
+        .db-badge.ready { background: var(--sage-light); color: var(--sage); }
+
+        /* ─── CTA BUTTON ─── */
+        .cta-btn {
+            width: 100%;
+            height: 52px;
+            background: var(--charcoal);
+            color: var(--sand);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .cta-btn:hover:not(:disabled) {
+            background: var(--amber);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(194,85,10,0.3);
+        }
+        .cta-btn:disabled {
+            background: var(--warm-gray);
+            color: var(--stone);
+            cursor: not-allowed;
+        }
+
+        /* ─── MANUAL TABLE ─── */
+        .table-scroll {
+            overflow: auto;
+            max-height: 480px;
+            border: 1.5px solid var(--warm-gray);
+            border-radius: 10px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            background: var(--parchment);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--stone);
+            padding: 12px 10px;
+            border-bottom: 1.5px solid var(--warm-gray);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-align: center;
+        }
+        thead th:nth-child(3) { text-align: left; }
+
+        tbody tr { transition: background 0.15s; }
+        tbody tr:hover td { background: rgba(194,85,10,0.02); }
+        tbody td {
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--warm-gray);
+            background: white;
+        }
+        .row-num {
+            font-size: 11px;
+            color: var(--stone);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        td input[type="number"],
+        td input[type="text"] {
+            width: 100%;
+            padding: 7px 10px;
+            background: var(--cream);
+            border: 1.5px solid transparent;
+            border-radius: 6px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink);
+            text-align: center;
+            transition: all 0.2s;
+        }
+        td input[type="text"] { text-align: left; font-weight: 500; text-transform: uppercase; }
+        td input:focus {
+            outline: none;
+            border-color: var(--amber);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(194,85,10,0.1);
+        }
+
+        .add-row-btn {
+            margin-top: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--amber);
+            border: 1.5px solid var(--amber);
+            background: transparent;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .add-row-btn:hover { background: var(--amber); color: white; }
+
+        /* ─── RESULT TABLE ─── */
+        .result-empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--stone);
+            border: 2px dashed var(--warm-gray);
+            border-radius: 10px;
+        }
+        .result-empty .big-icon { font-size: 40px; color: var(--warm-gray); margin-bottom: 12px; }
+        .result-empty p { font-size: 13px; font-weight: 500; }
+
+        .result-table-wrap {
+            overflow: auto;
+            max-height: 600px;
+            border: 1.5px solid var(--warm-gray);
+            border-radius: 10px;
+        }
+
+        #resultBody_injection tr { transition: filter 0.15s; }
+        #resultBody_injection tr:hover { filter: brightness(0.97); }
+
+        #resultBody_injection td {
+            padding: 9px 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        #resultBody_injection thead th {
+            background: var(--charcoal);
+            color: rgba(255,255,255,0.7);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 12px 10px;
+            border-bottom: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Row backgrounds */
+        tr.row-green { background: #F0FAF0; }
+        tr.row-red   { background: #FEF4F4; }
+        tr.row-yellow{ background: #FFFBF0; }
+        tr.row-gray  { background: #F9F9F9; }
+
+        /* Status badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+        }
+        .badge-match   { background: #D1FAE5; color: #065F46; }
+        .badge-warning { background: #FEF3C7; color: #92400E; }
+        .badge-error   { background: #FEE2E2; color: #991B1B; }
+        .badge-gray    { background: #F3F4F6; color: #6B7280; }
+
+        .lot-mono {
+            font-family: 'DM Serif Display', serif;
+            font-style: italic;
+            font-size: 11px;
+            color: var(--slate);
+        }
+        .lot-sys-error {
+            font-weight: 800;
+            color: var(--rose);
+            background: var(--rose-light);
+            border-radius: 4px;
+            padding: 2px 6px;
+        }
+        .qty-cell { font-weight: 700; text-align: right; }
+        .time-cell { font-size: 11px; color: var(--stone); text-align: center; }
+        .note-cell { font-size: 11px; color: var(--stone); font-style: italic; }
+
+        /* ─── SUGGESTION BOX ─── */
+        .hidden { display: none !important; }
+
+        #suggestionBox {
+            border: 1.5px solid var(--warm-gray);
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(28,24,20,0.15);
+            overflow: hidden;
+        }
+        #suggestionBox li {
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink);
+            cursor: pointer;
+            border-bottom: 1px solid var(--warm-gray);
+            transition: all 0.15s;
+            list-style: none;
+        }
+        #suggestionBox li:hover { background: var(--amber); color: white; }
+        #suggestionBox::-webkit-scrollbar { width: 6px; }
+        #suggestionBox::-webkit-scrollbar-track { background: var(--cream); }
+        #suggestionBox::-webkit-scrollbar-thumb { background: var(--warm-gray); border-radius: 4px; }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card { animation: fadeUp 0.4s ease both; }
+        .card:nth-child(1) { animation-delay: 0.05s; }
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.15s; }
+    </style>
+</head>
+<body>
+<div class="layout">
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-left">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+            <p class="app-eyebrow">Production Control · Injection</p>
+            <h1 class="app-title">Checker <em>Injection</em></h1>
+            <p class="app-subtitle">By Dyansg8 · Trinity Visual Creative</p>
+            <div class="shift-tags">
+                <span class="shift-tag">S1: 15:00–15:30</span>
+                <span class="shift-tag">S2: 18:00–18:30</span>
+                <span class="shift-tag">S3: 22:00–22:30</span>
+            </div>
+        </div>
+        <div class="version-badge">Logic V5</div>
+    </header>
+
+    <!-- PANEL UPLOAD -->
+    <div class="card">
+        <div class="card-title"><span class="dot"></span> Parameter & Data Source</div>
+
+        <div class="controls-grid">
+            <div>
+                <p class="field-label">Tanggal Produksi</p>
+                <input type="date" id="tgl" class="field-input">
+            </div>
+
+            <div>
+                <p class="field-label">1. Upload CSV Sistem</p>
+                <div class="file-wrap">
+                    <div class="file-btn" id="csvBtnLabel">
+                        <i class="fas fa-file-csv file-icon"></i>
+                        <span id="csvBtnText">Pilih file CSV...</span>
+                    </div>
+                    <input type="file" id="csv" accept=".csv" class="file-input">
+                </div>
+                <div class="file-name" id="csvName"></div>
+            </div>
+
+            <div>
+                <p class="field-label">2. Database Produk</p>
+                <div class="file-wrap">
+                    <div class="file-btn" id="prodBtnLabel">
+                        <i class="fas fa-database file-icon"></i>
+                        <span id="prodBtnText">Pilih file CSV...</span>
+                    </div>
+                    <input type="file" id="prodCsv" accept=".csv" class="file-input">
+                </div>
+                <div id="dbStatus" class="db-badge empty"><i class="fas fa-circle-xmark"></i> DB Kosong</div>
+            </div>
+        </div>
+
+        <button id="btnCheck" disabled class="cta-btn">
+            <i class="fas fa-magnifying-glass-chart"></i> Analisa Data
+        </button>
+    </div>
+
+    <!-- PANEL MANUAL INPUT -->
+    <div class="card" id="manualContainer">
+        <div class="card-title"><span class="dot"></span> Input Manual Mesin</div>
+
+        <div class="table-scroll" id="tableScrollArea">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:40px">#</th>
+                        <th style="width:80px">Mesin</th>
+                        <th style="text-align:left">Nama Produk</th>
+                        <th style="width:110px">S1</th>
+                        <th style="width:110px">S2</th>
+                        <th style="width:110px">S3</th>
+                    </tr>
+                </thead>
+                <tbody id="manualBody_injection"></tbody>
+            </table>
+        </div>
+        <button id="btnAddRow_injection" class="add-row-btn">
+            <i class="fas fa-plus"></i> Tambah Baris
+        </button>
+    </div>
+
+    <!-- PANEL HASIL -->
+    <div class="card">
+        <div class="card-title"><span class="dot"></span> Hasil Analisa</div>
+
+        <div id="resultHint" class="result-empty">
+            <div class="big-icon"><i class="fas fa-clipboard-list"></i></div>
+            <p>Upload CSV Sistem lalu klik <strong>Analisa Data</strong> untuk memulai.</p>
+        </div>
+
+        <div class="result-table-wrap" style="display:none" id="resultTableWrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:44px">Msn</th>
+                        <th style="width:40px">Shf</th>
+                        <th>LOT Ideal</th>
+                        <th>LOT Sistem</th>
+                        <th style="text-align:right">Qty Man</th>
+                        <th style="text-align:right">Qty Sys</th>
+                        <th style="width:70px">Jam</th>
+                        <th>Produk Manual</th>
+                        <th>Produk Sistem</th>
+                        <th style="width:110px;text-align:center">Status</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody_injection"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- SUGGESTION DROPDOWN -->
+<ul id="suggestionBox" class="hidden" style="position:fixed;z-index:9999;background:white;max-height:240px;overflow-y:auto;min-width:280px;"></ul>
+
+<script>
+    // ═══════════════════════════════════════════════════════
+    // CONSTANTS
+    // ═══════════════════════════════════════════════════════
+    const SHIFT_RULES = [
+        { id: 1, start: "15:00", end: "15:30" },
+        { id: 2, start: "18:00", end: "18:30" },
+        { id: 3, start: "22:00", end: "22:30" }
+    ];
+    const TOTAL_MACHINES = 36;
+    const DB_STORAGE_KEY    = "db_produk_injection_v5";
+    const MEMORY_STORAGE_KEY = "memory_mesin_injection_v5";
+
+    // ═══════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════
+    function pad2(n){ return (parseInt(n,10)<10?"0":"")+parseInt(n,10); }
+    function normName(str){ return (str||"").toLowerCase().replace(/\s+/g," ").trim(); }
+    function timeToMinutes(t){ const [h,m]=t.split(":").map(x=>parseInt(x,10)); if(isNaN(h)||isNaN(m)) return null; return h*60+m; }
+    function extractTimeStr(dateStr){ if(!dateStr) return ""; const parts=dateStr.trim().split(" "); if(parts.length>=2) return parts[1].slice(0,5); if(dateStr.length>=5) return dateStr.slice(0,5); return ""; }
+
+    function detectShiftByTime(timeStr){
+        if(!timeStr) return null;
+        const tm = timeToMinutes(timeStr);
+        if(tm===null) return null;
+        for(let s of SHIFT_RULES){
+            if(tm >= timeToMinutes(s.start) && tm <= timeToMinutes(s.end)) return s.id;
+        }
+        return null;
+    }
+
+    function getClosestShiftID(timeStr){
+        const tm = timeToMinutes(timeStr);
+        if(tm===null) return 0;
+        let t = tm;
+        if(t < 480) t += 1440;
+        const dist1 = Math.abs(t-915), dist2 = Math.abs(t-1095), dist3 = Math.abs(t-1335);
+        const mn = Math.min(dist1,dist2,dist3);
+        if(mn===dist1) return 1;
+        if(mn===dist2) return 2;
+        return 3;
+    }
+
+    function parseCSV(text){
+        const lines = text.split(/\r?\n/).filter(l=>l.trim()!=="");
+        if(!lines.length) return [];
+        const sep = (lines[0].split(";").length > lines[0].split(",").length) ? ";" : ",";
+        return lines.map(line => line.split(sep).map(c=>c.trim()));
+    }
+
+    function extractMachineNumber(str){ const m=String(str).match(/\d+/); return m?parseInt(m[0],10):null; }
+
+    // ═══════════════════════════════════════════════════════
+    // DOM REFS
+    // ═══════════════════════════════════════════════════════
+    const tglInput   = document.getElementById("tgl");
+    const csvInput   = document.getElementById("csv");
+    const csvName    = document.getElementById("csvName");
+    const prodInput  = document.getElementById("prodCsv");
+    const dbStatus   = document.getElementById("dbStatus");
+    const btnCheck   = document.getElementById("btnCheck");
+    const resultHint = document.getElementById("resultHint");
+    const resultTableWrap = document.getElementById("resultTableWrap");
+    const manualBody = document.getElementById("manualBody_injection");
+    const resultBody = document.getElementById("resultBody_injection");
+    const btnAddRow  = document.getElementById("btnAddRow_injection");
+    const suggestionBox = document.getElementById("suggestionBox");
+
+    let rowCounter=0, csvLoaded=false, systemMap={};
+    let machineMemory={}, productDatabase=[], activeInput=null;
+
+    // File button label update
+    document.getElementById("csv").addEventListener("change", e => {
+        const f = e.target.files[0];
+        document.getElementById("csvBtnText").textContent = f ? f.name : "Pilih file CSV...";
+    });
+    document.getElementById("prodCsv").addEventListener("change", e => {
+        const f = e.target.files[0];
+        document.getElementById("prodBtnText").textContent = f ? f.name : "Pilih file CSV...";
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // MACHINE MEMORY
+    // ═══════════════════════════════════════════════════════
+    function loadMachineMemory(){
+        const s = localStorage.getItem(MEMORY_STORAGE_KEY);
+        if(s){ try{ machineMemory=JSON.parse(s); }catch(e){ machineMemory={}; } }
+    }
+    function saveMachineMemory(mNum, pName){
+        if(!mNum||!pName) return;
+        machineMemory[mNum]=pName;
+        localStorage.setItem(MEMORY_STORAGE_KEY, JSON.stringify(machineMemory));
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // PRODUCT DB
+    // ═══════════════════════════════════════════════════════
+    function loadProductDb(){
+        const s = localStorage.getItem(DB_STORAGE_KEY);
+        if(s){ try{
+            const names = JSON.parse(s);
+            if(Array.isArray(names)&&names.length>0){
+                productDatabase=names.sort();
+                dbStatus.innerHTML=`<i class="fas fa-circle-check"></i> DB Siap (${names.length})`;
+                dbStatus.className="db-badge ready";
+                return;
+            }
+        }catch(e){} }
+        dbStatus.innerHTML=`<i class="fas fa-circle-xmark"></i> DB Kosong`;
+        dbStatus.className="db-badge empty";
+    }
+
+    function saveProductDb(csvText){
+        const rows=parseCSV(csvText); const names=new Set(); let si=0;
+        if(rows.length>0&&rows[0][0]&&rows[0][0].toLowerCase().includes("name")) si=1;
+        for(let i=si;i<rows.length;i++) if(rows[i][0]&&rows[i][0].trim().length>1) names.add(rows[i][0].trim());
+        const arr=Array.from(names).sort();
+        if(arr.length>0){ localStorage.setItem(DB_STORAGE_KEY,JSON.stringify(arr)); loadProductDb(); alert(`Sukses! ${arr.length} produk tersimpan.`); }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // AUTOCOMPLETE — same pattern as original (works)
+    // ═══════════════════════════════════════════════════════
+    function positionAndShow(input) {
+        activeInput = input;
+        const rect = input.getBoundingClientRect();
+        suggestionBox.style.top  = (rect.bottom + 2) + 'px';
+        suggestionBox.style.left = rect.left + 'px';
+        suggestionBox.style.width = Math.max(rect.width, 300) + 'px';
+
+        if (productDatabase.length === 0) {
+            suggestionBox.innerHTML = `<li style="color:var(--rose);background:var(--rose-light);font-weight:700;padding:12px 16px;font-size:12px;"><i class="fas fa-triangle-exclamation" style="margin-right:6px"></i>Database Kosong!</li>`;
+            suggestionBox.classList.remove('hidden');
+            return;
+        }
+        const val = input.value.toLowerCase();
+        const matches = val === "" ? productDatabase.slice(0,50) : productDatabase.filter(p => p.toLowerCase().includes(val)).slice(0,100);
+        if (!matches.length) { suggestionBox.classList.add('hidden'); return; }
+
+        suggestionBox.innerHTML = matches.map(item => `<li>${item}</li>`).join('');
+        suggestionBox.classList.remove('hidden');
+
+        suggestionBox.querySelectorAll('li').forEach(li => {
+            li.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                input.value = li.textContent;
+                input.dispatchEvent(new Event('change'));
+                suggestionBox.classList.add('hidden');
+            });
+        });
+    }
+
+    // Klik di luar → tutup
+    document.addEventListener('click', (e) => {
+        if (activeInput && e.target !== activeInput && !suggestionBox.contains(e.target)) {
+            suggestionBox.classList.add('hidden');
+        }
+    });
+    document.getElementById('tableScrollArea').addEventListener('scroll', () => suggestionBox.classList.add('hidden'));
+    window.addEventListener('scroll', () => suggestionBox.classList.add('hidden'));
+
+    // ═══════════════════════════════════════════════════════
+    // TABLE ROWS
+    // ═══════════════════════════════════════════════════════
+    function addManualRow(){
+        rowCounter++;
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+            <td class="row-num">${rowCounter}</td>
+            <td><input type="number" class="machine-input" placeholder="—"></td>
+            <td><input type="text" data-field="name" placeholder="cari produk..." autocomplete="off"></td>
+            <td><input type="number" data-field="qty1" placeholder="0"></td>
+            <td><input type="number" data-field="qty2" placeholder="0"></td>
+            <td><input type="number" data-field="qty3" placeholder="0"></td>`;
+
+        const mInput = tr.querySelector('.machine-input');
+        const nInput = tr.querySelector('[data-field="name"]');
+
+        nInput.addEventListener('input', () => positionAndShow(nInput));
+        nInput.addEventListener('focus', () => positionAndShow(nInput));
+
+        mInput.addEventListener('change', e => {
+            const mVal = e.target.value;
+            if (mVal && machineMemory[mVal] && !nInput.value) nInput.value = machineMemory[mVal];
+        });
+        nInput.addEventListener('change', e => {
+            if (mInput.value && e.target.value) saveMachineMemory(mInput.value, e.target.value);
+        });
+
+        manualBody.appendChild(tr);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // CSV SISTEM LOADER
+    // ═══════════════════════════════════════════════════════
+    csvInput.addEventListener("change", ()=>{
+        const file=csvInput.files[0];
+        if(!file){ csvName.textContent=""; csvLoaded=false; btnCheck.disabled=true; return; }
+        csvName.textContent=file.name;
+        const reader=new FileReader();
+        reader.onload=e=>{
+            const rows=parseCSV(e.target.result);
+            if(rows.length<=1){ alert("CSV error"); return; }
+            const header=rows[0].map(h=>h.toLowerCase());
+            const idxM=header.findIndex(h=>h.includes("machine"));
+            const idxN=header.findIndex(h=>h=="name"||h.includes("nama"));
+            const idxL=header.findIndex(h=>h.includes("lot")||h.includes("batch"));
+            const idxD=header.findIndex(h=>h.startsWith("date"));
+            let idxA=header.findIndex(h=>h.includes("approved")); if(idxA<0) idxA=4;
+
+            if(idxM<0||idxN<0||idxL<0||idxD<0){ alert("Header CSV tidak sesuai! Pastikan ada kolom: Machine, Name, Lot/Batch, Date"); return; }
+
+            systemMap={};
+            for(let i=1;i<rows.length;i++){
+                const r=rows[i]; if(!r.length) continue;
+                const nameRaw=r[idxN]||"";
+                const lotRaw=(r[idxL]||"").trim();
+                if(!nameRaw.toLowerCase().includes("injection")) continue;
+                const m=extractMachineNumber(r[idxM]); if(!m) continue;
+                const timeStr=extractTimeStr(r[idxD]);
+                let shift=getClosestShiftID(timeStr); if(!shift) shift=0;
+                let qty=parseFloat((r[idxA]||"0").replace(/\./g,"").replace(",",".")); if(isNaN(qty)) qty=0;
+                const key=`${m}|${shift}|${normName(nameRaw)}`;
+                if(!systemMap[key]){
+                    systemMap[key]={machine:m, shift, name:nameRaw, lot:lotRaw, qty:0, time:timeStr};
+                } else {
+                    if((!systemMap[key].lot||systemMap[key].lot==="")&&(lotRaw&&lotRaw!==""))
+                        systemMap[key].lot=lotRaw;
+                }
+                systemMap[key].qty+=qty;
+            }
+            csvLoaded=true;
+            btnCheck.disabled=false;
+            resultHint.innerHTML=`<div class="big-icon" style="font-size:28px;margin-bottom:8px;color:var(--sage)"><i class="fas fa-circle-check"></i></div><p style="color:var(--sage);font-weight:700">CSV Sistem terbaca — siap dianalisa.</p>`;
+        };
+        reader.readAsText(file);
+    });
+
+    prodInput.addEventListener("change", ()=>{
+        const file=prodInput.files[0]; if(!file) return;
+        const r=new FileReader(); r.onload=e=>saveProductDb(e.target.result); r.readAsText(file);
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // MAIN CHECK LOGIC (V5 + FIXES)
+    // ═══════════════════════════════════════════════════════
+    btnCheck.addEventListener("click", ()=>{
+        if(!tglInput.value){ alert("Pilih tanggal dulu!"); return; }
+
+        const resultRows=[];
+        const usedSystemKeys=new Set();
+        const [yy,mm,dd]=tglInput.value.split("-");
+
+        manualBody.querySelectorAll("tr").forEach(tr=>{
+            const mInp=tr.querySelector('.machine-input');
+            const nInp=tr.querySelector('[data-field="name"]');
+            if(!mInp) return;
+            const m=parseInt(mInp.value);
+            const nm=(nInp.value||"").trim();
+            if(!m) return;
+
+            [1,2,3].forEach(sh=>{
+                const qInp=tr.querySelector(`[data-field="qty${sh}"]`);
+                const rawVal=qInp.value.trim();
+                const hasInput=rawVal!=="";
+
+                // BUG FIX: NaN guard
+                const q=hasInput?(parseFloat(rawVal)||0):0;
+
+                const sysKey=`${m}|${sh}|${normName(nm)}`;
+                const sys=systemMap[sysKey];
+
+                if(!hasInput&&!sys) return;
+
+                let rowClass="row-yellow", txt="CEK", nts=[];
+                let lSys="-", qSys=0, tSys="-", nSys="-";
+                const lotIdeal=`IJ${pad2(m)}${dd}${mm}${yy.slice(-2)}${sh}`;
+
+                if(!sys){
+                    if(hasInput&&q>0){ rowClass="row-red"; txt="BLM INPUT"; nts.push("Data Sys Kosong"); }
+                    else if(hasInput&&q===0){ rowClass="row-red"; txt="BLM INPUT"; nts.push("—"); }
+                    else return;
+                } else {
+                    usedSystemKeys.add(sysKey);
+                    lSys=sys.lot||""; qSys=sys.qty; tSys=sys.time; nSys=sys.name;
+                    let lotError=false;
+
+                    if(!lSys||lSys.trim()===""||lSys==="-"){
+                        rowClass="row-red"; txt="SUPV LUPA"; nts.push("LOT Sys Kosong"); lotError=true;
+                    } else if(lSys!==lotIdeal){
+                        rowClass="row-red"; txt="BEDA LOT"; nts.push("Format LOT Salah"); lotError=true;
+                    }
+
+                    if(!lotError){
+                        if(!hasInput){ rowClass="row-red"; txt="SYS ONLY"; nts.push("Manual Kosong"); }
+                        else {
+                            if(q===0&&qSys===0){
+                                rowClass="row-green"; txt="MATCH"; nts.push("Start-up (0)");
+                            } else {
+                                const selisih=Math.abs(q-qSys);
+                                // BUG FIX: base selisih pakai nilai terbesar keduanya
+                                const limit=Math.max(1, Math.max(q,qSys)*0.03);
+                                if(selisih>limit){ rowClass="row-red"; txt="WARNING"; nts.push(`Selisih ${selisih.toFixed(0)}`); }
+                                else { rowClass="row-green"; txt="MATCH"; nts.push("OK"); }
+                            }
+                            const strictShift=detectShiftByTime(sys.time);
+                            if(strictShift!==sh){
+                                rowClass="row-red"; txt="WARNING";
+                                const ok=nts.indexOf("OK"); if(ok>-1) nts.splice(ok,1);
+                                nts.push("Jam Meleset");
+                            }
+                        }
+                    }
+                }
+
+                resultRows.push({ m, sh, lotExp:lotIdeal, lSys:(lSys===""||!lSys?"(KOSONG)":lSys), qMan:hasInput?q:0, qSys, tSys, nMan:nm, nSys, rowClass, txt, nts:nts.join(", ") });
+            });
+        });
+
+        // SYS ONLY (unmatched)
+        for(let key in systemMap){
+            if(!usedSystemKeys.has(key)){
+                const sys=systemMap[key];
+                let txtSys="SYS ONLY", ntsSys="Tidak ada di Manual";
+                const [yy2,mm2,dd2]=tglInput.value.split("-");
+                const lotExpSys=sys.machine&&sys.shift?`IJ${pad2(sys.machine)}${dd2}${mm2}${yy2.slice(-2)}${sys.shift}`:"-";
+                if(!sys.lot||sys.lot.trim()==="") ntsSys+=", LOT Kosong";
+                resultRows.push({ m:sys.machine, sh:sys.shift||"?", lotExp:lotExpSys, lSys:sys.lot||"(KOSONG)", qMan:0, qSys:sys.qty, tSys:sys.time, nMan:"-", nSys:sys.name, rowClass:"row-red", txt:txtSys, nts:ntsSys });
+            }
+        }
+
+        const sorted=resultRows.sort((a,b)=>{
+            if(a.m!==b.m) return a.m-b.m;
+            const sA=(a.sh==="?"||!a.sh)?99:a.sh;
+            const sB=(b.sh==="?"||!b.sh)?99:b.sh;
+            return sA-sB;
+        });
+
+        const badgeClass = txt => {
+            if(txt==="MATCH") return "badge-match";
+            if(txt==="WARNING"||txt==="CEK") return "badge-warning";
+            if(txt==="SYS ONLY"||txt==="BLM INPUT"||txt==="SUPV LUPA"||txt==="BEDA LOT") return "badge-error";
+            return "badge-gray";
+        };
+
+        const icon = txt => {
+            if(txt==="MATCH") return '<i class="fas fa-check"></i>';
+            if(txt==="WARNING") return '<i class="fas fa-triangle-exclamation"></i>';
+            return '<i class="fas fa-xmark"></i>';
+        };
+
+        resultBody.innerHTML=sorted.map(r=>`
+            <tr class="${r.rowClass}">
+                <td style="text-align:center;font-weight:800;font-size:13px">${r.m}</td>
+                <td style="text-align:center;font-weight:700">${r.sh}</td>
+                <td><span class="lot-mono">${r.lotExp}</span></td>
+                <td><span class="${r.lSys.includes('KOSONG')?'lot-sys-error':'lot-mono'}">${r.lSys}</span></td>
+                <td class="qty-cell">${r.qMan}</td>
+                <td class="qty-cell">${r.qSys}</td>
+                <td class="time-cell">${r.tSys}</td>
+                <td style="font-size:11px">${r.nMan}</td>
+                <td style="font-size:11px">${r.nSys}</td>
+                <td style="text-align:center">
+                    <span class="badge ${badgeClass(r.txt)}">${icon(r.txt)} ${r.txt}</span>
+                </td>
+                <td class="note-cell">${r.nts}</td>
+            </tr>`).join("");
+
+        resultHint.style.display="none";
+        resultTableWrap.style.display="block";
+        document.querySelector('.card:last-child').scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════════
+    function initPage(){
+        loadProductDb(); loadMachineMemory();
+        manualBody.innerHTML=""; resultBody.innerHTML="";
+        for(let m=1;m<=TOTAL_MACHINES;m++) addManualRow();
+    }
+    btnAddRow.addEventListener("click", addManualRow);
+    initPage();
+</script>
+</body>
+</html>

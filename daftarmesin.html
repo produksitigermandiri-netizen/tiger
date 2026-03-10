@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Harian Mesin Injection</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --amber: #C2550A;
+            --amber-dark: #8B3A06;
+            --charcoal: #1C1814;
+            --sage: #4A6741;
+            --sand: #D4B896;
+            --warm-gray: #E8E2D9;
+            --warm-gray-2: #D5CCBF;
+            --text-muted: #8A7E72;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--charcoal);
+            min-height: 100vh;
+            padding: 2rem 1rem 4rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* ── BACK BUTTON ── */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            background: transparent;
+            border: 1.5px solid var(--sand);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 1.5rem;
+        }
+        .btn-back:hover { border-color: var(--amber); color: var(--amber); }
+
+        /* ── CONTROLS BAR ── */
+        .controls-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--amber);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(194,85,10,0.25);
+        }
+        .btn-upload:hover { background: var(--amber-dark); transform: translateY(-1px); }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--amber);
+            border: 1.5px solid var(--amber);
+            padding: 10px 22px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-download:hover { background: var(--amber); color: white; }
+
+        .hidden { display: none !important; }
+
+        /* ── REPORT CARD ── */
+        #reportCard {
+            background: white;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            border-top: 5px solid var(--amber);
+            box-shadow: 0 4px 32px rgba(28,24,20,0.10);
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .report-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            color: var(--charcoal);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--warm-gray);
+            padding-bottom: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #reportDate {
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.75rem;
+        }
+
+        /* ── MESSAGE BOX ── */
+        #messageBox {
+            background: #FDF5EE;
+            border-left: 4px solid var(--amber);
+            padding: 14px 18px;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--charcoal);
+        }
+        #messageBox p { margin: 0; }
+        #msgTotalMesin {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.3rem;
+            color: var(--amber);
+        }
+
+        /* ── DATA CONTAINER ── */
+        #dataContainer {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--warm-gray);
+        }
+
+        #dataContainer p.placeholder {
+            color: var(--warm-gray-2);
+            font-family: 'DM Serif Display', serif;
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        /* ── TWO COLUMN TABLES ── */
+        .table-pair {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        .table-col { flex: 1; }
+
+        .mesin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .mesin-table thead tr th {
+            background: var(--amber);
+            color: white;
+            padding: 9px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            border: 1px solid var(--amber-dark);
+        }
+
+        .mesin-table tbody tr { border-bottom: 1px solid var(--warm-gray); transition: background 0.15s; }
+        .mesin-table tbody tr:hover { background: #FDF5EE; }
+
+        .mesin-table tbody td {
+            padding: 8px 12px;
+            border: 1px solid var(--warm-gray);
+        }
+        .mesin-table tbody td.col-num {
+            text-align: center;
+            font-weight: 800;
+            background: #FAF8F4;
+            color: var(--amber);
+            width: 15%;
+            font-size: 0.9rem;
+        }
+        .mesin-table tbody td.col-product {
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .mesin-table tbody td.conflict-num {
+            background: #FFF3F3;
+            color: #C0392B;
+        }
+        .mesin-table tbody td.conflict-product {
+            background: #FFF3F3;
+            color: #C0392B;
+        }
+
+        /* ── FOOTER SUMMARY ── */
+        #footerSummary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--amber);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        #totalMesinTxt {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            font-weight: 400;
+        }
+        #totalConflictTxt {
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #C0392B;
+            background: #FFF3F3;
+            border: 1px solid #FFBABA;
+            padding: 4px 12px;
+        }
+
+        .report-footer-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--warm-gray-2);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <a href="index.html" class="btn-back">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+
+    <div class="controls-bar">
+        <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-folder-open"></i> Upload CSV
+        </button>
+        <input type="file" id="fileInput" accept=".csv" class="hidden" onchange="processFile()">
+
+        <button id="btnDownload" class="btn-download hidden" onclick="downloadImage()">
+            <i class="fas fa-camera"></i> Download Gambar
+        </button>
+    </div>
+
+    <!-- REPORT CARD -->
+    <div id="reportCard">
+        <h1 class="report-title">Data Harian Mesin Injection</h1>
+        <div id="reportDate">Tanggal: —</div>
+
+        <div id="messageBox" class="hidden">
+            <p>Dear Tim Mekanik,</p>
+            <p>Berikut daftar mesin yang beroperasi hari ini.</p>
+            <p>Total Mesin Produksi: <span id="msgTotalMesin">0 Unit</span></p>
+        </div>
+
+        <div id="dataContainer">
+            <p class="placeholder">(Silakan Upload File CSV)</p>
+        </div>
+
+        <div id="footerSummary" class="hidden">
+            <div id="totalMesinTxt">Total: 0 Unit</div>
+            <div id="totalConflictTxt">Ganti Produk: 0</div>
+        </div>
+
+        <div class="report-footer-text">Generated by Trinity Visual Creative System</div>
+    </div>
+
+</div>
+
+<script>
+    function excelDateToJSDate(serial) {
+        if (!isNaN(serial) && serial > 20000) {
+            var utc_days  = Math.floor(serial - 25569);
+            var utc_value = utc_days * 86400;
+            var date_info = new Date(utc_value * 1000);
+            return `${date_info.getDate()}/${date_info.getMonth() + 1}/${date_info.getFullYear()}`;
+        }
+        return serial;
+    }
+
+    function processFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) { parseData(e.target.result); };
+        reader.readAsText(file);
+    }
+
+    function parseData(csvText) {
+        const lines = csvText.split('\n');
+        let machineData = {};
+        let reportDate = "-";
+
+        for (let i = 1; i < lines.length; i++) {
+            const row = lines[i].replace('\r', '').split(';');
+            if (row.length < 6) continue;
+            const machineRaw = row[0];
+            const productName = row[1];
+            const dateRaw = row[3];
+            const workCentre = row[5] ? row[5].trim() : '';
+
+            if (reportDate === "-" && dateRaw) {
+                reportDate = excelDateToJSDate(parseFloat(dateRaw));
+            }
+
+            if (workCentre.toLowerCase().includes('injection')) {
+                const numberMatch = machineRaw.match(/(\d+)/);
+                const machineNum = numberMatch ? parseInt(numberMatch[0]) : machineRaw;
+                if (!machineData[machineNum]) machineData[machineNum] = new Set();
+                machineData[machineNum].add(productName.trim());
+            }
+        }
+
+        document.getElementById('reportDate').innerText = "TANGGAL PRODUKSI: " + reportDate;
+        renderTwoColumns(machineData);
+    }
+
+    function renderTwoColumns(machineData) {
+        const sortedMachines = Object.keys(machineData).sort((a, b) => a - b);
+        const totalMesin = sortedMachines.length;
+
+        document.getElementById('messageBox').classList.remove('hidden');
+        document.getElementById('msgTotalMesin').innerText = totalMesin + " Unit";
+
+        const midPoint = Math.ceil(totalMesin / 2);
+        const leftData = sortedMachines.slice(0, midPoint);
+        const rightData = sortedMachines.slice(midPoint);
+        let totalGantiCetakan = 0;
+
+        function createRows(keys) {
+            let html = '';
+            keys.forEach(num => {
+                const products = Array.from(machineData[num]);
+                let displayProduct = products[0];
+                let isConflict = false;
+                if (products.length > 1) {
+                    displayProduct = products.join(' <br><span style="font-size:0.7rem;font-weight:800;color:#C0392B">⬇ GANTI ⬇</span><br> ');
+                    isConflict = true;
+                    totalGantiCetakan++;
+                }
+                html += `<tr>
+                    <td class="col-num ${isConflict ? 'conflict-num' : ''}">${num}</td>
+                    <td class="col-product ${isConflict ? 'conflict-product' : ''}">${displayProduct}</td>
+                </tr>`;
+            });
+            return html;
+        }
+
+        const tableHeader = `<thead><tr><th>Mesin</th><th>Nama Produk</th></tr></thead>`;
+
+        let containerHTML = '';
+        if (totalMesin === 0) {
+            containerHTML = '<p style="color:#C0392B;font-weight:700;padding:2.5rem;text-align:center">Tidak ada data Injection.</p>';
+        } else {
+            containerHTML = `<div class="table-pair">
+                <div class="table-col"><table class="mesin-table">${tableHeader}<tbody>${createRows(leftData)}</tbody></table></div>
+                <div class="table-col"><table class="mesin-table">${tableHeader}<tbody>${createRows(rightData)}</tbody></table></div>
+            </div>`;
+        }
+
+        document.getElementById('dataContainer').innerHTML = containerHTML;
+        document.getElementById('totalMesinTxt').innerText = "Total: " + totalMesin + " Unit";
+        document.getElementById('totalConflictTxt').innerText = "Ganti Produk: " + totalGantiCetakan;
+        document.getElementById('footerSummary').classList.remove('hidden');
+        document.getElementById('btnDownload').classList.remove('hidden');
+    }
+
+    function downloadImage() {
+        const element = document.getElementById("reportCard");
+        if (typeof html2canvas === 'undefined') {
+            alert("Mode Offline: Gunakan Screenshot manual.");
+            return;
+        }
+        html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+            const link = document.createElement("a");
+            link.download = "Laporan_Injection_Trinity.jpg";
+            link.href = canvas.toDataURL("image/jpeg", 0.9);
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>

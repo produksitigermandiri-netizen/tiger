@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Assembling — Konversi PCS ↔ KG</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --amber: #C2550A;
+            --amber-dark: #8B3A06;
+            --amber-light: #E8874A;
+            --charcoal: #1C1814;
+            --sage: #4A6741;
+            --sand: #D4B896;
+            --warm-gray: #E8E2D9;
+            --warm-gray-2: #D5CCBF;
+            --text-muted: #8A7E72;
+            --red-danger: #C0392B;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--charcoal);
+            min-height: 100vh;
+            padding-bottom: 4rem;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        /* ── STICKY TOPBAR ── */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: white;
+            border-bottom: 3px solid var(--amber);
+            box-shadow: 0 2px 16px rgba(28,24,20,0.08);
+            padding: 1rem 1.5rem;
+        }
+        .topbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1.5px solid var(--sand);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-back:hover { border-color: var(--amber); color: var(--amber); }
+
+        .topbar-title h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.4rem;
+            color: var(--charcoal);
+        }
+        .topbar-title p {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .topbar-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            background: var(--warm-gray);
+            padding: 3px;
+            border-radius: 4px;
+            gap: 2px;
+        }
+        .mode-btn {
+            padding: 7px 16px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s;
+            background: transparent;
+            color: var(--text-muted);
+        }
+        .mode-btn.active {
+            background: white;
+            color: var(--amber);
+            box-shadow: 0 1px 4px rgba(28,24,20,0.12);
+        }
+
+        input[type="text"]#searchInput {
+            padding: 8px 14px;
+            border: 1.5px solid var(--warm-gray-2);
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.83rem;
+            color: var(--charcoal);
+            outline: none;
+            width: 180px;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]#searchInput:focus { border-color: var(--amber); }
+
+        .btn-reset-input {
+            padding: 8px 12px;
+            background: #FDF5EE;
+            border: 1.5px solid var(--sand);
+            color: var(--amber);
+            cursor: pointer;
+            font-size: 0.83rem;
+            transition: all 0.2s;
+        }
+        .btn-reset-input:hover { background: var(--amber); color: white; }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── CARD GRID ── */
+        #dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+        }
+        @media (max-width: 1024px) { #dashboard-container { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 640px)  { #dashboard-container { grid-template-columns: 1fr; } }
+
+        .brand-card {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            border-top: 3px solid var(--amber);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+            animation: fadeUp 0.4s ease both;
+        }
+        .brand-card:hover { box-shadow: 0 4px 20px rgba(194,85,10,0.12); }
+
+        .brand-card-header {
+            background: #FDF5EE;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--warm-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .brand-card-header span {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1rem;
+            color: var(--amber);
+            letter-spacing: 0.02em;
+        }
+        .btn-del-brand {
+            background: none;
+            border: none;
+            color: var(--warm-gray-2);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+        .btn-del-brand:hover { color: var(--red-danger); }
+
+        .brand-table { width: 100%; border-collapse: collapse; }
+        .brand-table tbody tr { border-bottom: 1px solid var(--warm-gray); transition: background 0.15s; }
+        .brand-table tbody tr:last-child { border-bottom: none; }
+        .brand-table tbody tr:hover { background: #FDF5EE; }
+
+        .brand-table td { padding: 10px 12px; }
+        .td-part .part-name { font-weight: 700; color: var(--charcoal); font-size: 0.85rem; }
+        .td-part .part-weight { font-size: 0.72rem; color: var(--text-muted); margin-top: 1px; }
+        .td-input input {
+            width: 100%;
+            background: var(--cream);
+            border: 1.5px solid var(--warm-gray-2);
+            padding: 6px 8px;
+            text-align: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            color: var(--amber);
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+        .td-input input:focus { border-color: var(--amber); }
+        .td-result { text-align: right; }
+        .res-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.2rem;
+            color: var(--amber);
+        }
+        .td-del { text-align: center; }
+        .btn-del-part {
+            background: none; border: none;
+            color: var(--warm-gray-2);
+            cursor: pointer; font-size: 0.8rem;
+            transition: color 0.2s; padding: 4px;
+        }
+        .btn-del-part:hover { color: var(--red-danger); }
+
+        .empty-state {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-family: 'DM Serif Display', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        /* ── MANAGEMENT BAR ── */
+        .management-bar {
+            max-width: 1280px;
+            margin: 2.5rem auto 0;
+            padding: 0 1.5rem 2rem;
+            border-top: 1px solid var(--warm-gray);
+            padding-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .management-bar h3 {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .management-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+        .btn-mgmt {
+            padding: 9px 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-add { background: white; color: var(--amber); border: 1.5px solid var(--amber); }
+        .btn-add:hover { background: var(--amber); color: white; }
+        .btn-backup { background: var(--charcoal); color: white; }
+        .btn-backup:hover { background: #333; }
+        .btn-danger { background: var(--red-danger); color: white; }
+        .btn-danger:hover { background: #a93226; }
+
+        .management-note {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ── MODALS ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(28,24,20,0.75);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: white;
+            width: 90%;
+            max-width: 420px;
+            padding: 1.75rem;
+            border-top: 4px solid var(--amber);
+            position: relative;
+            z-index: 51;
+            animation: fadeUp 0.25s ease both;
+        }
+        .modal-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.4rem;
+            color: var(--amber);
+            margin-bottom: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-close-btn {
+            background: none; border: none;
+            color: var(--text-muted);
+            cursor: pointer; font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .modal-close-btn:hover { color: var(--charcoal); }
+
+        .form-field { margin-bottom: 1rem; }
+        .form-field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .form-field input {
+            width: 100%;
+            border: 1.5px solid var(--warm-gray-2);
+            background: var(--cream);
+            padding: 9px 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
+            color: var(--charcoal);
+            outline: none;
+            transition: border-color 0.2s;
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+        .form-field input:focus { border-color: var(--amber); }
+
+        .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 1.5rem; }
+        .btn-cancel {
+            padding: 8px 18px;
+            background: var(--warm-gray);
+            color: var(--text-muted);
+            border: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancel:hover { background: var(--warm-gray-2); }
+        .btn-confirm {
+            padding: 8px 22px;
+            background: var(--amber);
+            color: white;
+            border: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-confirm:hover { background: var(--amber-dark); }
+        .btn-confirm.danger { background: var(--red-danger); }
+        .btn-confirm.danger:hover { background: #a93226; }
+
+        /* PIN Modal specific */
+        .pin-modal-box { text-align: center; }
+        .pin-modal-box h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--amber); margin-bottom: 1rem; }
+        input#pin-input {
+            width: 100%;
+            border: 2px solid var(--warm-gray-2);
+            padding: 12px;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.3em;
+            color: var(--charcoal);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin-bottom: 1.25rem;
+            outline: none;
+            -webkit-user-select: auto;
+            user-select: auto;
+            background: var(--cream);
+            transition: border-color 0.2s;
+        }
+        input#pin-input:focus { border-color: var(--amber); }
+
+        /* Confirm Modal */
+        .confirm-icon { font-size: 2rem; color: var(--amber); margin-bottom: 0.75rem; }
+        .confirm-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--charcoal); margin-bottom: 0.5rem; }
+        #confirm-msg { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div style="display:flex;align-items:center;gap:1.25rem;">
+                <button onclick="goHome()" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</button>
+                <div class="topbar-title">
+                    <h1>Sistem Assembling</h1>
+                    <p>Konversi PCS ↔ KG</p>
+                </div>
+            </div>
+            <div class="topbar-controls">
+                <div class="mode-toggle">
+                    <button class="mode-btn active" id="btn-pcs" onclick="setMode('pcs')">Cari PCS</button>
+                    <button class="mode-btn" id="btn-kilo" onclick="setMode('kilo')">Cari KG</button>
+                </div>
+                <input type="text" id="searchInput" oninput="renderDashboard()" placeholder="Cari produk…">
+                <button class="btn-reset-input" onclick="resetAll()" title="Reset Input"><i class="fas fa-sync-alt"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD GRID -->
+    <div class="main">
+        <div id="dashboard-container"></div>
+    </div>
+
+    <!-- MANAGEMENT BAR -->
+    <div class="management-bar">
+        <h3>Pengaturan Data Master</h3>
+        <div class="management-btns">
+            <button class="btn-mgmt btn-add" onclick="openModal()">➕ Tambah Barang</button>
+            <button class="btn-mgmt btn-backup" onclick="backupData()">💾 Backup Data</button>
+            <button class="btn-mgmt btn-danger" onclick="hardReset()">⚠ Reset Master</button>
+        </div>
+        <p class="management-note">Data tersimpan otomatis di browser device ini.</p>
+    </div>
+
+    <!-- MODAL: TAMBAH BARANG -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">
+                Tambah Barang
+                <button class="modal-close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="form-field">
+                <label>Nama Brand</label>
+                <input id="m-brand" type="text" placeholder="Contoh: KELLY">
+            </div>
+            <div class="form-field">
+                <label>Nama Part</label>
+                <input id="m-part" type="text" placeholder="Contoh: COVER">
+            </div>
+            <div class="form-field">
+                <label>Berat Satuan (Gram)</label>
+                <input id="m-weight" type="number" step="0.01" placeholder="0.00">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">Batal</button>
+                <button class="btn-confirm" onclick="saveNewItem()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PIN -->
+    <div id="pin-overlay" class="modal-overlay">
+        <div class="modal-box pin-modal-box">
+            <h3>🔒 Masukkan PIN Admin</h3>
+            <input type="password" id="pin-input" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter') submitPin()">
+            <div class="modal-footer" style="justify-content:center">
+                <button class="btn-cancel" onclick="closePin()">Batal</button>
+                <button class="btn-confirm" onclick="submitPin()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIRM -->
+    <div id="confirm-overlay" class="modal-overlay">
+        <div class="modal-box" style="text-align:center">
+            <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="confirm-title">Konfirmasi</div>
+            <p id="confirm-msg">Yakin mau hapus data ini?</p>
+            <div class="modal-footer" style="justify-content:center;margin-top:1.25rem">
+                <button class="btn-cancel" onclick="closeConfirm()">Batal</button>
+                <button class="btn-confirm danger" onclick="submitConfirm()">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const defaultData = { "CM 210": [ { "name": "COVER", "weight": 15.34 }, { "name": "BASE", "weight": 22.89 }, { "name": "PENT", "weight": 38.23 } ], "CM 205": [ { "name": "COVER", "weight": 10.51 }, { "name": "BASE", "weight": 20.69 }, { "name": "PENT", "weight": 31.20 } ], "LIP BALM": [ { "name": "BODY", "weight": 2.48 }, { "name": "BUTTOM", "weight": 1.09 }, { "name": "CAP", "weight": 0.31 }, { "name": "ASS", "weight": 4.88 } ], "CM 196": [ { "name": "COVER", "weight": 20.48 }, { "name": "BASE", "weight": 19.59 }, { "name": "PENT", "weight": 40.07 } ], "PT 204": [ { "name": "COVER", "weight": 7.22 }, { "name": "BASE", "weight": 5.86 }, { "name": "INNER", "weight": 5.70 }, { "name": "INNER LID", "weight": 0.92 } ], "PT 208": [ { "name": "COVER", "weight": 9.59 }, { "name": "BASE", "weight": 33.19 }, { "name": "INSERT BASE", "weight": 3.9 }, { "name": "INNER LID", "weight": 2.26 } ], "PT 202": [ { "name": "COVER", "weight": 6.32 }, { "name": "BASE", "weight": 23.73 } ], "KELLY BESAR": [ { "name": "COVER", "weight": 5.78 }, { "name": "BASE", "weight": 6.53 }, { "name": "SONIC", "weight": 16.83 } ], "KELLY KECIL": [ { "name": "COVER", "weight": 5.39 }, { "name": "BASE", "weight": 6.91 } ], "PT 206": [ { "name": "BASE", "weight": 63.06 }, { "name": "INSERT BASE", "weight": 7.25 }, { "name": "INSERT PLUG", "weight": 1.82 }, { "name": "INNER LID", "weight": 2.42 }, { "name": "OUTER COVER", "weight": 11.36 }, { "name": "INNER COVER", "weight": 7.65 } ], "LS 206": [ { "name": "COVER", "weight": 3.29 }, { "name": "BASE", "weight": 3.69 }, { "name": "CUP", "weight": 0.90 }, { "name": "SPIRAL", "weight": 1.46 }, { "name": "ASS", "weight": 9.34 } ], "MECCO": [ { "name": "COVER", "weight": 6.50 }, { "name": "BASE", "weight": 5.54 } ], "CM 217": [ { "name": "COVER", "weight": 9.64 }, { "name": "BASE", "weight": 10.68 }, { "name": "PENT", "weight": 20.32 } ], "PT 207": [ { "name": "COVER", "weight": 6.20 }, { "name": "BASE", "weight": 25.98 }, { "name": "INER", "weight": 2.51 }, { "name": "INER LID", "weight": 1.79 }, { "name": "HASIL JOINT", "weight": 34.69 } ], "CM 216": [ { "name": "COVER", "weight": 9.90 }, { "name": "BASE", "weight": 16.58 }, { "name": "PENT", "weight": 26.48 } ], "PT 201": [ { "name": "COVER", "weight": 11.29 }, { "name": "BASE", "weight": 9.31 }, { "name": "INNER", "weight": 12.89 } ], "LP 002": [ { "name": "COVER", "weight": 10.14 }, { "name": "BASE", "weight": 19.19 }, { "name": "SHIFTER", "weight": 3.46 } ], "LP 001": [ { "name": "COVER", "weight": 7.84 }, { "name": "BASE", "weight": 14.92 }, { "name": "SHIFTER", "weight": 2.38 } ] };
+
+        let appData = {};
+        let currentMode = 'pcs';
+        const ADMIN_PIN = "1234";
+        let pendingAction = null;
+        let confirmAction = null;
+
+        function goHome() { window.location.href = "index.html"; }
+
+        function init() {
+            try {
+                const saved = localStorage.getItem('mandorDataV2');
+                appData = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultData));
+            } catch (e) { appData = JSON.parse(JSON.stringify(defaultData)); }
+            renderDashboard();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-pcs').classList.toggle('active', mode === 'pcs');
+            document.getElementById('btn-kilo').classList.toggle('active', mode === 'kilo');
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('dashboard-container');
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            container.innerHTML = '';
+
+            if (!appData || Object.keys(appData).length === 0) {
+                container.innerHTML = '<div class="empty-state">Data Kosong. Silakan Reset Master.</div>';
+                return;
+            }
+
+            Object.keys(appData).sort().forEach(brand => {
+                const parts = appData[brand];
+                if (!(brand.toLowerCase().includes(term) || parts.some(p => p.name.toLowerCase().includes(term)))) return;
+
+                const card = document.createElement('div');
+                card.className = 'brand-card';
+
+                let rowsHTML = '';
+                parts.forEach((part, index) => {
+                    rowsHTML += `
+                        <tr>
+                            <td class="td-part">
+                                <div class="part-name">${part.name}</div>
+                                <span class="part-weight">${part.weight} gr</span>
+                            </td>
+                            <td class="td-input" style="width:32%">
+                                <input type="number" oninput="calc('${brand}', ${index}, this.value)">
+                            </td>
+                            <td class="td-result" style="width:25%">
+                                <div class="res-value" id="res-${brand}-${index}">0</div>
+                            </td>
+                            <td class="td-del" style="width:36px">
+                                <button class="btn-del-part" onclick="reqPin(() => reqConfirm('Hapus Item ${part.name}?', () => delPart('${brand}', ${index})))">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+
+                card.innerHTML = `
+                    <div class="brand-card-header">
+                        <span>${brand}</span>
+                        <button class="btn-del-brand" onclick="reqPin(() => reqConfirm('Hapus Brand ${brand} beserta isinya?', () => delBrand('${brand}')))" title="Hapus Brand">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <table class="brand-table"><tbody>${rowsHTML}</tbody></table>`;
+                container.appendChild(card);
+            });
+
+            if (!container.innerHTML) {
+                container.innerHTML = '<div class="empty-state">Tidak ada produk yang cocok.</div>';
+            }
+        }
+
+        function calc(b, i, v) {
+            const part = appData[b][i];
+            const el = document.getElementById(`res-${b}-${i}`);
+            if (!v) { el.innerText = "0"; return; }
+            const val = parseFloat(v);
+            el.innerText = currentMode === 'pcs'
+                ? Math.round((val * 1000) / part.weight).toLocaleString()
+                : ((val * part.weight) / 1000).toLocaleString(undefined, { maximumFractionDigits: 4 });
+        }
+
+        function resetAll() {
+            document.querySelectorAll('input[type="number"]').forEach(i => i.value = '');
+            document.querySelectorAll('[id^="res-"]').forEach(r => r.innerText = '0');
+        }
+
+        // ── MODAL: TAMBAH BARANG
+        function openModal() {
+            document.getElementById('modal-overlay').classList.add('open');
+            document.getElementById('m-brand').value = '';
+            document.getElementById('m-part').value = '';
+            document.getElementById('m-weight').value = '';
+        }
+        function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+        function saveNewItem() {
+            let b = document.getElementById('m-brand').value.toUpperCase().trim();
+            let p = document.getElementById('m-part').value.toUpperCase().trim();
+            let w = document.getElementById('m-weight').value;
+            if (!b || !p || !w) { alert("Semua wajib diisi!"); return; }
+            if (!appData[b]) appData[b] = [];
+            const exIdx = appData[b].findIndex(x => x.name === p);
+            if (exIdx >= 0) { appData[b][exIdx].weight = parseFloat(w); }
+            else { appData[b].push({ name: p, weight: parseFloat(w) }); }
+            save(); closeModal();
+        }
+
+        // ── MODAL: PIN
+        function reqPin(action) {
+            pendingAction = action;
+            document.getElementById('pin-overlay').classList.add('open');
+            const input = document.getElementById('pin-input');
+            input.value = ''; input.focus();
+        }
+        function closePin() { document.getElementById('pin-overlay').classList.remove('open'); pendingAction = null; }
+        function submitPin() {
+            if (document.getElementById('pin-input').value === ADMIN_PIN) {
+                closePin(); if (pendingAction) pendingAction();
+            } else {
+                alert("PIN SALAH!"); document.getElementById('pin-input').value = '';
+            }
+        }
+
+        // ── MODAL: CONFIRM
+        function reqConfirm(msg, action) {
+            confirmAction = action;
+            document.getElementById('confirm-msg').innerText = msg;
+            document.getElementById('confirm-overlay').classList.add('open');
+        }
+        function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); confirmAction = null; }
+        function submitConfirm() { closeConfirm(); if (confirmAction) confirmAction(); }
+
+        // ── CRUD
+        function delPart(b, i) { appData[b].splice(i, 1); if (!appData[b].length) delete appData[b]; save(); }
+        function delBrand(b) { delete appData[b]; save(); }
+        function hardReset() {
+            reqPin(() => reqConfirm('Reset Semua Data Jadi Awal? (Data akan kembali ke standar pabrik)', () => {
+                localStorage.removeItem('mandorDataV2'); location.reload();
+            }));
+        }
+        function backupData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const anchor = document.createElement('a');
+            anchor.setAttribute("href", dataStr);
+            anchor.setAttribute("download", "backup_assembling_tiger_v2.json");
+            document.body.appendChild(anchor); anchor.click(); anchor.remove();
+        }
+        function save() { localStorage.setItem('mandorDataV2', JSON.stringify(appData)); renderDashboard(); }
+
+        init();
+    </script>
+</body>
+</html>

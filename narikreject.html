@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finac Converter — Trinity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --parchment: #F0EBE1;
+            --warm-gray: #E8E2D9;
+            --stone: #8C7B6B;
+            --charcoal: #1C1814;
+            --ink: #2D2520;
+            --amber: #C2550A;
+            --amber-light: #F97316;
+            --amber-pale: #FEF3E2;
+            --sage: #4A6741;
+            --sage-light: #EEF4ED;
+            --rose: #9B2335;
+            --rose-light: #FDF2F4;
+            --sand: #D4B896;
+            --slate: #3B4E6B;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(194,85,10,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(74,103,65,0.05) 0%, transparent 50%);
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0; opacity: 0.4;
+        }
+
+        .layout { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+        /* HEADER */
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--stone); text-decoration: none;
+            border: 1.5px solid var(--warm-gray); padding: 8px 16px; border-radius: 4px;
+            background: white; transition: all 0.2s; margin-bottom: 32px; display: inline-flex;
+        }
+        .back-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+        .app-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+        .app-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px,5vw,52px); line-height: 1.05; color: var(--charcoal); margin-bottom: 8px; }
+        .app-title em { font-style: italic; color: var(--amber); }
+        .app-subtitle { font-size: 13px; color: var(--stone); font-weight: 500; margin-bottom: 40px; }
+
+        /* CARDS */
+        .card { background: white; border: 1.5px solid var(--warm-gray); border-radius: 12px; padding: 28px; margin-bottom: 24px; box-shadow: 0 2px 16px rgba(28,24,20,0.04); }
+        .card-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--charcoal); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+
+        /* DROP ZONE */
+        .drop-zone {
+            border: 2px dashed var(--warm-gray);
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: var(--cream);
+            margin-bottom: 20px;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--amber);
+            background: var(--amber-pale);
+        }
+        .drop-icon { font-size: 48px; color: var(--warm-gray); margin-bottom: 16px; transition: all 0.25s; }
+        .drop-zone:hover .drop-icon { color: var(--amber); transform: translateY(-4px); }
+        .drop-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--charcoal); margin-bottom: 8px; }
+        .drop-sub { font-size: 12px; color: var(--stone); font-weight: 500; }
+
+        /* ACTION BAR */
+        .action-bar {
+            display: none;
+            background: var(--charcoal);
+            border-radius: 12px;
+            padding: 20px 24px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .action-bar.show { display: flex; }
+        .action-bar-left { display: flex; align-items: center; gap: 12px; }
+        .file-count-badge {
+            background: var(--amber);
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 100px;
+        }
+        .action-bar-label { font-size: 13px; font-weight: 600; color: var(--sand); }
+        .action-bar-right { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary { background: var(--amber); color: white; }
+        .btn-primary:hover { background: var(--amber-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(194,85,10,0.3); }
+        .btn-excel { background: #16a34a; color: white; }
+        .btn-excel:hover { background: #15803d; transform: translateY(-1px); }
+        .btn-reset { background: transparent; color: var(--stone); border: 1.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+        .btn-reset:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* FILE LIST */
+        .file-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 18px;
+            background: white;
+            border: 1.5px solid var(--warm-gray);
+            border-left: 4px solid var(--amber);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            animation: fadeUp 0.3s ease both;
+        }
+        .file-item.error { border-left-color: var(--rose); }
+        .file-item-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+        .file-item-badge {
+            font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 100px;
+        }
+        .file-item-badge.ok { background: var(--sage-light); color: var(--sage); }
+        .file-item-badge.err { background: var(--rose-light); color: var(--rose); }
+
+        /* CHART SECTION */
+        .chart-section { display: none; }
+        .chart-section.show { display: block; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        @media(max-width: 700px) { .chart-grid { grid-template-columns: 1fr; } }
+
+        .chart-card {
+            background: white; border: 1.5px solid var(--warm-gray); border-radius: 12px;
+            padding: 24px; box-shadow: 0 2px 16px rgba(28,24,20,0.04);
+        }
+        .chart-card.full { grid-column: 1 / -1; }
+        .chart-title {
+            font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--charcoal);
+            margin-bottom: 4px;
+        }
+        .chart-subtitle { font-size: 11px; color: var(--stone); font-weight: 600; margin-bottom: 20px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+        /* STAT CARDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media(max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
+        .stat-card { background: white; border: 1.5px solid var(--warm-gray); border-radius: 10px; padding: 20px; text-align: center; }
+        .stat-value { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--amber); }
+        .stat-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--stone); margin-top: 4px; }
+
+        .hidden { display: none !important; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+<div class="layout">
+
+    <!-- HEADER -->
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    <p class="app-eyebrow">Finac Tools · Rekap Reject</p>
+    <h1 class="app-title">Rekap <em>Finac</em> Reject</h1>
+    <p class="app-subtitle">Gabung banyak file HTML Finac jadi satu Excel rapi + analisa visual.</p>
+
+    <!-- UPLOAD CARD -->
+    <div class="card">
+        <div class="card-title"><span class="dot"></span> Upload File HTML Finac</div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-icon"><i class="fas fa-cloud-arrow-up"></i></div>
+            <div class="drop-title">Letakkan File di Sini</div>
+            <p class="drop-sub">Klik atau drag & drop · Support Injection, Stamping, Assy, dll</p>
+            <input type="file" id="fileInput" multiple accept=".html,.htm" class="hidden">
+        </div>
+
+        <!-- ACTION BAR -->
+        <div class="action-bar" id="actionBar">
+            <div class="action-bar-left">
+                <span class="file-count-badge" id="countFiles">0</span>
+                <span class="action-bar-label">file siap diproses</span>
+            </div>
+            <div class="action-bar-right">
+                <button class="btn btn-primary" onclick="showAnalysis()">
+                    <i class="fas fa-chart-bar"></i> Analisa Visual
+                </button>
+                <button class="btn btn-excel" onclick="downloadStackedExcel()">
+                    <i class="fas fa-file-excel"></i> Unduh Excel
+                </button>
+                <button class="btn btn-reset" onclick="resetAll()">
+                    <i class="fas fa-rotate-left"></i> Mulai Ulang
+                </button>
+            </div>
+        </div>
+
+        <!-- FILE LIST -->
+        <div id="fileList"></div>
+    </div>
+
+    <!-- ANALYSIS SECTION -->
+    <div class="chart-section" id="chartSection">
+
+        <!-- STAT CARDS -->
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <!-- CHARTS -->
+        <div class="chart-grid">
+            <!-- Top 10 Reject Types -->
+            <div class="chart-card full">
+                <div class="chart-title">Top Reject Types</div>
+                <div class="chart-subtitle">Gabungan semua departemen — sorted by total</div>
+                <canvas id="chartTopReject" height="120"></canvas>
+            </div>
+
+            <!-- Reject per Dept -->
+            <div class="chart-card">
+                <div class="chart-title">Reject per Departemen</div>
+                <div class="chart-subtitle">Total reject qty per dept</div>
+                <canvas id="chartDeptReject"></canvas>
+            </div>
+
+            <!-- Reject Rate per Dept -->
+            <div class="chart-card">
+                <div class="chart-title">Reject Rate per Dept</div>
+                <div class="chart-subtitle">% reject vs total produksi</div>
+                <canvas id="chartDeptRate"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ═══════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════
+    let deptDataCollection = [];
+    let chartInstances = {};
+
+    // ═══════════════════════════════════════════
+    // DOM
+    // ═══════════════════════════════════════════
+    const dropZone    = document.getElementById('dropZone');
+    const fileInput   = document.getElementById('fileInput');
+    const fileList    = document.getElementById('fileList');
+    const actionBar   = document.getElementById('actionBar');
+    const countLabel  = document.getElementById('countFiles');
+    const chartSection= document.getElementById('chartSection');
+
+    // ═══════════════════════════════════════════
+    // DROP ZONE EVENTS
+    // ═══════════════════════════════════════════
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+    // ═══════════════════════════════════════════
+    // FILE HANDLING
+    // ═══════════════════════════════════════════
+    function handleFiles(files) { Array.from(files).forEach(processFile); }
+
+    function processFile(file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(e.target.result, 'text/html');
+                const result = parseFinacSmart(doc);
+                const deptName = file.name.replace(/\.html?$/i, '').toUpperCase();
+                deptDataCollection.push({ name: deptName, headers: result.headers, data: result.data });
+                addFileItem(file.name, result.data.length + " Baris", true);
+                updateActionBar();
+            } catch(err) {
+                addFileItem(file.name, "Gagal: " + err.message, false);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function updateActionBar() {
+        if(deptDataCollection.length > 0) {
+            actionBar.classList.add('show');
+            countLabel.innerText = deptDataCollection.length;
+        }
+    }
+
+    function addFileItem(name, info, success) {
+        const div = document.createElement('div');
+        div.className = `file-item${success ? '' : ' error'}`;
+        div.innerHTML = `
+            <div class="file-item-name"><i class="fas fa-file-code" style="margin-right:8px;color:var(--stone)"></i>${name}</div>
+            <span class="file-item-badge ${success ? 'ok' : 'err'}">${info}</span>`;
+        fileList.appendChild(div);
+    }
+
+    // BUG FIX: Reset bersih — deptDataCollection + UI
+    function resetAll() {
+        deptDataCollection = [];
+        fileList.innerHTML = '';
+        fileInput.value = '';
+        actionBar.classList.remove('show');
+        chartSection.classList.remove('show');
+        countLabel.innerText = '0';
+        // Destroy all chart instances
+        Object.values(chartInstances).forEach(c => c.destroy());
+        chartInstances = {};
+        document.getElementById('statsGrid').innerHTML = '';
+    }
+
+    // ═══════════════════════════════════════════
+    // PARSE LOGIC (ORIGINAL — TIDAK DIUBAH)
+    // ═══════════════════════════════════════════
+    function parseFinacSmart(doc) {
+        const rows = Array.from(doc.querySelectorAll('tr'));
+        let detectedHeaders = [];
+        let headerKeywords = ['uneven','dirty','mottled','start up','startup','short','flow','flashing','crack','spot','scratch','loose','locking','gap','over run','damage','hinge','smudged','scratched','other'];
+
+        for(let row of rows) {
+            for(let cell of row.cells) {
+                const text = cell.innerText.replace(/\u00a0/g," ").trim();
+                if(text.length > 1 && !text.includes('PCS') && !text.includes('%') && !text.toLowerCase().includes('total')) {
+                    if(headerKeywords.some(kw => text.toLowerCase().includes(kw))) {
+                        if(!detectedHeaders.includes(text)) detectedHeaders.push(text);
+                    }
+                }
+            }
+            if(detectedHeaders.length > 0) break;
+        }
+        if(detectedHeaders.length === 0) detectedHeaders = ["Reject Qty"];
+
+        let result = [];
+        rows.forEach(row => {
+            let cells = Array.from(row.cells);
+            if(cells.length < 5) return;
+            let idIndex = -1; let nameIndex = -1; let maxColspan = 0;
+            for(let c = 0; c < cells.length - 2; c++) {
+                const span = parseInt(cells[c].getAttribute('colspan') || "1");
+                const txt = cells[c].innerText.replace(/\u00a0/g," ").trim();
+                if(span <= 4) { if(/^\d{6,}/.test(txt)) idIndex = c; }
+                if(span >= 3) { if(span > maxColspan) { maxColspan = span; nameIndex = c; } }
+            }
+            if(idIndex !== -1 && nameIndex !== -1 && nameIndex > idIndex) {
+                const nameRaw = cells[nameIndex].innerText.replace(/\u00a0/g," ").trim();
+                if(!nameRaw.toLowerCase().includes('total')) {
+                    let rowData = { name: nameRaw.replace(/\s+/g,' '), good: 0, totalReject: 0, rejects: {} };
+                    if(cells[nameIndex + 2]) rowData.good = parseNum(cells[nameIndex + 2].innerText);
+                    if(cells[nameIndex + 4]) rowData.totalReject = parseNum(cells[nameIndex + 4].innerText);
+                    let rawRejectValues = [];
+                    for(let i = nameIndex + 6; i < cells.length; i++) {
+                        const txt = cells[i].innerText.replace(/\u00a0/g," ").trim();
+                        if(!txt.includes('%') && txt !== '' && txt !== '-') rawRejectValues.push(parseNum(txt));
+                    }
+                    detectedHeaders.forEach((hName, idx) => {
+                        rowData.rejects[hName] = rawRejectValues[idx] !== undefined ? rawRejectValues[idx] : 0;
+                    });
+                    result.push(rowData);
+                }
+            }
+        });
+        return { headers: detectedHeaders, data: result };
+    }
+
+    function parseNum(str) {
+        if(!str) return 0;
+        let clean = str.replace(/[^\d.,-]/g,'');
+        if(clean.indexOf(',') > -1 && clean.indexOf(',') > clean.length - 4) {
+            clean = clean.replace(/\./g,'').replace(',','.');
+        } else { clean = clean.replace(/,/g,''); }
+        return parseFloat(clean) || 0;
+    }
+
+    // ═══════════════════════════════════════════
+    // ANALYSIS + CHARTS
+    // ═══════════════════════════════════════════
+    function showAnalysis() {
+        if(deptDataCollection.length === 0) return;
+
+        // Destroy existing charts before redrawing
+        Object.values(chartInstances).forEach(c => c.destroy());
+        chartInstances = {};
+
+        // ── Aggregate data ──
+        const rejectTotals   = {};   // { typeName: totalQty }
+        const deptTotals     = {};   // { deptName: { good, reject } }
+
+        deptDataCollection.forEach(dept => {
+            let deptReject = 0, deptGood = 0;
+            dept.data.forEach(row => {
+                deptGood   += row.good;
+                deptReject += row.totalReject;
+                dept.headers.forEach(h => {
+                    rejectTotals[h] = (rejectTotals[h] || 0) + (row.rejects[h] || 0);
+                });
+            });
+            deptTotals[dept.name] = { good: deptGood, reject: deptReject };
+        });
+
+        // ── Stats ──
+        const totalGood   = Object.values(deptTotals).reduce((s,d) => s + d.good, 0);
+        const totalReject = Object.values(deptTotals).reduce((s,d) => s + d.reject, 0);
+        const rejectRate  = totalGood + totalReject > 0 ? ((totalReject / (totalGood + totalReject)) * 100).toFixed(2) : 0;
+
+        const statsGrid = document.getElementById('statsGrid');
+        statsGrid.innerHTML = `
+            <div class="stat-card">
+                <div class="stat-value">${totalGood.toLocaleString('id')}</div>
+                <div class="stat-label">Total Produk OK</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--rose)">${totalReject.toLocaleString('id')}</div>
+                <div class="stat-label">Total Reject</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:${rejectRate > 3 ? 'var(--rose)' : 'var(--sage)'}">${rejectRate}%</div>
+                <div class="stat-label">Reject Rate</div>
+            </div>`;
+
+        // ── Palette ──
+        const palette = [
+            '#C2550A','#3B4E6B','#4A6741','#9B2335','#D97706',
+            '#0891B2','#7C3AED','#DB2777','#059669','#DC2626',
+            '#64748B','#B45309','#0E7490','#6D28D9','#BE185D'
+        ];
+
+        // ── Chart 1: Top 10 Reject Types (horizontal bar) ──
+        const sortedRejects = Object.entries(rejectTotals)
+            .sort((a,b) => b[1] - a[1])
+            .slice(0, 10);
+        const r1Labels = sortedRejects.map(([k]) => k);
+        const r1Data   = sortedRejects.map(([,v]) => v);
+
+        chartInstances.topReject = new Chart(document.getElementById('chartTopReject'), {
+            type: 'bar',
+            data: {
+                labels: r1Labels,
+                datasets: [{
+                    label: 'Total Reject (PCS)',
+                    data: r1Data,
+                    backgroundColor: r1Labels.map((_,i) => palette[i % palette.length] + 'CC'),
+                    borderColor:     r1Labels.map((_,i) => palette[i % palette.length]),
+                    borderWidth: 1.5,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x.toLocaleString('id')} pcs` } }
+                },
+                scales: {
+                    x: { grid: { color: '#E8E2D9' }, ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } } },
+                    y: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } } }
+                }
+            }
+        });
+
+        // ── Chart 2: Reject per Dept (donut) ──
+        const deptNames   = Object.keys(deptTotals);
+        const deptRejects = deptNames.map(d => deptTotals[d].reject);
+
+        chartInstances.deptReject = new Chart(document.getElementById('chartDeptReject'), {
+            type: 'doughnut',
+            data: {
+                labels: deptNames,
+                datasets: [{
+                    data: deptRejects,
+                    backgroundColor: deptNames.map((_,i) => palette[i % palette.length] + 'CC'),
+                    borderColor: deptNames.map((_,i) => palette[i % palette.length]),
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', size: 11 }, boxWidth: 12, padding: 16 } },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString('id')} pcs` } }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // ── Chart 3: Reject Rate per Dept (bar) ──
+        const deptRates = deptNames.map(d => {
+            const total = deptTotals[d].good + deptTotals[d].reject;
+            return total > 0 ? +((deptTotals[d].reject / total) * 100).toFixed(2) : 0;
+        });
+
+        chartInstances.deptRate = new Chart(document.getElementById('chartDeptRate'), {
+            type: 'bar',
+            data: {
+                labels: deptNames,
+                datasets: [{
+                    label: 'Reject Rate (%)',
+                    data: deptRates,
+                    backgroundColor: deptRates.map(r => r > 3 ? '#9B233566' : '#4A674166'),
+                    borderColor:     deptRates.map(r => r > 3 ? '#9B2335' : '#4A6741'),
+                    borderWidth: 1.5,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}%` } }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 11 } } },
+                    y: {
+                        grid: { color: '#E8E2D9' },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 11 }, callback: v => v + '%' },
+                        suggestedMax: Math.max(...deptRates, 5)
+                    }
+                }
+            }
+        });
+
+        chartSection.classList.add('show');
+        chartSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ═══════════════════════════════════════════
+    // DOWNLOAD EXCEL (ORIGINAL — TIDAK DIUBAH)
+    // ═══════════════════════════════════════════
+    window.downloadStackedExcel = function() {
+        if(deptDataCollection.length === 0) return alert("Belum ada data!");
+        deptDataCollection.sort((a,b) => a.name.localeCompare(b.name));
+
+        let fullHTML = '';
+        deptDataCollection.forEach(dept => {
+            let totalColspan = 4 + (dept.headers.length * 2);
+            fullHTML += `<tr><td colspan="${totalColspan}" style="background:#7b1113;color:#ffffff;font-weight:bold;border:1px solid #000;font-size:14px;padding:5px;">DEPARTEMEN: ${dept.name}</td></tr>`;
+            fullHTML += `<tr style="background:#f3f4f6;color:#000;">
+                <th style="border:1px solid #000;">No</th>
+                <th style="border:1px solid #000;width:350px;">Nama Produk</th>
+                <th style="border:1px solid #000;">Total OK</th>
+                <th style="border:1px solid #000;">Total Reject</th>`;
+            dept.headers.forEach(h => {
+                fullHTML += `<th style="border:1px solid #000;width:100px;background:#ffd700;">${h} (PCS)</th>`;
+                fullHTML += `<th style="border:1px solid #000;width:80px;background:#e5e7eb;">(KG)</th>`;
+            });
+            fullHTML += '</tr>';
+            dept.data.forEach((row, index) => {
+                fullHTML += `<tr>
+                    <td style="border:1px solid #000;text-align:center;">${index+1}</td>
+                    <td style="border:1px solid #000;">${row.name}</td>
+                    <td style="border:1px solid #000;text-align:right;">${row.good}</td>
+                    <td style="border:1px solid #000;text-align:right;font-weight:bold;color:#be123c;">${row.totalReject}</td>`;
+                dept.headers.forEach(h => {
+                    fullHTML += `<td style="border:1px solid #000;text-align:right;">${row.rejects[h] || 0}</td>`;
+                    fullHTML += `<td style="border:1px solid #000;background:#f9fafb;"></td>`;
+                });
+                fullHTML += '</tr>';
+            });
+            fullHTML += '<tr><td colspan="10" style="height:30px;"></td></tr>';
+        });
+
+        const blob = new Blob([`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head></head><body><table>${fullHTML}</table></body></html>`], { type: 'application/vnd.ms-excel' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Laporan_Produksi_Tiger_V5.1_SPACED.xls';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    };
+</script>
+</body>
+</html>

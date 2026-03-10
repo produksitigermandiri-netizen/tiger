@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Rekap Tahunan + Pareto Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --amber: #C2550A;
+            --amber-dark: #8B3A06;
+            --amber-light: #E8874A;
+            --charcoal: #1C1814;
+            --sage: #4A6741;
+            --gold: #C8961E;
+            --sand: #D4B896;
+            --warm-gray: #E8E2D9;
+            --warm-gray-2: #D5CCBF;
+            --text-muted: #8A7E72;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--charcoal);
+            min-height: 100vh;
+            padding: 2rem 1rem 4rem;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        .wrapper { max-width: 1300px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* ── BACK BUTTON ── */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border: 1.5px solid var(--sand);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 1.75rem;
+        }
+        .btn-back:hover { border-color: var(--amber); color: var(--amber); }
+
+        /* ── HEADER CARD ── */
+        .header-card {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            border-top: 4px solid var(--amber);
+            padding: 2rem 2.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.4s ease both;
+        }
+        .header-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .header-card h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.75rem;
+            color: var(--charcoal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-card h1 i { color: var(--amber); font-size: 1.3rem; }
+        .header-card p { color: var(--text-muted); font-size: 0.83rem; margin-top: 4px; }
+
+        /* File input */
+        .file-input-box {
+            background: var(--cream);
+            border: 1.5px solid var(--warm-gray-2);
+            padding: 12px 16px;
+        }
+        .file-input-box label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .file-input-box input[type="file"] {
+            display: block;
+            width: 100%;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .file-input-box input[type="file"]::file-selector-button {
+            background: var(--amber);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .file-input-box input[type="file"]::file-selector-button:hover { background: var(--amber-dark); }
+
+        .btn-process {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--amber);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: auto;
+        }
+        .btn-process:hover { background: var(--amber-dark); }
+
+        /* ── LOADING ── */
+        #loading {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        #loading i { font-size: 3rem; color: var(--amber); }
+        #loading p { margin-top: 1rem; font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--text-muted); font-style: italic; }
+
+        /* ── RESULT SECTION ── */
+        #resultSection { animation: fadeUp 0.4s ease both; }
+
+        /* TABS BAR */
+        .tabs-bar {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            padding: 1rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 4px;
+            z-index: 20;
+            margin-bottom: 1.25rem;
+        }
+        .tab-btns { display: flex; gap: 6px; }
+        .tab-btn {
+            padding: 8px 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: var(--amber); color: white; }
+        .tab-btn:not(.active) { background: var(--warm-gray); color: var(--text-muted); }
+        .tab-btn:not(.active):hover { background: var(--warm-gray-2); }
+
+        .mode-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .btn-copy {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--sage);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-copy:hover { background: #3a5233; }
+
+        /* ── PARETO + TOP5 GRID ── */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+        @media (max-width: 900px) { .analysis-grid { grid-template-columns: 1fr; } }
+
+        .panel {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            padding: 1.75rem;
+        }
+        .panel-gold { border-top: 4px solid var(--gold); }
+        .panel-amber { border-top: 4px solid var(--amber); }
+
+        .panel h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel h3 i.gold { color: var(--gold); }
+        .panel h3 i.amber { color: var(--amber); }
+
+        .chart-wrap { position: relative; height: 300px; width: 100%; }
+
+        /* Top 5 list */
+        .top5-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--warm-gray);
+        }
+        .top5-item:last-child { border-bottom: none; }
+        .top5-left { display: flex; align-items: center; gap: 10px; }
+        .top5-rank {
+            background: var(--amber);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 800;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .top5-name { font-weight: 600; font-size: 0.85rem; color: var(--charcoal); }
+        .top5-val { font-weight: 800; font-size: 0.85rem; color: var(--charcoal); }
+        .top5-unit { font-size: 0.72rem; color: var(--text-muted); font-weight: 400; }
+
+        .insight-box {
+            margin-top: 1rem;
+            padding: 10px 14px;
+            background: #FFFBEA;
+            border: 1px solid #F0D060;
+            font-size: 0.78rem;
+            color: #7A6200;
+            line-height: 1.6;
+        }
+
+        /* ── DATA TABLE ── */
+        .table-panel {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            padding: 1.75rem;
+        }
+        .table-panel h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
+        }
+        .table-container { overflow-x: auto; }
+
+        #dataTable { width: 100%; border-collapse: collapse; }
+        #dataTable th {
+            background: var(--amber);
+            color: white;
+            padding: 10px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            text-align: center;
+            white-space: nowrap;
+            border: 1px solid var(--amber-dark);
+        }
+        #dataTable th.sticky-col { position: sticky; left: 0; z-index: 10; }
+        #dataTable td {
+            padding: 8px 12px;
+            border: 1px solid var(--warm-gray);
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+        #dataTable tbody tr { transition: background 0.15s; }
+        #dataTable tbody tr:hover { background: #FDF5EE; }
+        #dataTable tbody tr.empty-row { color: var(--text-muted); font-style: italic; background: var(--cream); }
+        #dataTable tbody td.sticky-col { position: sticky; left: 0; background: white; font-weight: 700; border-right: 1px solid var(--warm-gray-2); z-index: 5; }
+        #dataTable tbody tr:hover td.sticky-col { background: #FDF5EE; }
+        #dataTable tfoot td { background: var(--charcoal); color: white; font-weight: 700; padding: 10px 12px; border: 1px solid #333; font-size: 0.83rem; }
+        #dataTable tfoot td.sticky-col { position: sticky; left: 0; background: var(--charcoal); z-index: 5; }
+
+        .cell-total-main { background: #FDF5EE; color: var(--amber); font-weight: 800; text-align: right; }
+        .cell-ok { color: var(--sage); text-align: right; }
+        .cell-rej { color: #C0392B; font-weight: 700; text-align: right; }
+        .cell-pct { background: #FFFBEA; text-align: center; font-weight: 700; font-size: 0.75rem; }
+        .cell-defect { text-align: right; }
+        .cell-grand-total { color: #F0D060; font-size: 1rem; text-align: right; }
+        .cell-grand-pct { color: #F0D060; text-align: center; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <a href="index.html" class="btn-back"><i class="fas fa-home"></i> Dashboard</a>
+
+    <!-- HEADER CARD -->
+    <div class="header-card">
+        <div class="header-top">
+            <div>
+                <h1><i class="fas fa-chart-line"></i> Grand Rekap & Pareto</h1>
+                <p>Upload Folder → Auto Sortir Bulan → Analisa Pareto 80/20</p>
+            </div>
+            <div class="file-input-box">
+                <label>Pilih Folder Data (Isi CSV Bulanan)</label>
+                <input type="file" id="folderInput" webkitdirectory directory multiple accept=".csv">
+            </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end">
+            <button class="btn-process" onclick="processFolder()">
+                <i class="fas fa-bolt"></i> Proses & Analisa
+            </button>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading" class="hidden">
+        <i class="fas fa-cog fa-spin"></i>
+        <p>Sedang mengunyah data setahun…</p>
+    </div>
+
+    <!-- RESULT SECTION -->
+    <div id="resultSection" class="hidden">
+
+        <!-- TABS BAR -->
+        <div class="tabs-bar">
+            <div class="tab-btns">
+                <button class="tab-btn active" id="btnPcs" onclick="switchTab('pcs')">Rekap PCS</button>
+                <button class="tab-btn" id="btnKg" onclick="switchTab('kg')">Rekap KG</button>
+            </div>
+            <span class="mode-label" id="activeModeLabel">Mode: PCS</span>
+            <button class="btn-copy" onclick="copyTable()"><i class="fas fa-copy"></i> Copy Table</button>
+        </div>
+
+        <!-- PARETO + TOP5 -->
+        <div class="analysis-grid">
+            <div class="panel panel-gold">
+                <h3><i class="fas fa-chart-bar gold"></i> Diagram Pareto (80/20 Rule)</h3>
+                <div class="chart-wrap"><canvas id="paretoChart"></canvas></div>
+            </div>
+            <div class="panel panel-amber">
+                <h3><i class="fas fa-trophy amber"></i> Top 5 Reject Utama</h3>
+                <div id="top5List"></div>
+                <div class="insight-box">
+                    <i class="fas fa-lightbulb"></i> <strong>Insight:</strong>
+                    Fokus perbaikan pada 2–3 reject teratas biasanya akan menurunkan total reject secara signifikan.
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA TABLE -->
+        <div class="table-panel">
+            <h3>Detail Data Bulanan</h3>
+            <div class="table-container">
+                <table id="dataTable"></table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const COL_MAP = {
+        OK_PCS: 3, OK_KG: 4,
+        REJECT_PCS: 5, REJECT_KG: 6,
+        UNEVEN_PCS: 10, UNEVEN_KG: 11,
+        MOTTLED_PCS: 12, MOTTLED_KG: 13,
+        STARTUP_PCS: 14, STARTUP_KG: 15,
+        SHORTSHOOT_PCS: 16, SHORTSHOOT_KG: 17,
+        FLOWMARK_PCS: 18, FLOWMARK_KG: 19,
+        FLASHING_PCS: 20, FLASHING_KG: 21,
+        CRACK_PCS: 22, CRACK_KG: 23,
+        SPOT_PCS: 24, SPOT_KG: 25,
+        SCRATCH_PCS: 26, SCRATCH_KG: 27,
+        DIRTY_PCS: 28, DIRTY_KG: 29
+    };
+
+    const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","Nopember","Desember"];
+    const DEFECT_TYPES = ["Uneven","Mottled","Start Up","Short Shoot","Flow Mark","Flashing","Crack","Spot","Scratch","Dirty"];
+
+    let yearlyData = {};
+    let activeTab = 'pcs';
+    let myChart = null;
+
+    function initData() {
+        yearlyData = {};
+        MONTHS.forEach(m => {
+            yearlyData[m] = {
+                fileCount: 0, ok_pcs: 0, ok_kg: 0, reject_pcs: 0, reject_kg: 0,
+                defects: { "Uneven":{p:0,k:0},"Mottled":{p:0,k:0},"Start Up":{p:0,k:0},"Short Shoot":{p:0,k:0},"Flow Mark":{p:0,k:0},"Flashing":{p:0,k:0},"Crack":{p:0,k:0},"Spot":{p:0,k:0},"Scratch":{p:0,k:0},"Dirty":{p:0,k:0} }
+            };
+        });
+    }
+
+    function cleanNum(str) {
+        if (!str) return 0;
+        let clean = str.toString().replace(/,/g,'').replace(/-/g,'0').trim();
+        if (clean === '') return 0;
+        return parseFloat(clean) || 0;
+    }
+
+    function detectMonth(filename) {
+        const lower = filename.toLowerCase();
+        if (lower.includes("jan")) return "Januari";
+        if (lower.includes("feb")) return "Februari";
+        if (lower.includes("mar")) return "Maret";
+        if (lower.includes("apr")) return "April";
+        if (lower.includes("mei") || lower.includes("may")) return "Mei";
+        if (lower.includes("jun")) return "Juni";
+        if (lower.includes("jul")) return "Juli";
+        if (lower.includes("agu") || lower.includes("aug")) return "Agustus";
+        if (lower.includes("sep")) return "September";
+        if (lower.includes("okt") || lower.includes("oct")) return "Oktober";
+        if (lower.includes("nop") || lower.includes("nov")) return "Nopember";
+        if (lower.includes("des") || lower.includes("dec")) return "Desember";
+        return null;
+    }
+
+    async function processFolder() {
+        const input = document.getElementById('folderInput');
+        if (input.files.length === 0) { alert("Pilih folder dulu bro!"); return; }
+
+        document.getElementById('resultSection').classList.add('hidden');
+        document.getElementById('loading').classList.remove('hidden');
+
+        initData();
+
+        let files = Array.from(input.files).filter(f => f.name.toLowerCase().endsWith('.csv'));
+        if (files.length === 0) {
+            alert("Gak ada file CSV di folder yang dipilih.");
+            document.getElementById('loading').classList.add('hidden');
+            return;
+        }
+
+        for (let file of files) {
+            const month = detectMonth(file.name);
+            if (month) { const text = await readFile(file); parseCSV(text, month); }
+        }
+
+        updateUI();
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('resultSection').classList.remove('hidden');
+    }
+
+    function readFile(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsText(file);
+        });
+    }
+
+    function parseCSV(text, month) {
+        const rows = text.split('\n');
+        let d = yearlyData[month];
+        d.fileCount++;
+        for (let i = 4; i < rows.length; i++) {
+            let cols = rows[i].split(';');
+            if (cols.length < 10) continue;
+            if (cols[0] && cols[0].toLowerCase().includes("total")) continue;
+            let no = parseInt(cols[0]);
+            if (isNaN(no)) continue;
+
+            d.ok_pcs += cleanNum(cols[COL_MAP.OK_PCS]); d.ok_kg += cleanNum(cols[COL_MAP.OK_KG]);
+            d.reject_pcs += cleanNum(cols[COL_MAP.REJECT_PCS]); d.reject_kg += cleanNum(cols[COL_MAP.REJECT_KG]);
+
+            d.defects["Uneven"].p += cleanNum(cols[COL_MAP.UNEVEN_PCS]); d.defects["Uneven"].k += cleanNum(cols[COL_MAP.UNEVEN_KG]);
+            d.defects["Mottled"].p += cleanNum(cols[COL_MAP.MOTTLED_PCS]); d.defects["Mottled"].k += cleanNum(cols[COL_MAP.MOTTLED_KG]);
+            d.defects["Start Up"].p += cleanNum(cols[COL_MAP.STARTUP_PCS]); d.defects["Start Up"].k += cleanNum(cols[COL_MAP.STARTUP_KG]);
+            d.defects["Short Shoot"].p += cleanNum(cols[COL_MAP.SHORTSHOOT_PCS]); d.defects["Short Shoot"].k += cleanNum(cols[COL_MAP.SHORTSHOOT_KG]);
+            d.defects["Flow Mark"].p += cleanNum(cols[COL_MAP.FLOWMARK_PCS]); d.defects["Flow Mark"].k += cleanNum(cols[COL_MAP.FLOWMARK_KG]);
+            d.defects["Flashing"].p += cleanNum(cols[COL_MAP.FLASHING_PCS]); d.defects["Flashing"].k += cleanNum(cols[COL_MAP.FLASHING_KG]);
+            d.defects["Crack"].p += cleanNum(cols[COL_MAP.CRACK_PCS]); d.defects["Crack"].k += cleanNum(cols[COL_MAP.CRACK_KG]);
+            d.defects["Spot"].p += cleanNum(cols[COL_MAP.SPOT_PCS]); d.defects["Spot"].k += cleanNum(cols[COL_MAP.SPOT_KG]);
+            d.defects["Scratch"].p += cleanNum(cols[COL_MAP.SCRATCH_PCS]); d.defects["Scratch"].k += cleanNum(cols[COL_MAP.SCRATCH_KG]);
+            d.defects["Dirty"].p += cleanNum(cols[COL_MAP.DIRTY_PCS]); d.defects["Dirty"].k += cleanNum(cols[COL_MAP.DIRTY_KG]);
+        }
+    }
+
+    function fmt(num, isKg = false) {
+        return num.toLocaleString('en-US', { minimumFractionDigits: isKg?2:0, maximumFractionDigits: isKg?2:0 });
+    }
+
+    function updateUI() { renderTable(); renderPareto(); }
+
+    function renderPareto() {
+        const isPcs = activeTab === 'pcs';
+        let defectTotals = DEFECT_TYPES.map(type => {
+            let total = 0;
+            MONTHS.forEach(m => { total += isPcs ? yearlyData[m].defects[type].p : yearlyData[m].defects[type].k; });
+            return { type, val: total };
+        });
+        defectTotals.sort((a,b) => b.val - a.val);
+
+        let grandSum = defectTotals.reduce((a,b) => a + b.val, 0);
+        let cumulative = 0;
+        let labels = [], dataBar = [], dataLine = [];
+
+        defectTotals.forEach(d => {
+            labels.push(d.type); dataBar.push(d.val);
+            cumulative += d.val;
+            dataLine.push(grandSum > 0 ? (cumulative / grandSum * 100) : 0);
+        });
+
+        // Top 5
+        document.getElementById('top5List').innerHTML = defectTotals.slice(0,5).map((d,i) => `
+            <div class="top5-item">
+                <div class="top5-left">
+                    <span class="top5-rank">${i+1}</span>
+                    <span class="top5-name">${d.type}</span>
+                </div>
+                <div class="top5-val">${fmt(d.val, !isPcs)} <span class="top5-unit">${isPcs?'Pcs':'Kg'}</span></div>
+            </div>`).join('');
+
+        const ctx = document.getElementById('paretoChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    { type:'line', label:'Kumulatif %', data:dataLine, borderColor:'#C8961E', borderWidth:2, yAxisID:'y1', tension:0.1, pointBackgroundColor:'#C8961E' },
+                    { type:'bar', label:`Jumlah Reject (${isPcs?'Pcs':'Kg'})`, data:dataBar, backgroundColor:'#C2550A', yAxisID:'y', barPercentage:0.6 }
+                ]
+            },
+            options: {
+                responsive:true, maintainAspectRatio:false,
+                plugins: {
+                    legend:{ position:'top' },
+                    tooltip: { mode:'index', intersect:false, callbacks: { label: function(ctx) {
+                        let label = ctx.dataset.label || '';
+                        if (label) label += ': ';
+                        if (ctx.dataset.type === 'line') return label + ctx.raw.toFixed(1) + '%';
+                        return label + fmt(ctx.raw, !isPcs);
+                    }}}
+                },
+                scales: {
+                    y:{ beginAtZero:true, position:'left', title:{display:true, text:isPcs?'QTY (PCS)':'BERAT (KG)'} },
+                    y1:{ beginAtZero:true, position:'right', max:100, grid:{drawOnChartArea:false}, title:{display:true, text:'Kumulatif (%)'}, ticks:{callback:v=>v+"%"} }
+                }
+            }
+        });
+    }
+
+    function renderTable() {
+        const table = document.getElementById('dataTable');
+        const isPcs = activeTab === 'pcs';
+
+        let thead = `<thead><tr>
+            <th class="sticky-col" style="text-align:left">Bulan</th>
+            <th>File</th>
+            <th>Total ${isPcs?'PCS':'KG'}</th>
+            <th>OK</th><th>Reject</th><th>% Reject</th>
+            ${DEFECT_TYPES.map(t=>`<th>${t}</th>`).join('')}
+        </tr></thead><tbody>`;
+
+        let tbody = '';
+        let grand = { ok:0, rej:0, total:0, defects:{} };
+        DEFECT_TYPES.forEach(t => grand.defects[t] = 0);
+
+        MONTHS.forEach(m => {
+            let d = yearlyData[m];
+            const ok = isPcs ? d.ok_pcs : d.ok_kg;
+            const rej = isPcs ? d.reject_pcs : d.reject_kg;
+            const total = ok + rej;
+            const pct = total > 0 ? (rej/total*100).toFixed(2)+'%' : '0%';
+            grand.ok += ok; grand.rej += rej; grand.total += total;
+
+            let defectCells = '';
+            DEFECT_TYPES.forEach(t => {
+                const val = isPcs ? d.defects[t].p : d.defects[t].k;
+                grand.defects[t] += val;
+                defectCells += `<td class="cell-defect">${fmt(val, !isPcs)}</td>`;
+            });
+
+            const trClass = d.fileCount > 0 ? '' : 'empty-row';
+            tbody += `<tr class="${trClass}">
+                <td class="sticky-col">${m}</td>
+                <td style="text-align:center;font-size:0.75rem">${d.fileCount}</td>
+                <td class="cell-total-main">${fmt(total, !isPcs)}</td>
+                <td class="cell-ok">${fmt(ok, !isPcs)}</td>
+                <td class="cell-rej">${fmt(rej, !isPcs)}</td>
+                <td class="cell-pct">${pct}</td>
+                ${defectCells}
+            </tr>`;
+        });
+
+        const grandPct = grand.total > 0 ? (grand.rej/grand.total*100).toFixed(2)+'%' : '0%';
+        let tfoot = `</tbody><tfoot><tr>
+            <td class="sticky-col">GRAND TOTAL</td>
+            <td style="text-align:center">—</td>
+            <td class="cell-grand-total">${fmt(grand.total, !isPcs)}</td>
+            <td style="text-align:right">${fmt(grand.ok, !isPcs)}</td>
+            <td style="text-align:right;color:#F08080">${fmt(grand.rej, !isPcs)}</td>
+            <td class="cell-grand-pct">${grandPct}</td>
+            ${DEFECT_TYPES.map(t=>`<td style="text-align:right">${fmt(grand.defects[t], !isPcs)}</td>`).join('')}
+        </tr></tfoot>`;
+
+        table.innerHTML = thead + tbody + tfoot;
+    }
+
+    function switchTab(tab) {
+        activeTab = tab;
+        document.getElementById('activeModeLabel').innerText = `Mode: ${tab.toUpperCase()}`;
+        document.getElementById('btnPcs').classList.toggle('active', tab === 'pcs');
+        document.getElementById('btnKg').classList.toggle('active', tab === 'kg');
+        updateUI();
+    }
+
+    function copyTable() {
+        const el = document.getElementById('dataTable');
+        let range, sel;
+        if (document.createRange && window.getSelection) {
+            range = document.createRange(); sel = window.getSelection(); sel.removeAllRanges();
+            try { range.selectNodeContents(el); sel.addRange(range); }
+            catch(e) { range.selectNode(el); sel.addRange(range); }
+        }
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+        alert("Tabel berhasil dicopy!");
+    }
+</script>
+</body>
+</html>
