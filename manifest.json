@@ -1,0 +1,26 @@
+{
+  "name": "Tiger Production System",
+  "short_name": "Tiger System",
+  "description": "Integrated Production System - PT Tigermandiri Pratama",
+  "start_url": "/tiger/index.html",
+  "scope": "/tiger/",
+  "display": "standalone",
+  "background_color": "#FAF8F4",
+  "theme_color": "#1C1814",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "business"]
+}
