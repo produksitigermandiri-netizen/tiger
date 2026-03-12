@@ -24,7 +24,7 @@
         body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
 
         /* LOGIN */
-        #loginOverlay{position:fixed;inset:0;z-index:9999;background:rgba(28,24,20,0.97);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px)}
+        #loginOverlay{position:fixed;inset:0;z-index:9999;background:rgba(28,24,20,0.97);display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px)}
         #loginBox{background:white;border-top:5px solid var(--amber);padding:2.5rem 2rem;width:100%;max-width:400px;animation:fadeUp 0.4s ease both}
         .login-logo{display:flex;justify-content:center;margin-bottom:1.5rem}
         .login-logo img{width:64px;height:64px;object-fit:cover;border-radius:50%;border:3px solid var(--warm-gray);transition:transform 0.3s}
