@@ -1,6 +1,6 @@
 // Tiger Production System - Service Worker
 // Update versi ini setiap kali ada perubahan file biar cache refresh
-const CACHE_NAME = 'tiger-system-v1';
+const CACHE_NAME = 'tiger-system-v2';
 
 // File-file yang akan dicache untuk bisa jalan offline
 const ASSETS = [
