@@ -143,7 +143,7 @@
 </head>
 <body>
 
-<div id="loginOverlay">
+<div id="loginOverlay" style="display:none">
     <div id="loginBox">
         <div class="login-logo">
             <img src="logo3.png" alt="Tiger Logo" onerror="this.style.display='none'">
@@ -279,8 +279,8 @@
     }
 
     window.onload = function() {
-        if (sessionStorage.getItem('isLoggedIn') === 'true') {
-            document.getElementById('loginOverlay').style.display = 'none';
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            document.getElementById('loginOverlay').style.display = 'flex';
         }
         updateClock();
         setInterval(updateClock, 1000);
