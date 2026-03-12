@@ -236,11 +236,18 @@ async function generateRekap(){
             if(!(nameLower.includes("finish good ok")||nameLower.includes("finished good ok"))) continue;
             totalRows++;
             const dateRaw=cells[idxDate].trim(); if(!dateRaw) continue;
-            const tglPart=dateRaw.split(" ")[0];
-            const parts=tglPart.split(/[\/\-]/); if(parts.length<3) continue;
             let d,m,y;
-            if(parts[0].length===4){ y=parseInt(parts[0],10); m=parseInt(parts[1],10); d=parseInt(parts[2],10); }
-            else { d=parseInt(parts[0],10); m=parseInt(parts[1],10); y=parseInt(parts[2],10); }
+            const _mn={jan:1,feb:2,mar:3,apr:4,may:5,mei:5,jun:6,jul:7,aug:8,agu:8,sep:9,oct:10,okt:10,nov:11,dec:12,des:12};
+            const _sp=dateRaw.split(" ").filter(x=>x);
+            if(_sp.length>=3&&isNaN(_sp[1])){
+                d=parseInt(_sp[0],10); m=_mn[_sp[1].toLowerCase().slice(0,3)]||0; y=parseInt(_sp[2],10);
+            } else {
+                const tglPart=dateRaw.split(" ")[0];
+                const parts=tglPart.split(/[\/\-]/); if(parts.length<3) continue;
+                if(parts[0].length===4){ y=parseInt(parts[0],10); m=parseInt(parts[1],10); d=parseInt(parts[2],10); }
+                else { d=parseInt(parts[0],10); m=parseInt(parts[1],10); y=parseInt(parts[2],10); }
+            }
+            if(!d||!m||!y) continue;
             if(y!==tahun||m!==bulan) continue;
             const approvedStr=cells[idxApproved].replace(/\./g,"").replace(/,/g,"").trim();
             const approved=parseFloat(approvedStr)||0;
@@ -262,8 +269,8 @@ async function generateRekap(){
         bodyRows+=`<tr><td>${no++}</td><td>${nama}</td>`;
         for(let day=0; day<daysInMonth; day++){
             const val=arr[day]||0;
-            if(val>0){ const display=Number.isInteger(val)?val.toLocaleString('id-ID'):String(val).replace(".",","); bodyRows+=`<td class="val-has">${display}</td>`; }
-            else bodyRows+=`<td class="val-empty">—</td>`;
+            if(val>0){ bodyRows+=`<td class="val-has">${val}</td>`; }
+            else bodyRows+=`<td class="val-empty">0</td>`;
         }
         bodyRows+="</tr>";
     }
