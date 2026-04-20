@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Reject Tahunan</title>
+
+    <!-- ================================================================= -->
+    <!-- PERBAIKAN FATAL: Script Hack untuk Electron/Node Integration      -->
+    <!-- Ini maksa library biar tetep jalan di environment aplikasi desktop -->
+    <!-- ================================================================= -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Balikin module setelah load library -->
+    <script>if (window.module) module = window.module;</script>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --amber: #C2550A;
+            --amber-dark: #8B3A06;
+            --charcoal: #1C1814;
+            --sage: #4A6741;
+            --sand: #D4B896;
+            --warm-gray: #E8E2D9;
+            --warm-gray-2: #D5CCBF;
+            --text-muted: #8A7E72;
+        }
+
+        /* ═══════════════════════════════════════════
+           DARK MODE — TIGER SYSTEM
+           Toggle: data-theme="dark" on <html>
+        ═══════════════════════════════════════════ */
+        [data-theme="dark"] {
+            --cream:       #0D0C1A;
+            --parchment:   #13122A;
+            --warm-gray:   #2A2848;
+            --warm-gray-2: #3A3860;
+            --stone:       #8B8FAD;
+            --charcoal:    #EDE9FF;
+            --ink:         #C8C4E8;
+            --text-muted:  #8B8FAD;
+            --sand:        #A5B4FC;
+            --amber-pale:  #1E1628;
+            --sage-light:  #0D1F18;
+            --rose-light:  #1F0D10;
+            --slate-light: #0D1525;
+        }
+        [data-theme="dark"] body {
+            background-image:
+                radial-gradient(ellipse 70% 50% at 15% 10%, rgba(99,102,241,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 85% 90%, rgba(67,56,202,0.08) 0%, transparent 50%) !important;
+        }
+        [data-theme="dark"] body::before { opacity: 0.15 !important; }
+
+        /* Surfaces */
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .wc-card,
+        [data-theme="dark"] .wc-body,
+        [data-theme="dark"] .main-card,
+        [data-theme="dark"] .header-card,
+        [data-theme="dark"] .control-panel,
+        [data-theme="dark"] .result-card,
+        [data-theme="dark"] .topbar,
+        [data-theme="dark"] .back-btn,
+        [data-theme="dark"] .btn-back { background: #13122A !important; }
+
+        [data-theme="dark"] .wc-header,
+        [data-theme="dark"] .result-wc-header { background: #0F0E24 !important; }
+
+        [data-theme="dark"] thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] tbody td { background: #13122A !important; }
+        [data-theme="dark"] tbody tr:hover td,
+        [data-theme="dark"] tbody tr:hover { background: #1A1836 !important; }
+        [data-theme="dark"] tr.row-green td { background: #0D1F18 !important; }
+        [data-theme="dark"] tr.row-red td   { background: #1F0D10 !important; }
+        [data-theme="dark"] tr.row-yellow td { background: #1E1510 !important; }
+
+        /* Inputs */
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] input[type="date"],
+        [data-theme="dark"] input[type="month"],
+        [data-theme="dark"] input[type="file"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] .field-input,
+        [data-theme="dark"] .file-btn { background: #1A1836 !important; color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] td input[type="number"],
+        [data-theme="dark"] td input[type="text"] { background: #1A1836 !important; color: var(--ink) !important; }
+
+        /* CTA / action buttons — indigo in dark mode */
+        [data-theme="dark"] .cta-btn,
+        [data-theme="dark"] .btn-generate,
+        [data-theme="dark"] .btn-process { background: #4F46E5 !important; color: white !important; }
+        [data-theme="dark"] .cta-btn:hover:not(:disabled),
+        [data-theme="dark"] .btn-generate:hover,
+        [data-theme="dark"] .btn-process:hover { background: #4338CA !important; }
+        [data-theme="dark"] .cta-btn:disabled { background: #2A2848 !important; color: var(--stone) !important; }
+
+        /* Version / info badges */
+        [data-theme="dark"] .version-badge { background: #1A1836 !important; color: var(--sand) !important; }
+
+        /* Suggestion dropdown */
+        [data-theme="dark"] #suggestionBox { background: #13122A !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] #suggestionBox li { color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+
+        /* WC Nav bar (cekfinacdecorasi) */
+        [data-theme="dark"] #wcNav { background: rgba(13,12,26,0.92) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] .wcnav-btn { background: #13122A !important; border-color: var(--warm-gray) !important; color: var(--stone) !important; }
+
+        /* Stat cards, rekap, misc light surfaces */
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .summary-card,
+        [data-theme="dark"] .tab-content,
+        [data-theme="dark"] .rekap-section { background: #13122A !important; }
+        [data-theme="dark"] .tab-btn:not(.active) { background: #2A2848 !important; color: var(--text-muted) !important; }
+        [data-theme="dark"] .rekap-table thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] .mesin-table tbody tr:hover { background: #1A1836 !important; }
+
+        /* File selector button */
+        [data-theme="dark"] input[type="file"]::file-selector-button {
+            background: #2A2848 !important; color: var(--sand) !important;
+            border-color: var(--warm-gray) !important;
+        }
+
+        /* Smooth transitions on key elements */
+        .card, .wc-card, .main-card, .header-card, .control-panel,
+        .topbar, .back-btn, .btn-back, thead th, tbody td,
+        input, select, .field-input, .file-btn, .cta-btn,
+        .btn-generate, .btn-process, body {
+            transition: background-color 0.3s ease, border-color 0.3s ease,
+                        color 0.2s ease, box-shadow 0.25s ease !important;
+        }
+
+        /* Theme toggle button */
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 6px;
+            border: 1.5px solid var(--warm-gray);
+            background: transparent; cursor: pointer;
+            font-size: 0.78rem; color: var(--stone);
+            transition: all 0.2s; flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            vertical-align: middle;
+        }
+        .btn-theme:hover { border-color: var(--amber); color: var(--amber); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--charcoal);
+            min-height: 100vh;
+            padding: 2rem 1rem 4rem;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+        }
+
+        .wrapper { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* ── BACK BUTTON ── */
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 9px 18px;
+            border: 1.5px solid var(--sand); color: var(--text-muted);
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+            text-transform: uppercase; text-decoration: none;
+            transition: all 0.2s; margin-bottom: 1.75rem;
+        }
+        .btn-back:hover { border-color: var(--amber); color: var(--amber); }
+
+        /* ── CONTROL PANEL ── */
+        .control-panel {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            border-top: 4px solid var(--amber);
+            padding: 2rem 2.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.4s ease both;
+        }
+        .panel-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1.25rem;
+            border-bottom: 1px solid var(--warm-gray);
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .panel-top h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.75rem;
+            color: var(--charcoal);
+        }
+        .panel-top h1 i { color: var(--amber); margin-right: 8px; font-size: 1.3rem; }
+        .panel-top p { color: var(--text-muted); font-size: 0.83rem; margin-top: 4px; }
+
+        /* Status Badge */
+        #statusBadge {
+            padding: 8px 16px;
+            background: var(--warm-gray);
+            border: 1px solid var(--warm-gray-2);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        #statusBadge.success {
+            background: #F0FAF0;
+            border-color: #A8D5A2;
+            color: var(--sage);
+        }
+
+        /* Input Grid */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: end;
+            background: var(--cream);
+            border: 1.5px solid var(--warm-gray-2);
+            padding: 1.25rem;
+        }
+        @media (max-width: 640px) { .input-grid { grid-template-columns: 1fr; } }
+
+        .input-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        input[type="file"]#fileInput {
+            display: block;
+            width: 100%;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: 1.5px solid var(--warm-gray-2);
+            background: white;
+            padding: 8px 10px;
+        }
+        input[type="file"]#fileInput::file-selector-button {
+            background: var(--amber);
+            color: white; border: none;
+            padding: 7px 14px;
+            font-size: 0.75rem; font-weight: 700;
+            margin-right: 12px; cursor: pointer;
+            transition: background 0.2s;
+        }
+        input[type="file"]#fileInput::file-selector-button:hover { background: var(--amber-dark); }
+
+        .action-btns { display: flex; gap: 8px; }
+
+        .btn-excel {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px;
+            background: var(--sage);
+            color: white; border: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.75rem; font-weight: 800;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-excel:hover { background: #3a5233; }
+        .btn-excel:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-excel:disabled:hover { background: var(--sage); }
+
+        .btn-copy-text {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 18px;
+            background: #2563EB;
+            color: white; border: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.75rem; font-weight: 800;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-copy-text:hover { background: #1D4ED8; }
+        .btn-copy-text:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-copy-text:disabled:hover { background: #2563EB; }
+
+        .input-note { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-top: 8px; text-align: right; }
+
+        /* ── DASHBOARD AREA ── */
+        #dashboardArea {
+            animation: fadeUp 0.4s ease both;
+        }
+
+        /* Stat Cards */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        @media (max-width: 640px) { .stat-grid { grid-template-columns: 1fr; } }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            border-left: 4px solid var(--sand);
+            padding: 1.25rem 1.5rem;
+        }
+        .stat-card.blue { border-left-color: #2563EB; }
+        .stat-card.amber { border-left-color: var(--amber); }
+        .stat-card.yellow { border-left-color: #D97706; }
+
+        .stat-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .stat-val {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem;
+            color: var(--charcoal);
+        }
+        .stat-card.amber .stat-val { color: var(--amber); }
+        .stat-card.yellow .stat-val { color: #D97706; }
+
+        /* Chart + Summary Grid */
+        .viz-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        @media (max-width: 900px) { .viz-grid { grid-template-columns: 1fr; } }
+
+        .viz-panel {
+            background: white;
+            border: 1px solid var(--warm-gray);
+            padding: 1.5rem;
+        }
+        .viz-panel h3 {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--warm-gray);
+            padding-bottom: 10px;
+            margin-bottom: 1rem;
+        }
+
+        /* Quick Table */
+        .quick-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .quick-table thead th {
+            background: var(--warm-gray);
+            padding: 7px 10px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            border: 1px solid var(--warm-gray-2);
+            color: var(--text-muted);
+        }
+        .quick-table tbody tr { transition: background 0.15s; }
+        .quick-table tbody tr:hover { background: #FDF5EE; }
+        .quick-table tbody td { padding: 7px 10px; border: 1px solid var(--warm-gray); }
+        .quick-table .td-pct { text-align: right; font-weight: 700; color: var(--amber); }
+        .quick-table .td-rej { text-align: right; }
+        .quick-scroll { overflow-y: auto; max-height: 240px; }
+
+        /* ── TOAST ── */
+        #toast {
+            visibility: hidden;
+            min-width: 260px;
+            background: var(--charcoal);
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 20px rgba(28,24,20,0.3);
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-top: 3px solid var(--amber);
+        }
+        #toast.show { visibility: visible; animation: toastIn 0.4s, toastOut 0.4s 4.6s; }
+
+        @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes toastIn { from { bottom:0; opacity:0; } to { bottom:30px; opacity:1; } }
+        @keyframes toastOut { from { bottom:30px; opacity:1; } to { bottom:0; opacity:0; } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="wrapper">
+
+    <a href="dashboard.html" class="btn-back"><i class="fas fa-home"></i> Dashboard</a>
+    <button class="btn-theme" id="themeIcon" onclick="toggleTheme()" title="Toggle Dark/Light"><i class="fas fa-moon"></i></button>
+
+    <!-- CONTROL PANEL -->
+    <div class="control-panel">
+        <div class="panel-top">
+            <div>
+                <h1><i class="fas fa-industry"></i> Rekap Reject Tahunan</h1>
+                <p>Sistem Integrasi Produksi PT. Tigermandiri Pratama</p>
+            </div>
+            <div id="statusBadge" class="hidden">
+                <i class="fas fa-info-circle" style="margin-right:6px"></i> Menunggu Data…
+            </div>
+        </div>
+
+        <div class="input-grid">
+            <div class="input-group">
+                <label><i class="fas fa-file-csv" style="margin-right:4px"></i> Upload 12 File CSV</label>
+                <input type="file" id="fileInput" multiple accept=".csv">
+            </div>
+            <div class="action-btns">
+                <button onclick="generateStyledExcel()" id="downloadBtn" disabled class="btn-excel">
+                    <i class="fas fa-file-excel"></i> Export Excel
+                </button>
+                <button onclick="copyToClipboard()" id="copyBtn" disabled class="btn-copy-text">
+                    <i class="fas fa-copy"></i> Copy Text
+                </button>
+            </div>
+        </div>
+        <p class="input-note">*Gunakan "Copy Text" jika Export Excel gagal. Lalu Paste (Ctrl+V) di Excel.</p>
+    </div>
+
+    <!-- DASHBOARD AREA -->
+    <div id="dashboardArea" class="hidden">
+        <!-- Stat Cards -->
+        <div class="stat-grid">
+            <div class="stat-card blue">
+                <div class="stat-label">Total Produksi</div>
+                <div class="stat-val" id="valTotalProd">0 KG</div>
+            </div>
+            <div class="stat-card amber">
+                <div class="stat-label">Total Reject</div>
+                <div class="stat-val" id="valTotalReject">0 KG</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-label">Reject Rate</div>
+                <div class="stat-val" id="valRate">0%</div>
+            </div>
+        </div>
+
+        <!-- Chart + Summary -->
+        <div class="viz-grid">
+            <div class="viz-panel">
+                <h3>Grafik Reject per Dept</h3>
+                <canvas id="rejectChart" height="160"></canvas>
+            </div>
+            <div class="viz-panel">
+                <h3>Ringkasan Data</h3>
+                <div class="quick-scroll">
+                    <table class="quick-table">
+                        <thead>
+                            <tr>
+                                <th>Dept</th>
+                                <th style="text-align:right">Reject (KG)</th>
+                                <th style="text-align:right">%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quickTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden clipboard container -->
+    <div id="hiddenTableContainer" style="position:absolute;left:-9999px;top:-9999px;"></div>
+
+</div>
+
+<script>
+    function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.innerText = msg;
+        t.className = "show";
+        setTimeout(() => { t.className = t.className.replace("show",""); }, 5000);
+    }
+
+    const DEPARTMENTS = ["INJECTION","STAMPING","FLAMING","PRINTING","TRANSFER FILM","PINNING","ASSEMBLING"];
+    const MONTHS = ["jan","feb","mar","apr","mei","jun","jul","agu","sep","okt","nop","des"];
+    const MONTH_LABELS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","Nopember","Desember"];
+
+    let dataStore = {};
+    let myChart = null;
+
+    function resetStore() {
+        DEPARTMENTS.forEach(dept => { dataStore[dept] = new Array(12).fill(null); });
+    }
+    resetStore();
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const files = e.target.files;
+        if (files.length === 0) return;
+        resetStore();
+        let filesProcessed = 0;
+
+        const statusBadge = document.getElementById('statusBadge');
+        statusBadge.classList.remove('hidden','success');
+        statusBadge.innerHTML = `<i class="fas fa-spinner fa-spin" style="margin-right:6px"></i> Membaca data…`;
+
+        Array.from(files).forEach(file => {
+            const fileName = file.name.toLowerCase();
+            let monthIndex = -1;
+            MONTHS.forEach((m, index) => { if (fileName.includes(m)) monthIndex = index; });
+            if (fileName.includes("nov")) monthIndex = 10;
+
+            if (monthIndex === -1) { filesProcessed++; checkDone(files.length, filesProcessed); return; }
+
+            Papa.parse(file, {
+                complete: function(results) {
+                    processCSV(results.data, monthIndex);
+                    filesProcessed++;
+                    checkDone(files.length, filesProcessed);
+                }
+            });
+        });
+    });
+
+    function checkDone(total, current) {
+        if (total === current) {
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.classList.add('success');
+            statusBadge.innerHTML = `<i class="fas fa-check-circle" style="margin-right:6px"></i> Data Siap`;
+
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('copyBtn').disabled = false;
+            renderDashboard();
+        }
+    }
+
+    function processCSV(rows, monthIndex) {
+        let currentDept = null;
+        rows.forEach(row => {
+            let col0 = (row[0]||"").toString().toUpperCase().trim();
+            let col1 = (row[1]||"").toString().toUpperCase().trim();
+            DEPARTMENTS.forEach(dept => { if (col0.includes(dept) || col1.includes(dept)) currentDept = dept; });
+            if (currentDept && (col1.includes("TGL 01") || col1.includes("TGL. 01") || col1.includes("01 S.D"))) {
+                dataStore[currentDept][monthIndex] = {
+                    bagusKg: parseNumber(row[2]),
+                    rejectKg: parseNumber(row[3]),
+                    bagusPcs: parseNumber(row[5]),
+                    rejectPcs: parseNumber(row[6])
+                };
+            }
+        });
+    }
+
+    function parseNumber(str) {
+        if (!str) return 0;
+        str = str.toString();
+        return parseFloat(str.replace(/,/g,'')) || 0;
+    }
+
+    function renderDashboard() {
+        document.getElementById('dashboardArea').classList.remove('hidden');
+        let grandTotalKg = 0, grandRejectKg = 0;
+        let chartLabels = [], chartDataReject = [];
+        const tableBody = document.getElementById('quickTableBody');
+        tableBody.innerHTML = '';
+
+        DEPARTMENTS.forEach(dept => {
+            let totalDeptBagus = 0, totalDeptReject = 0;
+            dataStore[dept].forEach(d => { if (d) { totalDeptBagus += d.bagusKg; totalDeptReject += d.rejectKg; } });
+            grandTotalKg += (totalDeptBagus + totalDeptReject);
+            grandRejectKg += totalDeptReject;
+            chartLabels.push(dept);
+            chartDataReject.push(totalDeptReject);
+
+            let pct = (totalDeptBagus + totalDeptReject) > 0 ? (totalDeptReject / (totalDeptBagus + totalDeptReject) * 100).toFixed(2) : "0.00";
+            tableBody.innerHTML += `
+                <tr>
+                    <td style="font-size:0.78rem;font-weight:600">${dept}</td>
+                    <td class="td-rej">${totalDeptReject.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                    <td class="td-pct">${pct}%</td>
+                </tr>`;
+        });
+
+        document.getElementById('valTotalProd').innerText = grandTotalKg.toLocaleString('en-US',{maximumFractionDigits:0}) + " KG";
+        document.getElementById('valTotalReject').innerText = grandRejectKg.toLocaleString('en-US',{maximumFractionDigits:0}) + " KG";
+        let grandRate = grandTotalKg > 0 ? (grandRejectKg / grandTotalKg * 100).toFixed(2) : "0.00";
+        document.getElementById('valRate').innerText = grandRate + "%";
+
+        renderChart(chartLabels, chartDataReject);
+    }
+
+    function renderChart(labels, dataReject) {
+        const ctx = document.getElementById('rejectChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{ label:'Total Reject (KG)', data:dataReject, backgroundColor:'#C2550A', borderRadius:2 }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend:{ display:false } },
+                scales: { y:{ beginAtZero:true } }
+            }
+        });
+    }
+
+    // ── EXPORT EXCEL
+    function generateStyledExcel() {
+        try {
+            if (typeof XLSX === 'undefined') { showToast("Error: Library Excel gagal dimuat. Gunakan tombol COPY TEXT saja."); return; }
+
+            const styleTitleBox = { fill:{fgColor:{rgb:"C2550A"}}, font:{color:{rgb:"FFFFFF"},bold:true,sz:12}, alignment:{horizontal:"center",vertical:"center"}, border:{top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}} };
+            const styleHeader = { fill:{fgColor:{rgb:"EEEEEE"}}, font:{bold:true,color:{rgb:"000000"}}, alignment:{horizontal:"center",vertical:"center"}, border:{top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}} };
+            const styleData = { border:{top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}}, font:{sz:10} };
+            const styleTotalRow = { fill:{fgColor:{rgb:"FFF2CC"}}, font:{bold:true}, border:{top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}} };
+
+            let wb = XLSX.utils.book_new();
+            let ws_data = [];
+            let merges = [];
+            let currentRow = 0;
+
+            ws_data.push([{ v:"REKAP REJECT TAHUNAN - TIGERMANDIRI PRATAMA", s:{font:{bold:true,sz:14}} }]);
+            currentRow++; ws_data.push([""]); currentRow++;
+
+            DEPARTMENTS.forEach(dept => {
+                ws_data.push([{v:dept,s:styleTitleBox},{v:"",s:styleTitleBox},{v:"",s:styleTitleBox},{v:"",s:styleTitleBox},{v:"",s:styleTitleBox},{v:"",s:styleTitleBox},{v:"",s:styleTitleBox},{v:"",s:styleTitleBox},{v:"",s:styleTitleBox}]);
+                merges.push({s:{r:currentRow,c:0},e:{r:currentRow,c:8}});
+                currentRow++;
+
+                const headers = ["Periode","Bagus (KG)","Reject (KG)","Jumlah (KG)","% Reject (KG)","Bagus (PCS)","Reject (PCS)","Jumlah (PCS)","% Reject (PCS)"];
+                ws_data.push(headers.map(h=>({v:h,s:styleHeader}))); currentRow++;
+
+                let tBagusKg=0,tRejectKg=0,tBagusPcs=0,tRejectPcs=0;
+
+                MONTH_LABELS.forEach((monthLabel,idx) => {
+                    let d = dataStore[dept][idx];
+                    let rowArr = [];
+                    if (d) {
+                        let jKg=d.bagusKg+d.rejectKg; let pKg=jKg>0?(d.rejectKg/jKg):0;
+                        let jPcs=d.bagusPcs+d.rejectPcs; let pPcs=jPcs>0?(d.rejectPcs/jPcs):0;
+                        tBagusKg+=d.bagusKg; tRejectKg+=d.rejectKg; tBagusPcs+=d.bagusPcs; tRejectPcs+=d.rejectPcs;
+                        rowArr.push({v:monthLabel,s:styleData});
+                        rowArr.push({v:d.bagusKg,t:'n',z:'#,##0.00',s:styleData});
+                        rowArr.push({v:d.rejectKg,t:'n',z:'#,##0.00',s:styleData});
+                        rowArr.push({v:jKg,t:'n',z:'#,##0.00',s:styleData});
+                        rowArr.push({v:pKg,t:'n',z:'0.00%',s:styleData});
+                        rowArr.push({v:d.bagusPcs,t:'n',z:'#,##0',s:styleData});
+                        rowArr.push({v:d.rejectPcs,t:'n',z:'#,##0',s:styleData});
+                        rowArr.push({v:jPcs,t:'n',z:'#,##0',s:styleData});
+                        rowArr.push({v:pPcs,t:'n',z:'0.00%',s:styleData});
+                    } else {
+                        rowArr = new Array(9).fill({v:"-",s:styleData});
+                        rowArr[0] = {v:monthLabel,s:styleData};
+                    }
+                    ws_data.push(rowArr); currentRow++;
+                });
+
+                let gTotalKg=tBagusKg+tRejectKg; let gPctKg=gTotalKg>0?(tRejectKg/gTotalKg):0;
+                let gTotalPcs=tBagusPcs+tRejectPcs; let gPctPcs=gTotalPcs>0?(tRejectPcs/gTotalPcs):0;
+                ws_data.push([{v:"TOTAL TAHUNAN",s:styleTotalRow},{v:tBagusKg,t:'n',z:'#,##0.00',s:styleTotalRow},{v:tRejectKg,t:'n',z:'#,##0.00',s:styleTotalRow},{v:gTotalKg,t:'n',z:'#,##0.00',s:styleTotalRow},{v:gPctKg,t:'n',z:'0.00%',s:styleTotalRow},{v:tBagusPcs,t:'n',z:'#,##0',s:styleTotalRow},{v:tRejectPcs,t:'n',z:'#,##0',s:styleTotalRow},{v:gTotalPcs,t:'n',z:'#,##0',s:styleTotalRow},{v:gPctPcs,t:'n',z:'0.00%',s:styleTotalRow}]);
+                currentRow++;
+                ws_data.push([""]); currentRow++;
+            });
+
+            let ws = XLSX.utils.aoa_to_sheet(ws_data);
+            ws['!merges'] = merges;
+            ws['!cols'] = [{wch:15},{wch:15},{wch:15},{wch:15},{wch:12},{wch:15},{wch:15},{wch:15},{wch:12}];
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap 2025");
+
+            const wbout = XLSX.write(wb, {bookType:'xlsx', type:'base64'});
+            const uri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
+            var a = document.createElement("a");
+            a.href = uri; a.download = "Rekap_Reject_Internal_Tahunan.xlsx";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            showToast("✅ Memproses download…");
+        } catch(e) { showToast("Export Gagal: " + e.message); }
+    }
+
+    // ── COPY TEXT
+    function copyToClipboard() {
+        let tableHTML = `<table border="1"><thead><tr><th colspan="9">REKAP REJECT TAHUNAN</th></tr></thead><tbody>`;
+        DEPARTMENTS.forEach(dept => {
+            tableHTML += `<tr><th colspan="9" style="background:#C2550A;color:white;">${dept}</th></tr>`;
+            tableHTML += `<tr><td>Periode</td><td>Bagus (KG)</td><td>Reject (KG)</td><td>Jumlah (KG)</td><td>%</td><td>Bagus (PCS)</td><td>Reject (PCS)</td><td>Jumlah (PCS)</td><td>%</td></tr>`;
+            let tBagusKg=0,tRejectKg=0,tBagusPcs=0,tRejectPcs=0;
+            MONTH_LABELS.forEach((monthLabel,idx) => {
+                let d = dataStore[dept][idx];
+                if (d) {
+                    let jKg=d.bagusKg+d.rejectKg; let pKg=jKg>0?(d.rejectKg/jKg*100).toFixed(2):"0.00";
+                    let jPcs=d.bagusPcs+d.rejectPcs; let pPcs=jPcs>0?(d.rejectPcs/jPcs*100).toFixed(2):"0.00";
+                    tBagusKg+=d.bagusKg; tRejectKg+=d.rejectKg; tBagusPcs+=d.bagusPcs; tRejectPcs+=d.rejectPcs;
+                    tableHTML += `<tr><td>${monthLabel}</td><td>${d.bagusKg}</td><td>${d.rejectKg}</td><td>${jKg}</td><td>${pKg}%</td><td>${d.bagusPcs}</td><td>${d.rejectPcs}</td><td>${jPcs}</td><td>${pPcs}%</td></tr>`;
+                } else { tableHTML += `<tr><td>${monthLabel}</td><td colspan="8">-</td></tr>`; }
+            });
+            tableHTML += `<tr><td>TOTAL</td><td>${tBagusKg}</td><td>${tRejectKg}</td><td>${tBagusKg+tRejectKg}</td><td></td><td>${tBagusPcs}</td><td>${tRejectPcs}</td><td>${tBagusPcs+tRejectPcs}</td><td></td></tr><tr><td colspan="9"></td></tr>`;
+        });
+        tableHTML += `</tbody></table>`;
+
+        const container = document.getElementById('hiddenTableContainer');
+        container.innerHTML = tableHTML;
+        const range = document.createRange();
+        range.selectNode(container);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        try { document.execCommand('copy'); showToast("✅ Data TERSALIN! Buka Excel & Tekan Ctrl+V"); }
+        catch(err) { showToast("Gagal copy."); }
+        window.getSelection().removeAllRanges();
+    }
+</script>
+
+<script>
+    /* ── THEME ENGINE ── */
+    (function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('tigerTheme')||'light'); })();
+    function _applyTheme(t){
+        document.documentElement.setAttribute('data-theme',t);
+        localStorage.setItem('tigerTheme',t);
+        var ic=document.getElementById('themeIcon');
+        if(ic) ic.className = t==='dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    function toggleTheme(){ _applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    window.addEventListener('DOMContentLoaded',function(){
+        _applyTheme(localStorage.getItem('tigerTheme')||'light');
+    });
+</script>
+
+</body>
+</html>

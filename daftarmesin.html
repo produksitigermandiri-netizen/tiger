@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Harian Mesin Injection</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --amber: #C2550A;
+            --amber-dark: #8B3A06;
+            --charcoal: #1C1814;
+            --sage: #4A6741;
+            --sand: #D4B896;
+            --warm-gray: #E8E2D9;
+            --warm-gray-2: #D5CCBF;
+            --text-muted: #8A7E72;
+        }
+
+        /* ═══════════════════════════════════════════
+           DARK MODE — TIGER SYSTEM
+           Toggle: data-theme="dark" on <html>
+        ═══════════════════════════════════════════ */
+        [data-theme="dark"] {
+            --cream:       #0D0C1A;
+            --parchment:   #13122A;
+            --warm-gray:   #2A2848;
+            --warm-gray-2: #3A3860;
+            --stone:       #8B8FAD;
+            --charcoal:    #EDE9FF;
+            --ink:         #C8C4E8;
+            --text-muted:  #8B8FAD;
+            --sand:        #A5B4FC;
+            --amber-pale:  #1E1628;
+            --sage-light:  #0D1F18;
+            --rose-light:  #1F0D10;
+            --slate-light: #0D1525;
+        }
+        [data-theme="dark"] body {
+            background-image:
+                radial-gradient(ellipse 70% 50% at 15% 10%, rgba(99,102,241,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 85% 90%, rgba(67,56,202,0.08) 0%, transparent 50%) !important;
+        }
+        [data-theme="dark"] body::before { opacity: 0.15 !important; }
+
+        /* Surfaces */
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .wc-card,
+        [data-theme="dark"] .wc-body,
+        [data-theme="dark"] .main-card,
+        [data-theme="dark"] .header-card,
+        [data-theme="dark"] .control-panel,
+        [data-theme="dark"] .result-card,
+        [data-theme="dark"] .topbar,
+        [data-theme="dark"] .back-btn,
+        [data-theme="dark"] .btn-back { background: #13122A !important; }
+
+        [data-theme="dark"] .wc-header,
+        [data-theme="dark"] .result-wc-header { background: #0F0E24 !important; }
+
+        [data-theme="dark"] thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] tbody td { background: #13122A !important; }
+        [data-theme="dark"] tbody tr:hover td,
+        [data-theme="dark"] tbody tr:hover { background: #1A1836 !important; }
+        [data-theme="dark"] tr.row-green td { background: #0D1F18 !important; }
+        [data-theme="dark"] tr.row-red td   { background: #1F0D10 !important; }
+        [data-theme="dark"] tr.row-yellow td { background: #1E1510 !important; }
+
+        /* Inputs */
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] input[type="date"],
+        [data-theme="dark"] input[type="month"],
+        [data-theme="dark"] input[type="file"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] .field-input,
+        [data-theme="dark"] .file-btn { background: #1A1836 !important; color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] td input[type="number"],
+        [data-theme="dark"] td input[type="text"] { background: #1A1836 !important; color: var(--ink) !important; }
+
+        /* CTA / action buttons — indigo in dark mode */
+        [data-theme="dark"] .cta-btn,
+        [data-theme="dark"] .btn-generate,
+        [data-theme="dark"] .btn-process { background: #4F46E5 !important; color: white !important; }
+        [data-theme="dark"] .cta-btn:hover:not(:disabled),
+        [data-theme="dark"] .btn-generate:hover,
+        [data-theme="dark"] .btn-process:hover { background: #4338CA !important; }
+        [data-theme="dark"] .cta-btn:disabled { background: #2A2848 !important; color: var(--stone) !important; }
+
+        /* Version / info badges */
+        [data-theme="dark"] .version-badge { background: #1A1836 !important; color: var(--sand) !important; }
+
+        /* Suggestion dropdown */
+        [data-theme="dark"] #suggestionBox { background: #13122A !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] #suggestionBox li { color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+
+        /* WC Nav bar (cekfinacdecorasi) */
+        [data-theme="dark"] #wcNav { background: rgba(13,12,26,0.92) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] .wcnav-btn { background: #13122A !important; border-color: var(--warm-gray) !important; color: var(--stone) !important; }
+
+        /* Stat cards, rekap, misc light surfaces */
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .summary-card,
+        [data-theme="dark"] .tab-content,
+        [data-theme="dark"] .rekap-section { background: #13122A !important; }
+        [data-theme="dark"] .tab-btn:not(.active) { background: #2A2848 !important; color: var(--text-muted) !important; }
+        [data-theme="dark"] .rekap-table thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] .mesin-table tbody tr:hover { background: #1A1836 !important; }
+
+        /* File selector button */
+        [data-theme="dark"] input[type="file"]::file-selector-button {
+            background: #2A2848 !important; color: var(--sand) !important;
+            border-color: var(--warm-gray) !important;
+        }
+
+        /* Smooth transitions on key elements */
+        .card, .wc-card, .main-card, .header-card, .control-panel,
+        .topbar, .back-btn, .btn-back, thead th, tbody td,
+        input, select, .field-input, .file-btn, .cta-btn,
+        .btn-generate, .btn-process, body {
+            transition: background-color 0.3s ease, border-color 0.3s ease,
+                        color 0.2s ease, box-shadow 0.25s ease !important;
+        }
+
+        /* Theme toggle button */
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 6px;
+            border: 1.5px solid var(--warm-gray);
+            background: transparent; cursor: pointer;
+            font-size: 0.78rem; color: var(--stone);
+            transition: all 0.2s; flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            vertical-align: middle;
+        }
+        .btn-theme:hover { border-color: var(--amber); color: var(--amber); }
+
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--charcoal);
+            min-height: 100vh;
+            padding: 2rem 1rem 4rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrapper { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* ── BACK BUTTON ── */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            background: transparent;
+            border: 1.5px solid var(--sand);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-bottom: 1.5rem;
+        }
+        .btn-back:hover { border-color: var(--amber); color: var(--amber); }
+
+        /* ── CONTROLS BAR ── */
+        .controls-bar {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--amber);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(194,85,10,0.25);
+        }
+        .btn-upload:hover { background: var(--amber-dark); transform: translateY(-1px); }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--amber);
+            border: 1.5px solid var(--amber);
+            padding: 10px 22px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-download:hover { background: var(--amber); color: white; }
+
+        .hidden { display: none !important; }
+
+        /* ── REPORT CARD ── */
+        #reportCard {
+            background: white;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2.5rem;
+            border-top: 5px solid var(--amber);
+            box-shadow: 0 4px 32px rgba(28,24,20,0.10);
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .report-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            color: var(--charcoal);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--warm-gray);
+            padding-bottom: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #reportDate {
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.75rem;
+        }
+
+        /* ── MESSAGE BOX ── */
+        #messageBox {
+            background: #FDF5EE;
+            border-left: 4px solid var(--amber);
+            padding: 14px 18px;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--charcoal);
+        }
+        #messageBox p { margin: 0; }
+        #msgTotalMesin {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.3rem;
+            color: var(--amber);
+        }
+
+        /* ── DATA CONTAINER ── */
+        #dataContainer {
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--warm-gray);
+        }
+
+        #dataContainer p.placeholder {
+            color: var(--warm-gray-2);
+            font-family: 'DM Serif Display', serif;
+            font-size: 1rem;
+            font-style: italic;
+        }
+
+        /* ── TWO COLUMN TABLES ── */
+        .table-pair {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        .table-col { flex: 1; }
+
+        .mesin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .mesin-table thead tr th {
+            background: var(--amber);
+            color: white;
+            padding: 9px 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            border: 1px solid var(--amber-dark);
+        }
+
+        .mesin-table tbody tr { border-bottom: 1px solid var(--warm-gray); transition: background 0.15s; }
+        .mesin-table tbody tr:hover { background: #FDF5EE; }
+
+        .mesin-table tbody td {
+            padding: 8px 12px;
+            border: 1px solid var(--warm-gray);
+        }
+        .mesin-table tbody td.col-num {
+            text-align: center;
+            font-weight: 800;
+            background: #FAF8F4;
+            color: var(--amber);
+            width: 15%;
+            font-size: 0.9rem;
+        }
+        .mesin-table tbody td.col-product {
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .mesin-table tbody td.conflict-num {
+            background: #FFF3F3;
+            color: #C0392B;
+        }
+        .mesin-table tbody td.conflict-product {
+            background: #FFF3F3;
+            color: #C0392B;
+        }
+
+        /* ── FOOTER SUMMARY ── */
+        #footerSummary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--amber);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        #totalMesinTxt {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            color: var(--charcoal);
+            font-weight: 400;
+        }
+        #totalConflictTxt {
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #C0392B;
+            background: #FFF3F3;
+            border: 1px solid #FFBABA;
+            padding: 4px 12px;
+        }
+
+        .report-footer-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--warm-gray-2);
+        }
+
+        #reportCard.capturing {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <a href="dashboard.html" class="btn-back">
+        <i class="fas fa-home"></i> Dashboard
+    </a>
+    <button class="btn-theme" id="themeIcon" onclick="toggleTheme()" title="Toggle Dark/Light"><i class="fas fa-moon"></i></button>
+
+    <div class="controls-bar">
+        <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-folder-open"></i> Upload CSV
+        </button>
+        <input type="file" id="fileInput" accept=".csv" class="hidden" onchange="processFile()">
+
+        <button id="btnDownload" class="btn-download hidden" onclick="downloadImage()">
+            <i class="fas fa-camera"></i> Download Gambar
+        </button>
+    </div>
+
+    <!-- REPORT CARD -->
+    <div id="reportCard">
+        <h1 class="report-title">Data Harian Mesin Injection</h1>
+        <div id="reportDate">Tanggal: —</div>
+
+        <div id="messageBox" class="hidden">
+            <p>Dear Tim Mekanik,</p>
+            <p>Berikut daftar mesin yang beroperasi hari ini.</p>
+            <p>Total Mesin Produksi: <span id="msgTotalMesin">0 Unit</span></p>
+        </div>
+
+        <div id="dataContainer">
+            <p class="placeholder">(Silakan Upload File CSV)</p>
+        </div>
+
+        <div id="footerSummary" class="hidden">
+            <div id="totalMesinTxt">Total: 0 Unit</div>
+            <div id="totalConflictTxt">Ganti Produk: 0</div>
+        </div>
+
+        <div class="report-footer-text">Generated by Trinity Visual Creative System</div>
+    </div>
+
+</div>
+
+<script>
+    function excelDateToJSDate(serial) {
+        if (!isNaN(serial) && serial > 20000) {
+            var utc_days  = Math.floor(serial - 25569);
+            var utc_value = utc_days * 86400;
+            var date_info = new Date(utc_value * 1000);
+            return `${date_info.getDate()}/${date_info.getMonth() + 1}/${date_info.getFullYear()}`;
+        }
+        return serial;
+    }
+
+    function processFile() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) { parseData(e.target.result); };
+        reader.readAsText(file);
+    }
+
+    function parseData(csvText) {
+        const lines = csvText.split('\n');
+        let machineData = {};
+        let reportDate = "-";
+
+        for (let i = 1; i < lines.length; i++) {
+            const row = lines[i].replace('\r', '').split(';');
+            if (row.length < 6) continue;
+            const machineRaw = row[0];
+            const productName = row[1];
+            const dateRaw = row[3];
+            const workCentre = row[5] ? row[5].trim() : '';
+
+            if (reportDate === "-" && dateRaw) {
+                reportDate = excelDateToJSDate(parseFloat(dateRaw));
+            }
+
+            if (workCentre.toLowerCase().includes('injection')) {
+                const numberMatch = machineRaw.match(/(\d+)/);
+                const machineNum = numberMatch ? parseInt(numberMatch[0]) : machineRaw;
+                if (!machineData[machineNum]) machineData[machineNum] = new Set();
+                machineData[machineNum].add(productName.trim());
+            }
+        }
+
+        document.getElementById('reportDate').innerText = "TANGGAL PRODUKSI: " + reportDate;
+        renderTwoColumns(machineData);
+    }
+
+    function renderTwoColumns(machineData) {
+        const sortedMachines = Object.keys(machineData).sort((a, b) => a - b);
+        const totalMesin = sortedMachines.length;
+
+        document.getElementById('messageBox').classList.remove('hidden');
+        document.getElementById('msgTotalMesin').innerText = totalMesin + " Unit";
+
+        const midPoint = Math.ceil(totalMesin / 2);
+        const leftData = sortedMachines.slice(0, midPoint);
+        const rightData = sortedMachines.slice(midPoint);
+        let totalGantiCetakan = 0;
+
+        function createRows(keys) {
+            let html = '';
+            keys.forEach(num => {
+                const products = Array.from(machineData[num]);
+                let displayProduct = products[0];
+                let isConflict = false;
+                if (products.length > 1) {
+                    displayProduct = products.join(' <br><span style="font-size:0.7rem;font-weight:800;color:#C0392B">⬇ GANTI ⬇</span><br> ');
+                    isConflict = true;
+                    totalGantiCetakan++;
+                }
+                html += `<tr>
+                    <td class="col-num ${isConflict ? 'conflict-num' : ''}">${num}</td>
+                    <td class="col-product ${isConflict ? 'conflict-product' : ''}">${displayProduct}</td>
+                </tr>`;
+            });
+            return html;
+        }
+
+        const tableHeader = `<thead><tr><th>Mesin</th><th>Nama Produk</th></tr></thead>`;
+
+        let containerHTML = '';
+        if (totalMesin === 0) {
+            containerHTML = '<p style="color:#C0392B;font-weight:700;padding:2.5rem;text-align:center">Tidak ada data Injection.</p>';
+        } else {
+            containerHTML = `<div class="table-pair">
+                <div class="table-col"><table class="mesin-table">${tableHeader}<tbody>${createRows(leftData)}</tbody></table></div>
+                <div class="table-col"><table class="mesin-table">${tableHeader}<tbody>${createRows(rightData)}</tbody></table></div>
+            </div>`;
+        }
+
+        document.getElementById('dataContainer').innerHTML = containerHTML;
+        document.getElementById('totalMesinTxt').innerText = "Total: " + totalMesin + " Unit";
+        document.getElementById('totalConflictTxt').innerText = "Ganti Produk: " + totalGantiCetakan;
+        document.getElementById('footerSummary').classList.remove('hidden');
+        document.getElementById('btnDownload').classList.remove('hidden');
+    }
+
+    function downloadImage() {
+        const element = document.getElementById("reportCard");
+        if (typeof html2canvas === 'undefined') {
+            alert("Mode Offline: Gunakan Screenshot manual.");
+            return;
+        }
+
+        setTimeout(() => {
+            html2canvas(element, {
+                scale: 2,
+                backgroundColor: "#ffffff",
+                useCORS: true,
+                allowTaint: true,
+                onclone: (clonedDoc) => {
+                    const clonedEl = clonedDoc.getElementById("reportCard");
+                    clonedEl.style.opacity = "1";
+                    clonedEl.style.transform = "none";
+                    clonedEl.style.animation = "none";
+
+                    const style = clonedDoc.createElement('style');
+                    style.textContent = 'body::before { display: none !important; }';
+                    clonedDoc.head.appendChild(style);
+                }
+            }).then(canvas => {
+                const link = document.createElement("a");
+                link.download = "Laporan_Injection_Trinity.jpg";
+                link.href = canvas.toDataURL("image/jpeg", 1);
+                link.click();
+            });
+        }, 500);
+    }
+</script>
+
+<script>
+    /* ── THEME ENGINE ── */
+    (function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('tigerTheme')||'light'); })();
+    function _applyTheme(t){
+        document.documentElement.setAttribute('data-theme',t);
+        localStorage.setItem('tigerTheme',t);
+        var ic=document.getElementById('themeIcon');
+        if(ic) ic.className = t==='dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    function toggleTheme(){ _applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    window.addEventListener('DOMContentLoaded',function(){
+        _applyTheme(localStorage.getItem('tigerTheme')||'light');
+    });
+</script>
+
+</body>
+</html>

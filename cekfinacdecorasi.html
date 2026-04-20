@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checker Decorasi — Trinity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --parchment: #F0EBE1;
+            --warm-gray: #E8E2D9;
+            --stone: #8C7B6B;
+            --charcoal: #1C1814;
+            --ink: #2D2520;
+            --amber: #C2550A;
+            --amber-pale: #FEF3E2;
+            --sage: #4A6741;
+            --sage-light: #EEF4ED;
+            --rose: #9B2335;
+            --rose-light: #FDF2F4;
+            --sand: #D4B896;
+            --slate: #3B4E6B;
+        }
+
+        /* ═══════════════════════════════════════════
+           DARK MODE — TIGER SYSTEM
+           Toggle: data-theme="dark" on <html>
+        ═══════════════════════════════════════════ */
+        [data-theme="dark"] {
+            --cream:       #0D0C1A;
+            --parchment:   #13122A;
+            --warm-gray:   #2A2848;
+            --warm-gray-2: #3A3860;
+            --stone:       #8B8FAD;
+            --charcoal:    #EDE9FF;
+            --ink:         #C8C4E8;
+            --text-muted:  #8B8FAD;
+            --sand:        #A5B4FC;
+            --amber-pale:  #1E1628;
+            --sage-light:  #0D1F18;
+            --rose-light:  #1F0D10;
+            --slate-light: #0D1525;
+        }
+        [data-theme="dark"] body {
+            background-image:
+                radial-gradient(ellipse 70% 50% at 15% 10%, rgba(99,102,241,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 85% 90%, rgba(67,56,202,0.08) 0%, transparent 50%) !important;
+        }
+        [data-theme="dark"] body::before { opacity: 0.15 !important; }
+
+        /* Surfaces */
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .wc-card,
+        [data-theme="dark"] .wc-body,
+        [data-theme="dark"] .main-card,
+        [data-theme="dark"] .header-card,
+        [data-theme="dark"] .control-panel,
+        [data-theme="dark"] .result-card,
+        [data-theme="dark"] .topbar,
+        [data-theme="dark"] .back-btn,
+        [data-theme="dark"] .btn-back { background: #13122A !important; }
+
+        [data-theme="dark"] .wc-header,
+        [data-theme="dark"] .result-wc-header { background: #0F0E24 !important; }
+
+        [data-theme="dark"] thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] tbody td { background: #13122A !important; }
+        [data-theme="dark"] tbody tr:hover td,
+        [data-theme="dark"] tbody tr:hover { background: #1A1836 !important; }
+        [data-theme="dark"] tr.row-green td { background: #0D1F18 !important; }
+        [data-theme="dark"] tr.row-red td   { background: #1F0D10 !important; }
+        [data-theme="dark"] tr.row-yellow td { background: #1E1510 !important; }
+
+        /* Inputs */
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] input[type="date"],
+        [data-theme="dark"] input[type="month"],
+        [data-theme="dark"] input[type="file"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] .field-input,
+        [data-theme="dark"] .file-btn { background: #1A1836 !important; color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] td input[type="number"],
+        [data-theme="dark"] td input[type="text"] { background: #1A1836 !important; color: var(--ink) !important; }
+
+        /* CTA / action buttons — indigo in dark mode */
+        [data-theme="dark"] .cta-btn,
+        [data-theme="dark"] .btn-generate,
+        [data-theme="dark"] .btn-process { background: #4F46E5 !important; color: white !important; }
+        [data-theme="dark"] .cta-btn:hover:not(:disabled),
+        [data-theme="dark"] .btn-generate:hover,
+        [data-theme="dark"] .btn-process:hover { background: #4338CA !important; }
+        [data-theme="dark"] .cta-btn:disabled { background: #2A2848 !important; color: var(--stone) !important; }
+
+        /* Version / info badges */
+        [data-theme="dark"] .version-badge { background: #1A1836 !important; color: var(--sand) !important; }
+
+        /* Suggestion dropdown */
+        [data-theme="dark"] #suggestionBox { background: #13122A !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] #suggestionBox li { color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+
+        /* WC Nav bar (cekfinacdecorasi) */
+        [data-theme="dark"] #wcNav { background: rgba(13,12,26,0.92) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] .wcnav-btn { background: #13122A !important; border-color: var(--warm-gray) !important; color: var(--stone) !important; }
+
+        /* Stat cards, rekap, misc light surfaces */
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .summary-card,
+        [data-theme="dark"] .tab-content,
+        [data-theme="dark"] .rekap-section { background: #13122A !important; }
+        [data-theme="dark"] .tab-btn:not(.active) { background: #2A2848 !important; color: var(--text-muted) !important; }
+        [data-theme="dark"] .rekap-table thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] .mesin-table tbody tr:hover { background: #1A1836 !important; }
+
+        /* File selector button */
+        [data-theme="dark"] input[type="file"]::file-selector-button {
+            background: #2A2848 !important; color: var(--sand) !important;
+            border-color: var(--warm-gray) !important;
+        }
+
+        /* Smooth transitions on key elements */
+        .card, .wc-card, .main-card, .header-card, .control-panel,
+        .topbar, .back-btn, .btn-back, thead th, tbody td,
+        input, select, .field-input, .file-btn, .cta-btn,
+        .btn-generate, .btn-process, body {
+            transition: background-color 0.3s ease, border-color 0.3s ease,
+                        color 0.2s ease, box-shadow 0.25s ease !important;
+        }
+
+        /* Theme toggle button */
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 6px;
+            border: 1.5px solid var(--warm-gray);
+            background: transparent; cursor: pointer;
+            font-size: 0.78rem; color: var(--stone);
+            transition: all 0.2s; flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            vertical-align: middle;
+        }
+        .btn-theme:hover { border-color: var(--amber); color: var(--amber); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(194,85,10,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(74,103,65,0.05) 0%, transparent 50%);
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0; opacity: 0.4;
+        }
+
+        .layout { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 40px 24px 80px; }
+
+        /* HEADER */
+        .site-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 48px; gap: 20px; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--stone); text-decoration: none;
+            border: 1.5px solid var(--warm-gray); padding: 8px 16px; border-radius: 4px;
+            background: white; transition: all 0.2s; margin-bottom: 24px;
+        }
+        .back-btn:hover { border-color: var(--amber); color: var(--amber); }
+        .app-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+        .app-title { font-family: 'DM Serif Display', serif; font-size: clamp(32px, 5vw, 52px); line-height: 1.05; color: var(--charcoal); margin-bottom: 8px; }
+        .app-title em { font-style: italic; color: var(--amber); }
+        .app-subtitle { font-size: 13px; color: var(--stone); font-weight: 500; }
+        .version-badge { background: var(--charcoal); color: var(--sand); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; padding: 4px 12px; border-radius: 100px; text-transform: uppercase; align-self: flex-start; margin-top: 4px; }
+
+        /* CARDS */
+        .card { background: white; border: 1.5px solid var(--warm-gray); border-radius: 12px; padding: 28px; margin-bottom: 24px; box-shadow: 0 2px 16px rgba(28,24,20,0.04); animation: fadeUp 0.4s ease both; }
+        .card-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--charcoal); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
+
+        /* CONTROLS */
+        .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .field-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone); margin-bottom: 6px; }
+        .field-input {
+            width: 100%; height: 44px; padding: 0 14px;
+            border: 1.5px solid var(--warm-gray); border-radius: 8px;
+            background: var(--cream); font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px; font-weight: 600; color: var(--ink); transition: all 0.2s; appearance: none;
+        }
+        .field-input:focus { outline: none; border-color: var(--amber); background: white; box-shadow: 0 0 0 3px rgba(194,85,10,0.1); }
+
+        /* Bundle selector styling */
+        select.field-input { cursor: pointer; }
+
+        .file-wrap { position: relative; }
+        .file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+        .file-btn {
+            display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 14px;
+            border: 1.5px dashed var(--warm-gray); border-radius: 8px; background: var(--cream);
+            font-size: 12px; font-weight: 600; color: var(--stone); cursor: pointer; transition: all 0.2s; overflow: hidden;
+        }
+        .file-btn:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-pale); }
+        .file-name { font-size: 11px; color: var(--sage); font-weight: 700; margin-top: 5px; }
+        .db-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 100px; margin-top: 5px; }
+        .db-badge.empty { background: var(--rose-light); color: var(--rose); }
+        .db-badge.ready { background: var(--sage-light); color: var(--sage); }
+
+        /* CTA */
+        .cta-btn {
+            width: 100%; height: 52px; background: var(--charcoal); color: var(--sand);
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 13px;
+            letter-spacing: 0.1em; text-transform: uppercase; border: none; border-radius: 10px;
+            cursor: pointer; transition: all 0.25s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .cta-btn:hover:not(:disabled) { background: var(--amber); color: white; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(194,85,10,0.3); }
+        .cta-btn:disabled { background: var(--warm-gray); color: var(--stone); cursor: not-allowed; }
+
+        /* WC SECTION CARDS */
+        .wc-card { background: white; border: 1.5px solid var(--warm-gray); border-radius: 12px; margin-bottom: 20px; overflow: hidden; box-shadow: 0 2px 12px rgba(28,24,20,0.04); }
+        .wc-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; background: var(--parchment); border-bottom: 1.5px solid var(--warm-gray);
+        }
+        .wc-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--charcoal); display: flex; align-items: center; gap: 10px; }
+        .wc-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--amber); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+        .shift-info { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--stone); background: white; border: 1.5px solid var(--warm-gray); padding: 4px 10px; border-radius: 100px; }
+        .wc-body { padding: 16px 20px 20px; }
+
+        /* TABLES */
+        .table-scroll { overflow: auto; max-height: 400px; border: 1.5px solid var(--warm-gray); border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            background: var(--parchment); font-size: 10px; font-weight: 800; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--stone); padding: 10px 8px;
+            border-bottom: 1.5px solid var(--warm-gray); position: sticky; top: 0; z-index: 10; text-align: center;
+        }
+        thead th.left { text-align: left; }
+        tbody tr { transition: background 0.15s; }
+        tbody td { padding: 5px 7px; border-bottom: 1px solid var(--warm-gray); background: white; }
+
+        td input[type="number"], td input[type="text"] {
+            width: 100%; padding: 6px 8px;
+            background: var(--cream); border: 1.5px solid transparent; border-radius: 6px;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600;
+            color: var(--ink); text-align: center; transition: all 0.2s;
+        }
+        td input[type="text"] { text-align: left; font-weight: 500; }
+        td input:focus { outline: none; border-color: var(--amber); background: white; box-shadow: 0 0 0 3px rgba(194,85,10,0.1); }
+        .row-num { font-size: 11px; color: var(--stone); text-align: center; font-weight: 600; }
+
+        .add-row-btn {
+            margin-top: 12px; display: inline-flex; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 700; color: var(--amber); border: 1.5px solid var(--amber);
+            background: transparent; padding: 7px 16px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .add-row-btn:hover { background: var(--amber); color: white; }
+
+        /* RESULT SECTION */
+        .result-empty { padding: 50px 20px; text-align: center; color: var(--stone); border: 2px dashed var(--warm-gray); border-radius: 10px; }
+        .result-empty .big-icon { font-size: 36px; color: var(--warm-gray); margin-bottom: 10px; }
+        .result-empty p { font-size: 13px; font-weight: 500; }
+
+        .result-wc-header {
+            display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+            background: var(--charcoal); border-radius: 8px 8px 0 0;
+        }
+        .result-wc-title { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 15px; color: var(--sand); }
+
+        .result-table-wrap { overflow: auto; max-height: 500px; border: 1.5px solid var(--warm-gray); border-radius: 0 0 10px 10px; margin-bottom: 24px; }
+        .result-table-wrap thead th { background: rgba(28,24,20,0.06); color: var(--stone); font-size: 10px; }
+
+        /* Row colors */
+        tr.row-green { background: #F0FAF0; }
+        tr.row-red   { background: #FEF4F4; }
+        tr.row-yellow{ background: #FFFBF0; }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 4px 10px; border-radius: 100px; font-size: 10px; font-weight: 800; letter-spacing: 0.07em; white-space: nowrap; }
+        .badge-match   { background: #D1FAE5; color: #065F46; }
+        .badge-warning { background: #FEF3C7; color: #92400E; }
+        .badge-error   { background: #FEE2E2; color: #991B1B; }
+
+        .lot-mono { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 11px; color: var(--slate); }
+        .qty-cell { font-weight: 700; text-align: right; }
+        .time-cell { font-size: 11px; color: var(--stone); text-align: center; }
+        .note-cell { font-size: 11px; color: var(--stone); font-style: italic; }
+
+        /* Bundle tabs */
+        .bundle-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        .bundle-tab {
+            flex: 1; padding: 10px 16px; border: 1.5px solid var(--warm-gray); border-radius: 8px;
+            background: white; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700;
+            color: var(--stone); cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .bundle-tab.active { background: var(--charcoal); color: var(--sand); border-color: var(--charcoal); }
+        .bundle-tab:not(.active):hover { border-color: var(--amber); color: var(--amber); }
+
+        /* WC color accents per type */
+        .wc-stamping  .wc-icon { background: #7C3AED; }
+        .wc-flaming   .wc-icon { background: #DC2626; }
+        .wc-sonic     .wc-icon { background: #0891B2; }
+        .wc-assembling .wc-icon { background: #059669; }
+        .wc-pinning   .wc-icon { background: #D97706; }
+        .wc-printing  .wc-icon { background: #DB2777; }
+
+        /* SUGGESTION */
+        #suggestionBox { border: 1.5px solid var(--warm-gray); border-radius: 10px; box-shadow: 0 20px 60px rgba(28,24,20,0.15); overflow: hidden; }
+        #suggestionBox li { padding: 10px 16px; font-size: 12px; font-weight: 500; color: var(--ink); cursor: pointer; border-bottom: 1px solid var(--warm-gray); transition: all 0.15s; list-style: none; }
+        #suggestionBox li:hover { background: var(--amber); color: white; }
+        #suggestionBox::-webkit-scrollbar { width: 6px; }
+        #suggestionBox::-webkit-scrollbar-track { background: var(--cream); }
+        #suggestionBox::-webkit-scrollbar-thumb { background: var(--warm-gray); border-radius: 4px; }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .wc-card { animation: fadeUp 0.35s ease both; }
+
+        /* STICKY WC NAV */
+        #wcNav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(250,248,244,0.92); backdrop-filter: blur(12px);
+            border-bottom: 1.5px solid var(--warm-gray);
+            padding: 10px 24px; margin: 0 -24px 20px;
+            display: none; gap: 8px; flex-wrap: wrap; align-items: center;
+        }
+        #wcNav.visible { display: flex; }
+        .wcnav-label {
+            font-size: 10px; font-weight: 800; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--stone); margin-right: 4px; flex-shrink: 0;
+        }
+        .wcnav-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 100px;
+            border: 1.5px solid var(--warm-gray); background: white;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700;
+            color: var(--stone); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .wcnav-btn:hover { border-color: var(--amber); color: var(--amber); }
+        .wcnav-btn .wcnav-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .wcnav-btn.wc-stamping-nav  .wcnav-dot { background: #7C3AED; }
+        .wcnav-btn.wc-flaming-nav   .wcnav-dot { background: #DC2626; }
+        .wcnav-btn.wc-sonic-nav     .wcnav-dot { background: #0891B2; }
+        .wcnav-btn.wc-assembling-nav .wcnav-dot { background: #059669; }
+        .wcnav-btn.wc-pinning-nav   .wcnav-dot { background: #D97706; }
+        .wcnav-btn.wc-printing-nav  .wcnav-dot { background: #DB2777; }
+        .wcnav-divider { width: 1px; height: 20px; background: var(--warm-gray); margin: 0 4px; flex-shrink: 0; }
+        .wcnav-scroll-top {
+            margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 100px;
+            border: 1.5px solid var(--warm-gray); background: white;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700;
+            color: var(--stone); cursor: pointer; transition: all 0.2s;
+        }
+        .wcnav-scroll-top:hover { border-color: var(--charcoal); color: var(--charcoal); background: var(--parchment); }
+    </style>
+</head>
+<body>
+<div class="layout">
+
+    <!-- HEADER -->
+    <header class="site-header">
+        <div>
+            <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    <button class="btn-theme" id="themeIcon" onclick="toggleTheme()" title="Toggle Dark/Light"><i class="fas fa-moon"></i></button>
+            <p class="app-eyebrow">Production Control · Decorasi</p>
+            <h1 class="app-title">Checker <em>Decorasi</em></h1>
+            <p class="app-subtitle">By Dyansg8 · Trinity Visual Creative</p>
+        </div>
+        <div class="version-badge">Strict V4</div>
+    </header>
+
+    <!-- PANEL UPLOAD -->
+    <div class="card">
+        <div class="card-title"><span class="dot"></span> Parameter & Data Source</div>
+
+        <div class="controls-grid">
+            <div>
+                <p class="field-label">Pilih Bundel</p>
+                <select id="bundleSelect" class="field-input">
+                    <option value="bundle1">Bundel 1 — ST, FL, SN</option>
+                    <option value="bundle2">Bundel 2 — AS, PN, PR</option>
+                </select>
+                <div id="bundleInfo" class="hidden" style="font-size:11px;color:var(--amber);font-weight:700;margin-top:5px;"></div>
+            </div>
+
+            <div>
+                <p class="field-label">Tanggal Produksi</p>
+                <input type="date" id="tgl" class="field-input">
+            </div>
+
+            <div>
+                <p class="field-label">1. Upload CSV Sistem</p>
+                <div class="file-wrap">
+                    <div class="file-btn"><i class="fas fa-file-csv" style="font-size:14px;flex-shrink:0"></i><span id="csvBtnText">Pilih file CSV...</span></div>
+                    <input type="file" id="csv" accept=".csv" class="file-input">
+                </div>
+                <div class="file-name" id="csvName"></div>
+            </div>
+
+            <div>
+                <p class="field-label">2. Database Produk</p>
+                <div class="file-wrap">
+                    <div class="file-btn"><i class="fas fa-database" style="font-size:14px;flex-shrink:0"></i><span id="prodBtnText">Pilih file CSV...</span></div>
+                    <input type="file" id="prodCsv" accept=".csv" class="file-input">
+                </div>
+                <div id="dbStatus" class="db-badge empty"><i class="fas fa-circle-xmark"></i> DB Kosong</div>
+            </div>
+        </div>
+
+        <button id="btnCheck" disabled class="cta-btn">
+            <i class="fas fa-magnifying-glass-chart"></i> Analisa Data
+        </button>
+    </div>
+
+    <!-- STICKY WC NAV -->
+    <nav id="wcNav">
+        <span class="wcnav-label">Jump ke:</span>
+        <button class="wcnav-btn wc-stamping-nav" onclick="jumpToWC('stamping')" id="navBtn_stamping">
+            <span class="wcnav-dot"></span> Stamping
+        </button>
+        <button class="wcnav-btn wc-flaming-nav" onclick="jumpToWC('flaming')" id="navBtn_flaming">
+            <span class="wcnav-dot"></span> Flaming
+        </button>
+        <button class="wcnav-btn wc-sonic-nav" onclick="jumpToWC('sonic')" id="navBtn_sonic">
+            <span class="wcnav-dot"></span> Sonic
+        </button>
+        <button class="wcnav-btn wc-assembling-nav" onclick="jumpToWC('assembling')" id="navBtn_assembling">
+            <span class="wcnav-dot"></span> Assembling
+        </button>
+        <button class="wcnav-btn wc-pinning-nav" onclick="jumpToWC('pinning')" id="navBtn_pinning">
+            <span class="wcnav-dot"></span> Pinning
+        </button>
+        <button class="wcnav-btn wc-printing-nav" onclick="jumpToWC('printing')" id="navBtn_printing">
+            <span class="wcnav-dot"></span> Printing
+        </button>
+        <div class="wcnav-divider"></div>
+        <button class="wcnav-btn" onclick="jumpToWC('resultSection')" id="navBtn_result" style="border-color:var(--charcoal);color:var(--charcoal)">
+            <i class="fas fa-chart-bar" style="font-size:10px"></i> Hasil
+        </button>
+        <button class="wcnav-scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+            <i class="fas fa-arrow-up" style="font-size:10px"></i> Atas
+        </button>
+    </nav>
+
+    <!-- MANUAL INPUT CONTAINER -->
+    <div id="manualContainer">
+        <!-- WC blocks injected here -->
+        <div id="manualBlock_stamping" class="wc-card wc-stamping hidden">
+            <div class="wc-header">
+                <div class="wc-title"><div class="wc-icon"><i class="fas fa-stamp"></i></div> Stamping</div>
+                <span id="shiftInfo_stamping" class="shift-info"></span>
+            </div>
+            <div class="wc-body">
+                <div class="table-scroll table-scroll-area" id="scroll_stamping">
+                    <table><thead><tr><th style="width:36px">#</th><th style="width:72px">Mesin</th><th class="left">Nama Produk</th><th style="width:110px">S1</th><th style="width:110px">S2</th><th style="width:110px">S3</th></tr></thead>
+                    <tbody id="manualBody_stamping"></tbody></table>
+                </div>
+                <button id="btnAddRow_stamping" class="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
+            </div>
+        </div>
+
+        <div id="manualBlock_flaming" class="wc-card wc-flaming hidden">
+            <div class="wc-header">
+                <div class="wc-title"><div class="wc-icon"><i class="fas fa-fire"></i></div> Flaming</div>
+                <span id="shiftInfo_flaming" class="shift-info"></span>
+            </div>
+            <div class="wc-body">
+                <div class="table-scroll table-scroll-area" id="scroll_flaming">
+                    <table><thead><tr><th style="width:36px">#</th><th style="width:72px">Mesin</th><th class="left">Nama Produk</th><th style="width:110px">S1</th><th style="width:110px">S2</th><th style="width:110px">S3</th></tr></thead>
+                    <tbody id="manualBody_flaming"></tbody></table>
+                </div>
+                <button id="btnAddRow_flaming" class="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
+            </div>
+        </div>
+
+        <div id="manualBlock_sonic" class="wc-card wc-sonic hidden">
+            <div class="wc-header">
+                <div class="wc-title"><div class="wc-icon"><i class="fas fa-wave-square"></i></div> Sonic</div>
+                <span id="shiftInfo_sonic" class="shift-info"></span>
+            </div>
+            <div class="wc-body">
+                <div class="table-scroll table-scroll-area" id="scroll_sonic">
+                    <table><thead><tr><th style="width:36px">#</th><th style="width:72px">Mesin</th><th class="left">Nama Produk</th><th style="width:110px">S1</th><th style="width:110px">S2</th><th style="width:110px">S3</th></tr></thead>
+                    <tbody id="manualBody_sonic"></tbody></table>
+                </div>
+                <button id="btnAddRow_sonic" class="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
+            </div>
+        </div>
+
+        <div id="manualBlock_assembling" class="wc-card wc-assembling hidden">
+            <div class="wc-header">
+                <div class="wc-title"><div class="wc-icon"><i class="fas fa-cogs"></i></div> Assembling</div>
+                <span id="shiftInfo_assembling" class="shift-info"></span>
+            </div>
+            <div class="wc-body">
+                <div class="table-scroll table-scroll-area" id="scroll_assembling">
+                    <table><thead><tr><th style="width:36px">#</th><th style="width:72px">Mesin</th><th class="left">Nama Produk</th><th style="width:110px">S1</th><th style="width:110px">S2</th><th style="width:110px">S3</th></tr></thead>
+                    <tbody id="manualBody_assembling"></tbody></table>
+                </div>
+                <button id="btnAddRow_assembling" class="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
+            </div>
+        </div>
+
+        <div id="manualBlock_pinning" class="wc-card wc-pinning hidden">
+            <div class="wc-header">
+                <div class="wc-title"><div class="wc-icon"><i class="fas fa-thumbtack"></i></div> Pinning</div>
+                <span id="shiftInfo_pinning" class="shift-info"></span>
+            </div>
+            <div class="wc-body">
+                <div class="table-scroll table-scroll-area" id="scroll_pinning">
+                    <table><thead><tr><th style="width:36px">#</th><th style="width:72px">Mesin</th><th class="left">Nama Produk</th><th style="width:110px">S1</th><th style="width:110px">S2</th><th style="width:110px">S3</th></tr></thead>
+                    <tbody id="manualBody_pinning"></tbody></table>
+                </div>
+                <button id="btnAddRow_pinning" class="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
+            </div>
+        </div>
+
+        <div id="manualBlock_printing" class="wc-card wc-printing hidden">
+            <div class="wc-header">
+                <div class="wc-title"><div class="wc-icon"><i class="fas fa-print"></i></div> Printing</div>
+                <span id="shiftInfo_printing" class="shift-info"></span>
+            </div>
+            <div class="wc-body">
+                <div class="table-scroll table-scroll-area" id="scroll_printing">
+                    <table><thead><tr><th style="width:36px">#</th><th style="width:72px">Mesin</th><th class="left">Nama Produk</th><th style="width:110px">S1</th><th style="width:110px">S2</th><th style="width:110px">S3</th></tr></thead>
+                    <tbody id="manualBody_printing"></tbody></table>
+                </div>
+                <button id="btnAddRow_printing" class="add-row-btn"><i class="fas fa-plus"></i> Tambah Baris</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HASIL -->
+    <div class="card" id="resultSection">
+        <div class="card-title"><span class="dot"></span> Hasil Analisa</div>
+
+        <div id="resultHint" class="result-empty">
+            <div class="big-icon"><i class="fas fa-clipboard-list"></i></div>
+            <p>Upload CSV Sistem lalu klik <strong>Analisa Data</strong> untuk memulai.</p>
+        </div>
+
+        <!-- Result blocks per WC -->
+        <div id="resultBlock_stamping" class="hidden">
+            <div class="result-wc-header"><div class="wc-icon" style="background:#7C3AED;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white"><i class="fas fa-stamp"></i></div><span class="result-wc-title">Stamping</span></div>
+            <div class="result-table-wrap"><table><thead><tr><th>Msn</th><th>Shf</th><th>LOT Ideal</th><th>LOT Sys</th><th style="text-align:right">Qty Man</th><th style="text-align:right">Qty Sys</th><th>Jam</th><th class="left">Prod Man</th><th class="left">Prod Sys</th><th>Status</th><th class="left">Note</th></tr></thead><tbody id="resultBody_stamping"></tbody></table></div>
+        </div>
+
+        <div id="resultBlock_flaming" class="hidden" style="margin-top:20px">
+            <div class="result-wc-header"><div class="wc-icon" style="background:#DC2626;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white"><i class="fas fa-fire"></i></div><span class="result-wc-title">Flaming</span></div>
+            <div class="result-table-wrap"><table><thead><tr><th>Msn</th><th>Shf</th><th>LOT Ideal</th><th>LOT Sys</th><th style="text-align:right">Qty Man</th><th style="text-align:right">Qty Sys</th><th>Jam</th><th class="left">Prod Man</th><th class="left">Prod Sys</th><th>Status</th><th class="left">Note</th></tr></thead><tbody id="resultBody_flaming"></tbody></table></div>
+        </div>
+
+        <div id="resultBlock_sonic" class="hidden" style="margin-top:20px">
+            <div class="result-wc-header"><div class="wc-icon" style="background:#0891B2;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white"><i class="fas fa-wave-square"></i></div><span class="result-wc-title">Sonic</span></div>
+            <div class="result-table-wrap"><table><thead><tr><th>Msn</th><th>Shf</th><th>LOT Ideal</th><th>LOT Sys</th><th style="text-align:right">Qty Man</th><th style="text-align:right">Qty Sys</th><th>Jam</th><th class="left">Prod Man</th><th class="left">Prod Sys</th><th>Status</th><th class="left">Note</th></tr></thead><tbody id="resultBody_sonic"></tbody></table></div>
+        </div>
+
+        <div id="resultBlock_assembling" class="hidden" style="margin-top:20px">
+            <div class="result-wc-header"><div class="wc-icon" style="background:#059669;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white"><i class="fas fa-cogs"></i></div><span class="result-wc-title">Assembling</span></div>
+            <div class="result-table-wrap"><table><thead><tr><th>Msn</th><th>Shf</th><th>LOT Ideal</th><th>LOT Sys</th><th style="text-align:right">Qty Man</th><th style="text-align:right">Qty Sys</th><th>Jam</th><th class="left">Prod Man</th><th class="left">Prod Sys</th><th>Status</th><th class="left">Note</th></tr></thead><tbody id="resultBody_assembling"></tbody></table></div>
+        </div>
+
+        <div id="resultBlock_pinning" class="hidden" style="margin-top:20px">
+            <div class="result-wc-header"><div class="wc-icon" style="background:#D97706;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white"><i class="fas fa-thumbtack"></i></div><span class="result-wc-title">Pinning</span></div>
+            <div class="result-table-wrap"><table><thead><tr><th>Msn</th><th>Shf</th><th>LOT Ideal</th><th>LOT Sys</th><th style="text-align:right">Qty Man</th><th style="text-align:right">Qty Sys</th><th>Jam</th><th class="left">Prod Man</th><th class="left">Prod Sys</th><th>Status</th><th class="left">Note</th></tr></thead><tbody id="resultBody_pinning"></tbody></table></div>
+        </div>
+
+        <div id="resultBlock_printing" class="hidden" style="margin-top:20px">
+            <div class="result-wc-header"><div class="wc-icon" style="background:#DB2777;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white"><i class="fas fa-print"></i></div><span class="result-wc-title">Printing</span></div>
+            <div class="result-table-wrap"><table><thead><tr><th>Msn</th><th>Shf</th><th>LOT Ideal</th><th>LOT Sys</th><th style="text-align:right">Qty Man</th><th style="text-align:right">Qty Sys</th><th>Jam</th><th class="left">Prod Man</th><th class="left">Prod Sys</th><th>Status</th><th class="left">Note</th></tr></thead><tbody id="resultBody_printing"></tbody></table></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- SUGGESTION BOX -->
+<ul id="suggestionBox" class="hidden" style="position:fixed;z-index:9999;background:white;max-height:240px;overflow-y:auto;min-width:280px;"></ul>
+
+<script>
+    // ═══════════════════════════════════════════════════════
+    // CONFIG (UNCHANGED)
+    // ═══════════════════════════════════════════════════════
+    const WC_CONFIG = {
+        stamping:  { label:"Stamping",   prefix:"ST", machines:15, shifts:[{start:"15:31",end:"15:45"},{start:"19:31",end:"19:45"},{start:"22:31",end:"22:45"}] },
+        flaming:   { label:"Flaming",    prefix:"FL", machines:2,  shifts:[{start:"15:31",end:"15:45"},{start:"19:31",end:"19:45"},{start:"22:31",end:"22:45"}] },
+        sonic:     { label:"Sonic",      prefix:"SN", machines:5,  shifts:[{start:"15:46",end:"16:00"},{start:"19:45",end:"20:00"},{start:"22:46",end:"23:00"}] },
+        assembling:{ label:"Assembling", prefix:"AS", machines:12, shifts:[{start:"15:46",end:"16:00"},{start:"19:45",end:"20:00"},{start:"22:46",end:"23:00"}] },
+        pinning:   { label:"Pinning",    prefix:"PN", machines:5,  shifts:[{start:"15:46",end:"16:00"},{start:"19:45",end:"20:00"},{start:"22:46",end:"23:00"}] },
+        printing:  { label:"Printing",   prefix:"PR", machines:12, shifts:[{start:"15:31",end:"15:45"},{start:"19:31",end:"19:45"},{start:"22:31",end:"22:45"}] }
+    };
+    const BUNDLES = {
+        bundle1: { label:"Bundel 1 — Stamping, Flaming, Sonic",      wcs:["stamping","flaming","sonic"] },
+        bundle2: { label:"Bundel 2 — Assembling, Pinning, Printing",  wcs:["assembling","pinning","printing"] }
+    };
+    const STORAGE_KEYS = { bundle1:"db_produk_bundle1_v1", bundle2:"db_produk_bundle2_v1" };
+    const PREFIX_MAP   = { ST:"stamping", FL:"flaming", SN:"sonic", AS:"assembling", PN:"pinning", PR:"printing" };
+
+    // ═══════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════
+    function pad2(n){ return (parseInt(n,10)<10?"0":"")+parseInt(n,10); }
+    function normName(str){ return (str||"").toLowerCase().replace(/\s+/g," ").trim(); }
+    function timeToMinutes(t){ const [h,m]=t.split(":").map(x=>parseInt(x,10)); if(isNaN(h)||isNaN(m)) return null; return h*60+m; }
+    function extractTimeStr(dateStr){ if(!dateStr) return ""; const parts=dateStr.trim().split(" "); if(parts.length>=2) return parts[1].slice(0,5); if(dateStr.length>=5) return dateStr.slice(0,5); return ""; }
+    function detectShift(timeStr,wcKey){ if(!timeStr) return null; const cfg=WC_CONFIG[wcKey]; if(!cfg) return null; const total=timeToMinutes(timeStr); if(total==null) return null; for(let i=0;i<cfg.shifts.length;i++){ const s=cfg.shifts[i]; if(total>=timeToMinutes(s.start)&&total<=timeToMinutes(s.end)) return i+1; } return null; }
+    function getShiftFromLot(lotStr){ if(!lotStr) return null; const s=String(lotStr).trim(); const n=parseInt(s[s.length-1],10); return (n>=1&&n<=3)?n:null; }
+    function generateLot(machine,dateIso,shift,wcKey){ const cfg=WC_CONFIG[wcKey]; if(!cfg||!dateIso) return ""; const [yy,mm,dd]=dateIso.split("-"); return cfg.prefix+pad2(machine)+dd+mm+yy.slice(-2)+String(shift); }
+    function parseCSV(text){ const lines=text.split(/\r?\n/).filter(l=>l.trim()!==""); if(!lines.length) return []; const sep=(lines[0].split(";").length>lines[0].split(",").length)?";":","; return lines.map(line=>line.split(sep).map(c=>c.trim())); }
+    function extractMachineNumber(str){ const m=String(str).match(/\d+/); return m?parseInt(m[0],10):null; }
+
+    // ═══════════════════════════════════════════════════════
+    // DOM REFS
+    // ═══════════════════════════════════════════════════════
+    const bundleSelect = document.getElementById("bundleSelect");
+    const bundleInfo   = document.getElementById("bundleInfo");
+    const tglInput     = document.getElementById("tgl");
+    const csvInput     = document.getElementById("csv");
+    const csvName      = document.getElementById("csvName");
+    const prodInput    = document.getElementById("prodCsv");
+    const dbStatus     = document.getElementById("dbStatus");
+    const btnCheck     = document.getElementById("btnCheck");
+    const resultHint   = document.getElementById("resultHint");
+    const suggestionBox= document.getElementById("suggestionBox");
+
+    const wcKeys = ["stamping","flaming","sonic","assembling","pinning","printing"];
+    const manualBodies={}, manualBlocks={}, resultBodies={}, resultBlocks={}, shiftInfos={}, addButtons={};
+    wcKeys.forEach(k=>{
+        manualBodies[k]  = document.getElementById("manualBody_"+k);
+        manualBlocks[k]  = document.getElementById("manualBlock_"+k);
+        resultBodies[k]  = document.getElementById("resultBody_"+k);
+        resultBlocks[k]  = document.getElementById("resultBlock_"+k);
+        shiftInfos[k]    = document.getElementById("shiftInfo_"+k);
+        addButtons[k]    = document.getElementById("btnAddRow_"+k);
+    });
+
+    let rowCounter={}, csvLoaded=false, systemMap={}, systemShiftMap={};
+    let activeInput=null, productDatabase=[];
+
+    // File label updates
+    document.getElementById("csv").addEventListener("change", e=>{
+        const f=e.target.files[0];
+        document.getElementById("csvBtnText").textContent = f?f.name:"Pilih file CSV...";
+    });
+    document.getElementById("prodCsv").addEventListener("change", e=>{
+        const f=e.target.files[0];
+        document.getElementById("prodBtnText").textContent = f?f.name:"Pilih file CSV...";
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // UI HELPERS
+    // ═══════════════════════════════════════════════════════
+    function updateCheckButton(){
+        if(csvLoaded){ btnCheck.disabled=false; }
+        else { btnCheck.disabled=true; }
+    }
+    function activeBundleWCs(){ return BUNDLES[bundleSelect.value].wcs; }
+
+    function showHideBlocks(){
+        const active=new Set(activeBundleWCs());
+        wcKeys.forEach(k=>{
+            manualBlocks[k].classList.toggle("hidden", !active.has(k));
+            resultBlocks[k].classList.toggle("hidden", !active.has(k));
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // PRODUCT DB
+    // ═══════════════════════════════════════════════════════
+    function loadProductDb(bundleKey){
+        const stored=localStorage.getItem(STORAGE_KEYS[bundleKey]);
+        productDatabase=[];
+        if(stored){ try{
+            const names=JSON.parse(stored);
+            if(Array.isArray(names)&&names.length>0){
+                productDatabase=names.sort();
+                dbStatus.innerHTML=`<i class="fas fa-circle-check"></i> DB Siap (${names.length})`;
+                dbStatus.className="db-badge ready";
+                return;
+            }
+        }catch(e){} }
+        dbStatus.innerHTML=`<i class="fas fa-circle-xmark"></i> DB Kosong`;
+        dbStatus.className="db-badge empty";
+    }
+
+    function saveProductDb(bundleKey,csvText){
+        const rows=parseCSV(csvText); const names=new Set(); let si=0;
+        if(rows.length>0&&rows[0][0]&&rows[0][0].toLowerCase().includes("name")) si=1;
+        for(let i=si;i<rows.length;i++) if(rows[i][0]&&rows[i][0].trim().length>1) names.add(rows[i][0].trim());
+        const arr=Array.from(names).sort();
+        if(arr.length>0){ localStorage.setItem(STORAGE_KEYS[bundleKey],JSON.stringify(arr)); loadProductDb(bundleKey); alert(`Sukses! ${arr.length} produk tersimpan.`); }
+        else alert("Gagal baca CSV.");
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // AUTOCOMPLETE — original working pattern
+    // ═══════════════════════════════════════════════════════
+    function showSuggestions(input){
+        activeInput=input;
+        const rect=input.getBoundingClientRect();
+        suggestionBox.style.top  = (rect.bottom+2)+'px';
+        suggestionBox.style.left = rect.left+'px';
+        suggestionBox.style.width= Math.max(rect.width,300)+'px';
+
+        if(productDatabase.length===0){
+            suggestionBox.innerHTML=`<li style="color:var(--rose);background:var(--rose-light);font-weight:700;padding:12px 16px;font-size:12px;"><i class="fas fa-triangle-exclamation" style="margin-right:6px"></i>Database Kosong!</li>`;
+            suggestionBox.classList.remove('hidden'); return;
+        }
+        const val=input.value.toLowerCase();
+        const matches=val===""?productDatabase.slice(0,50):productDatabase.filter(p=>p.toLowerCase().includes(val)).slice(0,100);
+        if(!matches.length){ suggestionBox.classList.add('hidden'); return; }
+        suggestionBox.innerHTML=matches.map(item=>`<li>${item}</li>`).join('');
+        suggestionBox.classList.remove('hidden');
+        suggestionBox.querySelectorAll('li').forEach(li=>{
+            li.addEventListener('mousedown', e=>{
+                e.preventDefault();
+                input.value=li.textContent;
+                suggestionBox.classList.add('hidden');
+            });
+        });
+    }
+
+    document.addEventListener('click', e=>{
+        if(activeInput&&e.target!==activeInput&&!suggestionBox.contains(e.target))
+            suggestionBox.classList.add('hidden');
+    });
+    document.querySelectorAll('.table-scroll-area').forEach(el=>{
+        el.addEventListener('scroll', ()=>suggestionBox.classList.add('hidden'));
+    });
+    window.addEventListener('scroll', ()=>suggestionBox.classList.add('hidden'));
+
+    // ═══════════════════════════════════════════════════════
+    // TABLE ROWS
+    // ═══════════════════════════════════════════════════════
+    function addManualRow(wcKey, machine, name){
+        rowCounter[wcKey]=(rowCounter[wcKey]||0)+1;
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+            <td class="row-num">${rowCounter[wcKey]}</td>
+            <td><input type="number" data-field="machine" value="${machine||""}" placeholder="—"></td>
+            <td><input type="text" data-field="name" value="${name||""}" autocomplete="off" placeholder="cari produk..."></td>
+            <td><input type="number" data-field="qty1" placeholder="0"></td>
+            <td><input type="number" data-field="qty2" placeholder="0"></td>
+            <td><input type="number" data-field="qty3" placeholder="0"></td>`;
+        const nInput=tr.querySelector('[data-field="name"]');
+        nInput.addEventListener('input', ()=>showSuggestions(nInput));
+        nInput.addEventListener('focus', ()=>showSuggestions(nInput));
+        manualBodies[wcKey].appendChild(tr);
+    }
+
+    function resetManualTables(){
+        rowCounter={};
+        wcKeys.forEach(k=>{
+            manualBodies[k].innerHTML="";
+            resultBodies[k].innerHTML="";
+            const cfg=WC_CONFIG[k];
+            shiftInfos[k].textContent=`S1: ${cfg.shifts[0].start} | S2: ${cfg.shifts[1].start} | S3: ${cfg.shifts[2].start}`;
+            rowCounter[k]=0;
+            if(activeBundleWCs().includes(k)){
+                for(let m=1;m<=cfg.machines;m++) addManualRow(k,"","");
+            }
+        });
+    }
+
+    wcKeys.forEach(k=>addButtons[k].addEventListener("click", ()=>addManualRow(k,"","")));
+
+    // ═══════════════════════════════════════════════════════
+    // CSV SISTEM
+    // ═══════════════════════════════════════════════════════
+    csvInput.addEventListener("change", ()=>{
+        const file=csvInput.files[0];
+        if(!file){ csvName.textContent=""; csvLoaded=false; updateCheckButton(); return; }
+        csvName.textContent=file.name;
+        const reader=new FileReader();
+        reader.onload=e=>{
+            const rows=parseCSV(e.target.result);
+            if(rows.length<=1){ alert("CSV error"); return; }
+            const header=rows[0].map(h=>h.toLowerCase());
+            const idxM=header.findIndex(h=>h.includes("machine"));
+            const idxN=header.findIndex(h=>h=="name"||h.includes("nama"));
+            const idxL=header.findIndex(h=>h.includes("lot"));
+            let idxD=header.findIndex(h=>h.startsWith("date")); if(idxD<0) idxD=header.findIndex(h=>h.includes("date")); if(idxD<0) idxD=header.findIndex(h=>h.includes("tgl"));
+            let idxA=header.findIndex(h=>h.includes("approved")); if(idxA<0) idxA=4;
+            if(idxM<0||idxN<0||idxL<0||idxD<0){ alert("Header CSV tidak sesuai!"); return; }
+
+            systemMap={}; systemShiftMap={};
+            const activeSet=new Set(activeBundleWCs());
+
+            for(let i=1;i<rows.length;i++){
+                const r=rows[i]; if(!r.length) continue;
+                const m=extractMachineNumber(r[idxM]); if(!m) continue;
+                const lot=r[idxL]||"", name=r[idxN]||"";
+                const wcKey=PREFIX_MAP[(lot.slice(0,2)||"").toUpperCase()];
+                if(!wcKey||!activeSet.has(wcKey)) continue;
+                const timeStr=extractTimeStr(r[idxD]);
+                let shift=detectShift(timeStr,wcKey);
+                let fromLot=false;
+                if(!shift){ shift=getShiftFromLot(lot); fromLot=true; }
+                if(!shift) continue;
+                let qty=parseFloat((r[idxA]||"0").replace(/\./g,"").replace(",",".")); if(isNaN(qty)) qty=0;
+                const key=`${wcKey}|${m}|${shift}|${normName(name)}`;
+                if(!systemMap[key]) systemMap[key]={wc:wcKey,machine:m,shift,name,lot,qty:0,time:timeStr,fromLot};
+                systemMap[key].qty+=qty;
+                const keyS=`${wcKey}|${m}|${shift}`;
+                if(!systemShiftMap[keyS]) systemShiftMap[keyS]=[];
+                systemShiftMap[keyS].push({name,lot,qty,time:timeStr,fromLot});
+            }
+            csvLoaded=true; updateCheckButton();
+            resultHint.innerHTML=`<div class="big-icon" style="font-size:28px;margin-bottom:8px;color:var(--sage)"><i class="fas fa-circle-check"></i></div><p style="color:var(--sage);font-weight:700">CSV Sistem terbaca — siap dianalisa.</p>`;
+        };
+        reader.readAsText(file);
+    });
+
+    prodInput.addEventListener("change", ()=>{
+        const file=prodInput.files[0]; if(!file) return;
+        const r=new FileReader(); r.onload=e=>saveProductDb(bundleSelect.value,e.target.result); r.readAsText(file);
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // MAIN CHECK LOGIC V4 STRICT + FIXES
+    // ═══════════════════════════════════════════════════════
+    btnCheck.addEventListener("click", ()=>{
+        if(!tglInput.value){ alert("Isi tanggal!"); return; }
+        if(!csvLoaded){ alert("CSV belum!"); return; }
+
+        resultHint.style.display="none";
+        const resultRowsByWC={};
+        activeBundleWCs().forEach(k=>resultRowsByWC[k]=[]);
+
+        const manualMap={};
+        activeBundleWCs().forEach(wcKey=>{
+            manualBodies[wcKey].querySelectorAll("tr").forEach(tr=>{
+                const mInp=tr.querySelector('[data-field="machine"]');
+                const nInp=tr.querySelector('[data-field="name"]');
+                if(!mInp) return;
+                const m=parseInt(mInp.value);
+                const nm=(nInp.value||"").trim();
+                if(!m) return;
+                [1,2,3].forEach(sh=>{
+                    const qInp=tr.querySelector(`[data-field="qty${sh}"]`);
+                    // BUG FIX: NaN guard
+                    const q=(parseFloat(qInp.value||"0")||0);
+                    if(q<=0) return; // STRICT V4
+                    const key=`${wcKey}|${m}|${sh}|${normName(nm)}`;
+                    if(!manualMap[key]) manualMap[key]={wc:wcKey,m,sh,name:nm,qty:0};
+                    manualMap[key].qty+=q;
+                });
+            });
+        });
+
+        const usedSystemKeys=new Set();
+
+        for(const key in manualMap){
+            const manData=manualMap[key];
+            const sysData=systemMap[key];
+            const wcKey=manData.wc;
+            let rowClass="row-yellow", txt="CEK", nts=[];
+            let lSys="-", qSys=0, tSys="-", nSys="-";
+            const lotExp=generateLot(manData.m,tglInput.value,manData.sh,wcKey);
+
+            if(sysData){
+                usedSystemKeys.add(key);
+                lSys=sysData.lot; qSys=sysData.qty; tSys=sysData.time; nSys=sysData.name;
+                let err=false;
+                if(lotExp&&lSys&&lotExp!==lSys){ err=true; nts.push("LOT Beda"); }
+                // BUG FIX: base selisih pakai terbesar antara manual dan sistem
+                if(Math.abs(manData.qty-qSys)>Math.max(1,Math.max(manData.qty,qSys)*0.03)) nts.push("Selisih >3%");
+                if(err){ rowClass="row-red"; txt="ERROR LOT"; }
+                else if(nts.length>0){ rowClass="row-yellow"; txt="WARNING"; }
+                else { rowClass="row-green"; txt="MATCH"; nts.push("OK"); }
+            } else {
+                const shiftKey=`${manData.wc}|${manData.m}|${manData.sh}`;
+                const shiftDat=systemShiftMap[shiftKey];
+                if(!shiftDat||shiftDat.length===0){ rowClass="row-red"; txt="MANUAL ONLY"; nts.push("Sys Kosong"); }
+                else { rowClass="row-red"; txt="NAMA BEDA"; nts.push("Nm Beda"); }
+            }
+            resultRowsByWC[wcKey].push({ m:manData.m, sh:manData.sh, lotExp, lSys, qMan:manData.qty, qSys, tSys, nMan:manData.name, nSys, rowClass, txt, nts:nts.join(", ") });
+        }
+
+        const activeWCs=new Set(activeBundleWCs());
+        for(const key in systemMap){
+            if(usedSystemKeys.has(key)) continue;
+            const sys=systemMap[key];
+            if(!activeWCs.has(sys.wc)) continue;
+            const lotExp=generateLot(sys.machine,tglInput.value,sys.shift,sys.wc);
+            resultRowsByWC[sys.wc].push({ m:sys.machine, sh:sys.shift, lotExp, lSys:sys.lot, qMan:0, qSys:sys.qty, tSys:sys.time, nMan:"-", nSys:sys.name, rowClass:"row-red", txt:"SYS ONLY", nts:"Man Kosong" });
+        }
+
+        const badgeClass=txt=>{
+            if(txt==="MATCH") return "badge-match";
+            if(txt==="WARNING"||txt==="CEK") return "badge-warning";
+            return "badge-error";
+        };
+        const icon=txt=>{
+            if(txt==="MATCH") return '<i class="fas fa-check"></i>';
+            if(txt==="WARNING") return '<i class="fas fa-triangle-exclamation"></i>';
+            return '<i class="fas fa-xmark"></i>';
+        };
+
+        activeBundleWCs().forEach(k=>{
+            const rows=resultRowsByWC[k].sort((a,b)=>a.m-b.m||a.sh-b.sh);
+            resultBlocks[k].classList.remove("hidden");
+            resultBodies[k].innerHTML=rows.map(r=>`
+                <tr class="${r.rowClass}">
+                    <td style="text-align:center;font-weight:800;font-size:13px">${r.m}</td>
+                    <td style="text-align:center;font-weight:700">${r.sh}</td>
+                    <td><span class="lot-mono">${r.lotExp}</span></td>
+                    <td><span class="lot-mono">${r.lSys}</span></td>
+                    <td class="qty-cell">${r.qMan}</td>
+                    <td class="qty-cell">${r.qSys}</td>
+                    <td class="time-cell">${r.tSys}</td>
+                    <td style="font-size:11px">${r.nMan}</td>
+                    <td style="font-size:11px">${r.nSys}</td>
+                    <td style="text-align:center"><span class="badge ${badgeClass(r.txt)}">${icon(r.txt)} ${r.txt}</span></td>
+                    <td class="note-cell">${r.nts}</td>
+                </tr>`).join("");
+        });
+
+        document.getElementById("resultSection").scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // BUNDLE CHANGE
+    // ═══════════════════════════════════════════════════════
+    bundleSelect.addEventListener("change", ()=>{
+        systemMap={}; systemShiftMap={}; csvLoaded=false;
+        csvName.textContent=""; document.getElementById("csvBtnText").textContent="Pilih file CSV...";
+        csvInput.value=""; prodInput.value=""; document.getElementById("prodBtnText").textContent="Pilih file CSV...";
+        updateCheckButton();
+        resultHint.innerHTML=`<div class="big-icon"><i class="fas fa-clipboard-list"></i></div><p>Upload CSV Sistem lalu klik <strong>Analisa Data</strong> untuk memulai.</p>`;
+        resultHint.style.display="";
+        showHideBlocks();
+        resetManualTables();
+        loadProductDb(bundleSelect.value);
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════════
+    function initPage(){
+        showHideBlocks();
+        resetManualTables();
+        loadProductDb(bundleSelect.value);
+    }
+    // ═══════════════════════════════════════════════════════
+    // STICKY WC NAV
+    // ═══════════════════════════════════════════════════════
+    const wcNav = document.getElementById('wcNav');
+    const allWCKeys = ['stamping','flaming','sonic','assembling','pinning','printing'];
+
+    function updateWCNav() {
+        let anyVisible = false;
+        allWCKeys.forEach(k => {
+            const block = document.getElementById('manualBlock_' + k);
+            const btn = document.getElementById('navBtn_' + k);
+            if (!block || !btn) return;
+            const isVisible = !block.classList.contains('hidden');
+            btn.style.display = isVisible ? '' : 'none';
+            if (isVisible) anyVisible = true;
+        });
+        wcNav.classList.toggle('visible', anyVisible);
+    }
+
+    function jumpToWC(key) {
+        const target = key === 'resultSection'
+            ? document.getElementById('resultSection')
+            : document.getElementById('manualBlock_' + key);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Observe visibility changes on WC blocks
+    const navObserver = new MutationObserver(updateWCNav);
+    allWCKeys.forEach(k => {
+        const block = document.getElementById('manualBlock_' + k);
+        if (block) navObserver.observe(block, { attributes: true, attributeFilter: ['class'] });
+    });
+    updateWCNav();
+
+    initPage();
+</script>
+
+<script>
+    /* ── THEME ENGINE ── */
+    (function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('tigerTheme')||'light'); })();
+    function _applyTheme(t){
+        document.documentElement.setAttribute('data-theme',t);
+        localStorage.setItem('tigerTheme',t);
+        var ic=document.getElementById('themeIcon');
+        if(ic) ic.className = t==='dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    function toggleTheme(){ _applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    window.addEventListener('DOMContentLoaded',function(){
+        _applyTheme(localStorage.getItem('tigerTheme')||'light');
+    });
+</script>
+
+</body>
+</html>

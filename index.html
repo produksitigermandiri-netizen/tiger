@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Tiger Production System</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0D0C1A">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tiger System">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg:        #0D0C1A;
+            --surface:   #13122A;
+            --surface-2: #1A1836;
+            --border:    #2A2848;
+            --border-2:  #3A3860;
+            --indigo:    #6366F1;
+            --indigo-2:  #818CF8;
+            --indigo-dim: #4338CA;
+            --text:      #EDE9FF;
+            --text-muted:#8B8FAD;
+            --amber:     #C2550A;
+            --amber-l:   #E8874A;
+            --error-bg:  #2D0F0F;
+            --error-bd:  #7F1D1D;
+            --error-tx:  #FCA5A5;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background decoration */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 85% 85%, rgba(67,56,202,0.15) 0%, transparent 55%),
+                radial-gradient(ellipse 40% 30% at 50% 50%, rgba(194,85,10,0.06) 0%, transparent 60%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Subtle grid pattern */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none; z-index: 0;
+        }
+
+        .login-wrap {
+            position: relative; z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            max-width: 900px;
+            min-height: 560px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(99,102,241,0.1);
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes shake {
+            10%,90%{transform:translate3d(-1px,0,0)}
+            20%,80%{transform:translate3d(2px,0,0)}
+            30%,50%,70%{transform:translate3d(-4px,0,0)}
+            40%,60%{transform:translate3d(4px,0,0)}
+        }
+
+        /* ── LEFT PANEL ── */
+        .login-left {
+            background: linear-gradient(145deg, #0F0E24 0%, #151330 50%, #0F1628 100%);
+            border-right: 1px solid var(--border);
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-deco {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .left-deco-1 {
+            width: 280px; height: 280px;
+            background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+            top: -60px; right: -60px;
+        }
+        .left-deco-2 {
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(194,85,10,0.1) 0%, transparent 70%);
+            bottom: 20px; left: 10px;
+        }
+
+        .brand-logo {
+            display: flex; align-items: center; gap: 14px; margin-bottom: 2.5rem;
+        }
+        .brand-logo img {
+            width: 52px; height: 52px; object-fit: contain;
+            animation: float 3s ease-in-out infinite;
+            filter: brightness(1.1);
+        }
+        .brand-logo-text h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1rem; color: var(--text); line-height: 1.2;
+        }
+        .brand-logo-text span {
+            font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em;
+            text-transform: uppercase; color: var(--indigo-2);
+        }
+
+        .left-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+        .hero-eyebrow {
+            font-size: 0.65rem; font-weight: 800; letter-spacing: 0.2em;
+            text-transform: uppercase; color: var(--indigo-2);
+            display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;
+        }
+        .hero-eyebrow::before {
+            content: ''; width: 20px; height: 2px;
+            background: var(--indigo); display: inline-block;
+        }
+
+        .hero-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(1.6rem, 3vw, 2.1rem);
+            line-height: 1.15; color: var(--text);
+            margin-bottom: 1rem;
+        }
+        .hero-title em { font-style: italic; color: var(--indigo-2); }
+
+        .hero-desc {
+            font-size: 0.78rem; color: var(--text-muted);
+            line-height: 1.7; font-weight: 500;
+            max-width: 300px; margin-bottom: 2rem;
+        }
+
+        .feature-list { display: flex; flex-direction: column; gap: 10px; }
+        .feature-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.72rem; color: var(--text-muted); font-weight: 600;
+        }
+        .feature-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--indigo); flex-shrink: 0;
+        }
+
+        .left-footer {
+            font-size: 0.62rem; color: rgba(139,143,173,0.5);
+            font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+        }
+
+        /* ── RIGHT PANEL (FORM) ── */
+        .login-right {
+            padding: 3rem 2.5rem;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .form-eyebrow {
+            font-size: 0.65rem; font-weight: 800; letter-spacing: 0.15em;
+            text-transform: uppercase; color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .form-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem; color: var(--text);
+            margin-bottom: 0.4rem;
+        }
+        .form-sub {
+            font-size: 0.72rem; color: var(--text-muted);
+            font-weight: 500; margin-bottom: 2rem;
+        }
+
+        .divider {
+            width: 32px; height: 3px;
+            background: linear-gradient(90deg, var(--indigo), var(--indigo-2));
+            border-radius: 2px; margin-bottom: 2rem;
+        }
+
+        .field { margin-bottom: 1.25rem; }
+        .field-label {
+            display: block; font-size: 0.68rem; font-weight: 800;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 8px;
+        }
+        .field-wrap { position: relative; }
+        .field-wrap i {
+            position: absolute; left: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--border-2); font-size: 0.82rem;
+            pointer-events: none; transition: color 0.2s;
+        }
+        .field-wrap input {
+            width: 100%; height: 48px;
+            padding: 0 14px 0 40px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.88rem; font-weight: 500;
+            color: var(--text); outline: none;
+            transition: all 0.2s;
+        }
+        .field-wrap input::placeholder { color: rgba(139,143,173,0.5); }
+        .field-wrap input:focus {
+            border-color: var(--indigo);
+            background: #1E1C38;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
+        .field-wrap input:focus + i,
+        .field-wrap:focus-within i { color: var(--indigo-2); }
+
+        /* icon before input trick — icon is before input in DOM actually reversed */
+        .field-wrap { display: flex; flex-direction: row; align-items: center; position: relative; }
+        .field-wrap input { order: 1; }
+        .field-wrap i { order: 0; position: absolute; left: 14px; z-index: 1; }
+
+        .error-box {
+            display: none;
+            background: var(--error-bg); border: 1px solid var(--error-bd);
+            border-radius: 8px; padding: 10px 14px;
+            margin-bottom: 1.25rem;
+            font-size: 0.75rem; font-weight: 700;
+            color: var(--error-tx);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .error-box.hidden { display: none; }
+
+        .btn-login {
+            width: 100%; height: 50px;
+            background: var(--indigo);
+            color: white; border: none;
+            border-radius: 10px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem; font-weight: 800;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            position: relative; overflow: hidden;
+        }
+        .btn-login::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .btn-login:hover {
+            background: var(--indigo-dim);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+        }
+        .btn-login:active { transform: translateY(0); }
+        .btn-login.loading .btn-text { opacity: 0; }
+        .btn-login .spinner {
+            display: none; width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white; border-radius: 50%;
+            position: absolute; animation: spin 0.7s linear infinite;
+        }
+        .btn-login.loading .spinner { display: block; }
+
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+        .form-footer {
+            margin-top: 1.5rem; display: flex; justify-content: center;
+            align-items: center; gap: 6px;
+        }
+        .form-footer .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border-2); }
+        .form-footer span {
+            font-size: 0.65rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: rgba(139,143,173,0.5);
+        }
+
+        .online-indicator {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: #4ade80;
+        }
+        .pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse 2s infinite; }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .login-wrap { grid-template-columns: 1fr; min-height: auto; border-radius: 14px; }
+            .login-left { display: none; }
+            .login-right { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginWrap">
+
+    <!-- LEFT: Branding -->
+    <div class="login-left">
+        <div class="left-deco left-deco-1"></div>
+        <div class="left-deco left-deco-2"></div>
+
+        <div class="brand-logo">
+            <img src="logo3.png" alt="Tiger Logo" onerror="this.style.display='none'">
+            <div class="brand-logo-text">
+                <h2>PT TIGERMANDIRI<br>PRATAMA</h2>
+                <span>Production System V2.0</span>
+            </div>
+        </div>
+
+        <div class="left-hero">
+            <div class="hero-eyebrow">Integrated System</div>
+            <h1 class="hero-title">Tiger<br>Production<br><em>System</em></h1>
+            <p class="hero-desc">Platform monitoring & analisa produksi terpadu untuk PT Tigermandiri Pratama.</p>
+            <div class="feature-list">
+                <div class="feature-item"><div class="feature-dot"></div> Checker Injection & Decorasi</div>
+                <div class="feature-item"><div class="feature-dot"></div> Rekap Reject & Analisa Pareto</div>
+                <div class="feature-item"><div class="feature-dot"></div> Generator Laporan Mixing</div>
+                <div class="feature-item"><div class="feature-dot"></div> Daftar Mesin Harian</div>
+            </div>
+        </div>
+
+        <div class="left-footer">© 2026 PT Tigermandiri Pratama · Dev: Diyan Nurpriyanto</div>
+    </div>
+
+    <!-- RIGHT: Form -->
+    <div class="login-right">
+        <div class="form-eyebrow">Secure Access</div>
+        <h2 class="form-title">Selamat datang<br>kembali.</h2>
+        <p class="form-sub">Login untuk mengakses dashboard produksi.</p>
+        <div class="divider"></div>
+
+        <div class="error-box hidden" id="errorBox">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>Username atau password salah. Coba lagi.</span>
+        </div>
+
+        <div class="field">
+            <label class="field-label" for="username">Username</label>
+            <div class="field-wrap">
+                <input type="text" id="username" placeholder="Masukkan username" autocomplete="off">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="field-label" for="password">Password</label>
+            <div class="field-wrap">
+                <input type="password" id="password" placeholder="••••••••">
+                <i class="fas fa-lock"></i>
+            </div>
+        </div>
+
+        <button class="btn-login" id="btnLogin" onclick="checkLogin()">
+            <div class="spinner"></div>
+            <span class="btn-text"><i class="fas fa-sign-in-alt"></i>&nbsp; Login</span>
+        </button>
+
+        <div class="form-footer">
+            <div class="online-indicator"><div class="pulse-dot"></div> System Online</div>
+            <div class="dot"></div>
+            <span>Private Asset</span>
+            <div class="dot"></div>
+            <span>Trinity</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const VALID_USERNAME = 'dyansg8';
+    const VALID_PASSWORD = 'belahanjiwaku1';
+
+    // Kalau udah login, langsung ke dashboard
+    if (sessionStorage.getItem('isLoggedIn') === 'true') {
+        window.location.replace('dashboard.html');
+    }
+
+    function checkLogin() {
+        const userIn  = document.getElementById('username').value.trim();
+        const passIn  = document.getElementById('password').value;
+        const errorBox = document.getElementById('errorBox');
+        const btn      = document.getElementById('btnLogin');
+        const wrap     = document.getElementById('loginWrap');
+
+        if (!userIn || !passIn) {
+            errorBox.querySelector('span').textContent = 'Username dan password wajib diisi.';
+            errorBox.classList.remove('hidden');
+            return;
+        }
+
+        // Loading state
+        btn.classList.add('loading');
+        btn.disabled = true;
+        errorBox.classList.add('hidden');
+
+        setTimeout(() => {
+            if (userIn === VALID_USERNAME && passIn === VALID_PASSWORD) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                // Smooth fade out lalu redirect
+                document.body.style.transition = 'opacity 0.35s ease';
+                document.body.style.opacity = '0';
+                setTimeout(() => window.location.replace('dashboard.html'), 350);
+            } else {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                errorBox.querySelector('span').textContent = 'Username atau password salah. Coba lagi.';
+                errorBox.classList.remove('hidden');
+                wrap.classList.remove('shake');
+                void wrap.offsetWidth;
+                wrap.classList.add('shake');
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        }, 600);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('password').addEventListener('keypress', e => { if(e.key === 'Enter') checkLogin(); });
+        document.getElementById('username').addEventListener('keypress', e => { if(e.key === 'Enter') document.getElementById('password').focus(); });
+    });
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('[PWA] SW registered:', reg.scope))
+                .catch(err => console.warn('[PWA] SW failed:', err));
+        });
+    }
+</script>
+</body>
+</html>

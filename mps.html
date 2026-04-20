@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Finac Bulanan</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FAF8F4;
+            --amber: #C2550A;
+            --charcoal: #1C1814;
+            --sage: #4A6741;
+            --sand: #D4B896;
+            --warm-gray: #E8E2D9;
+            --warm-gray-2: #D0C8BC;
+        }
+
+        /* ═══════════════════════════════════════════
+           DARK MODE — TIGER SYSTEM
+           Toggle: data-theme="dark" on <html>
+        ═══════════════════════════════════════════ */
+        [data-theme="dark"] {
+            --cream:       #0D0C1A;
+            --parchment:   #13122A;
+            --warm-gray:   #2A2848;
+            --warm-gray-2: #3A3860;
+            --stone:       #8B8FAD;
+            --charcoal:    #EDE9FF;
+            --ink:         #C8C4E8;
+            --text-muted:  #8B8FAD;
+            --sand:        #A5B4FC;
+            --amber-pale:  #1E1628;
+            --sage-light:  #0D1F18;
+            --rose-light:  #1F0D10;
+            --slate-light: #0D1525;
+        }
+        [data-theme="dark"] body {
+            background-image:
+                radial-gradient(ellipse 70% 50% at 15% 10%, rgba(99,102,241,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 85% 90%, rgba(67,56,202,0.08) 0%, transparent 50%) !important;
+        }
+        [data-theme="dark"] body::before { opacity: 0.15 !important; }
+
+        /* Surfaces */
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .wc-card,
+        [data-theme="dark"] .wc-body,
+        [data-theme="dark"] .main-card,
+        [data-theme="dark"] .header-card,
+        [data-theme="dark"] .control-panel,
+        [data-theme="dark"] .result-card,
+        [data-theme="dark"] .topbar,
+        [data-theme="dark"] .back-btn,
+        [data-theme="dark"] .btn-back { background: #13122A !important; }
+
+        [data-theme="dark"] .wc-header,
+        [data-theme="dark"] .result-wc-header { background: #0F0E24 !important; }
+
+        [data-theme="dark"] thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] tbody td { background: #13122A !important; }
+        [data-theme="dark"] tbody tr:hover td,
+        [data-theme="dark"] tbody tr:hover { background: #1A1836 !important; }
+        [data-theme="dark"] tr.row-green td { background: #0D1F18 !important; }
+        [data-theme="dark"] tr.row-red td   { background: #1F0D10 !important; }
+        [data-theme="dark"] tr.row-yellow td { background: #1E1510 !important; }
+
+        /* Inputs */
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] input[type="date"],
+        [data-theme="dark"] input[type="month"],
+        [data-theme="dark"] input[type="file"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] .field-input,
+        [data-theme="dark"] .file-btn { background: #1A1836 !important; color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] td input[type="number"],
+        [data-theme="dark"] td input[type="text"] { background: #1A1836 !important; color: var(--ink) !important; }
+
+        /* CTA / action buttons — indigo in dark mode */
+        [data-theme="dark"] .cta-btn,
+        [data-theme="dark"] .btn-generate,
+        [data-theme="dark"] .btn-process { background: #4F46E5 !important; color: white !important; }
+        [data-theme="dark"] .cta-btn:hover:not(:disabled),
+        [data-theme="dark"] .btn-generate:hover,
+        [data-theme="dark"] .btn-process:hover { background: #4338CA !important; }
+        [data-theme="dark"] .cta-btn:disabled { background: #2A2848 !important; color: var(--stone) !important; }
+
+        /* Version / info badges */
+        [data-theme="dark"] .version-badge { background: #1A1836 !important; color: var(--sand) !important; }
+
+        /* Suggestion dropdown */
+        [data-theme="dark"] #suggestionBox { background: #13122A !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] #suggestionBox li { color: var(--ink) !important; border-color: var(--warm-gray) !important; }
+
+        /* WC Nav bar (cekfinacdecorasi) */
+        [data-theme="dark"] #wcNav { background: rgba(13,12,26,0.92) !important; border-color: var(--warm-gray) !important; }
+        [data-theme="dark"] .wcnav-btn { background: #13122A !important; border-color: var(--warm-gray) !important; color: var(--stone) !important; }
+
+        /* Stat cards, rekap, misc light surfaces */
+        [data-theme="dark"] .stat-card,
+        [data-theme="dark"] .summary-card,
+        [data-theme="dark"] .tab-content,
+        [data-theme="dark"] .rekap-section { background: #13122A !important; }
+        [data-theme="dark"] .tab-btn:not(.active) { background: #2A2848 !important; color: var(--text-muted) !important; }
+        [data-theme="dark"] .rekap-table thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] .mesin-table tbody tr:hover { background: #1A1836 !important; }
+
+        /* File selector button */
+        [data-theme="dark"] input[type="file"]::file-selector-button {
+            background: #2A2848 !important; color: var(--sand) !important;
+            border-color: var(--warm-gray) !important;
+        }
+
+        /* Smooth transitions on key elements */
+        .card, .wc-card, .main-card, .header-card, .control-panel,
+        .topbar, .back-btn, .btn-back, thead th, tbody td,
+        input, select, .field-input, .file-btn, .cta-btn,
+        .btn-generate, .btn-process, body {
+            transition: background-color 0.3s ease, border-color 0.3s ease,
+                        color 0.2s ease, box-shadow 0.25s ease !important;
+        }
+
+        /* Theme toggle button */
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 30px; height: 30px; border-radius: 6px;
+            border: 1.5px solid var(--warm-gray);
+            background: transparent; cursor: pointer;
+            font-size: 0.78rem; color: var(--stone);
+            transition: all 0.2s; flex-shrink: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            vertical-align: middle;
+        }
+        .btn-theme:hover { border-color: var(--amber); color: var(--amber); }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--cream);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--charcoal);
+            min-height: 100vh;
+            padding: 2.5rem 1.5rem;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: transparent; color: var(--amber); border: 1.5px solid var(--amber);
+            padding: 0.5rem 1.25rem; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700; font-size: 0.75rem; letter-spacing: 0.12em;
+            text-transform: uppercase; text-decoration: none; cursor: pointer;
+            transition: all 0.2s; margin-bottom: 2rem;
+        }
+        .back-btn:hover { background: var(--amber); color: var(--cream); }
+        .header-card {
+            background: white; border-top: 3px solid var(--amber);
+            padding: 2.5rem; margin-bottom: 1.5rem;
+            box-shadow: 0 1px 4px rgba(28,24,20,0.06);
+            animation: fadeUp 0.5s ease both;
+        }
+        .header-title {
+            font-family: 'DM Serif Display', serif; font-size: 2rem;
+            color: var(--charcoal); text-align: center; margin-bottom: 0.4rem;
+        }
+        .header-sub { text-align: center; font-size: 0.82rem; color: #9B8E82; margin-bottom: 2rem; font-style: italic; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; align-items: end; }
+        @media(max-width:768px){ .form-grid { grid-template-columns: 1fr; } }
+        .form-group label {
+            display: block; font-weight: 700; font-size: 0.75rem;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--charcoal); margin-bottom: 0.5rem;
+        }
+        .file-input-wrapper {
+            border: 1.5px solid var(--warm-gray-2); background: var(--cream);
+            padding: 0.6rem; cursor: pointer; transition: border-color 0.2s;
+        }
+        .file-input-wrapper:hover { border-color: var(--amber); }
+        input[type="file"] { width: 100%; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; color: #6B5E52; cursor: pointer; }
+        input[type="file"]::file-selector-button {
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.75rem;
+            background: #FFF0E8; color: var(--amber); border: 1px solid var(--sand);
+            padding: 0.35rem 0.85rem; cursor: pointer; margin-right: 0.75rem; transition: all 0.2s;
+        }
+        input[type="file"]::file-selector-button:hover { background: var(--amber); color: white; }
+        input[type="month"] {
+            width: 100%; border: 1.5px solid var(--warm-gray-2); background: var(--cream);
+            padding: 0.65rem 0.85rem; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.875rem; color: var(--charcoal); outline: none; transition: border-color 0.2s;
+        }
+        input[type="month"]:focus { border-color: var(--amber); }
+        .btn-generate {
+            width: 100%; background: var(--amber); color: white; border: none;
+            padding: 0.75rem 1.5rem; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700; font-size: 0.8rem; letter-spacing: 0.12em;
+            text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-generate:hover { background: #A8440A; }
+        .btn-generate:active { transform: scale(0.98); }
+        .info-msg { margin-top: 1rem; text-align: center; font-weight: 700; font-size: 0.82rem; color: var(--amber); }
+        .result-card {
+            background: white; border: 1px solid var(--warm-gray); padding: 1.5rem;
+            box-shadow: 0 1px 4px rgba(28,24,20,0.06);
+            animation: fadeUp 0.5s 0.1s ease both;
+        }
+        .result-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--warm-gray); padding-bottom: 1rem; margin-bottom: 1.25rem;
+        }
+        .result-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--amber); }
+        .btn-copy {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--sage); color: white; border: none; padding: 0.5rem 1.1rem;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.72rem;
+            letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-copy:hover { background: #3A5533; }
+        .table-wrapper { overflow-x: auto; border: 1px solid var(--warm-gray); max-height: 600px; overflow-y: auto; }
+        .rekap-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .rekap-table thead th {
+            position: sticky; top: 0; z-index: 10; background: #FFF5EE;
+            color: var(--amber); font-weight: 700; padding: 0.6rem 0.5rem;
+            border: 1px solid var(--warm-gray-2); white-space: nowrap; font-size: 0.72rem;
+        }
+        .rekap-table thead th:nth-child(1) { min-width: 40px; text-align: center; }
+        .rekap-table thead th:nth-child(2) { min-width: 220px; text-align: left; }
+        .rekap-table thead th:nth-child(n+3) { text-align: right; min-width: 75px; }
+        .rekap-table tbody tr:hover { background: #FFF8F4; }
+        .rekap-table tbody td { padding: 0.5rem 0.5rem; border: 1px solid var(--warm-gray); }
+        .rekap-table tbody td:nth-child(1) { text-align: center; color: #9B8E82; }
+        .rekap-table tbody td:nth-child(2) { font-weight: 600; color: var(--charcoal); white-space: nowrap; }
+        .val-has { text-align: right; font-weight: 700; color: var(--charcoal); font-variant-numeric: tabular-nums; }
+        .val-empty { text-align: right; color: #C8BFB5; }
+        .stat-badge { font-size: 0.75rem; font-weight: 600; color: #6B5E52; margin-bottom: 0.75rem; }
+        .stat-badge .hi { color: var(--amber); font-weight: 800; }
+        .stat-badge .warn { background: #FFF0E8; color: var(--amber); border: 1px solid #F0C8A8; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 700; }
+        .placeholder-text { padding: 3rem; text-align: center; color: #B0A499; font-style: italic; font-size: 0.875rem; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="dashboard.html" class="back-btn">← Dashboard</a>
+    <button class="btn-theme" id="themeIcon" onclick="toggleTheme()" title="Toggle Dark/Light"><i class="fas fa-moon"></i></button>
+
+    <div class="header-card">
+        <h1 class="header-title">Rekap Finac Bulanan</h1>
+        <p class="header-sub">Filter Cerdas: Auto-Skip Warehouse — Hanya Produksi.</p>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>1. Pilih Folder CSV Finac</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="csvFile" webkitdirectory directory multiple accept=".csv">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>2. Pilih Bulan Rekap</label>
+                <input type="month" id="bulan">
+            </div>
+            <div class="form-group">
+                <label>&nbsp;</label>
+                <button class="btn-generate" onclick="generateRekap()">Generate Rekap</button>
+            </div>
+        </div>
+        <div id="info" class="info-msg"></div>
+    </div>
+
+    <div class="result-card">
+        <div class="result-header">
+            <h2 class="result-title">Hasil Rekap Bulanan</h2>
+            <button class="btn-copy" onclick="copyTable()">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy Table
+            </button>
+        </div>
+        <div id="hasil">
+            <div class="placeholder-text">(Data akan muncul di sini setelah di-generate)</div>
+        </div>
+    </div>
+</div>
+
+<script>
+function readFileAsText(file){
+    return new Promise((resolve,reject)=>{
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject; reader.readAsText(file);
+    });
+}
+function detectDelimiter(line){
+    const semi = (line.match(/;/g)||[]).length; const comma = (line.match(/,/g)||[]).length;
+    if (semi===0 && comma===0) return ","; return semi >= comma ? ";" : ",";
+}
+function splitCells(line, delim){
+    return line.split(delim).map(c=>{ c=c.trim(); if(c.startsWith('"')&&c.endsWith('"')) c=c.slice(1,-1); return c; });
+}
+function formatHeaderDate(d){
+    const dd=String(d.getDate()).padStart(2,"0");
+    const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${dd}-${months[d.getMonth()]}-${String(d.getFullYear()).slice(-2)}`;
+}
+
+async function generateRekap(){
+    const fileInput=document.getElementById("csvFile");
+    const bulanInput=document.getElementById("bulan");
+    const info=document.getElementById("info");
+    const hasilDiv=document.getElementById("hasil");
+    hasilDiv.innerHTML="";
+
+    if(!fileInput.files.length){ alert("Pilih folder CSV Finac dulu ya."); return; }
+    if(!bulanInput.value){ alert("Pilih bulan rekap dulu ya."); return; }
+
+    const [yearStr,monthStr]=bulanInput.value.split("-");
+    const tahun=parseInt(yearStr,10); const bulan=parseInt(monthStr,10);
+    const daysInMonth=new Date(tahun,bulan,0).getDate();
+    const mapProduk=new Map(); let totalRows=0; let warehouseSkipped=0;
+
+    for(let f=0; f<fileInput.files.length; f++){
+        const file=fileInput.files[f];
+        if(!file.name.toLowerCase().endsWith('.csv')) continue;
+        const raw=await readFileAsText(file);
+        const lines=raw.split(/\r?\n/).filter(l=>l.trim().length>0);
+        if(!lines.length) continue;
+        const delim=detectDelimiter(lines[0]);
+        const header=splitCells(lines[0],delim);
+
+        function findSmartIdx(keywords){ return header.findIndex(h=>keywords.some(k=>h.trim().toLowerCase().includes(k))); }
+
+        const idxName=findSmartIdx(["name","nama","product","produk","part name","material"]);
+        const idxDate=findSmartIdx(["date","tanggal","tgl","time"]);
+        const approvedKeywords=['approved','good','qty ok','finish good','total ok','jumlah','quantity','ok','hasil'];
+        let idxApproved=header.findIndex(h=>{ const t=h.trim().toLowerCase(); return approvedKeywords.some(k=>t.includes(k))&&!t.includes('reject')&&!t.includes('not'); });
+        if(idxApproved===-1) idxApproved=4;
+        let idxWC=findSmartIdx(["machine","mesin","work","center","dept","depart","lokasi"]);
+        if(idxWC===-1) idxWC=0;
+        if(idxName===-1||idxDate===-1){ console.warn(`File ${file.name} dilewati.`); continue; }
+
+        for(let i=1; i<lines.length; i++){
+            const line=lines[i]; if(!line.trim()) continue;
+            const cells=splitCells(line,delim);
+            if(cells.length<=Math.max(idxName,idxDate,idxApproved,idxWC)) continue;
+            const nama=cells[idxName].trim();
+            const wcRaw=cells[idxWC].trim().toLowerCase();
+            if(!nama) continue;
+            if(wcRaw.includes("warehouse")){ warehouseSkipped++; continue; }
+            const nameLower=nama.toLowerCase();
+            if(!(nameLower.includes("finish good ok")||nameLower.includes("finished good ok"))) continue;
+            totalRows++;
+            const dateRaw=cells[idxDate].trim(); if(!dateRaw) continue;
+            let d,m,y;
+            const _mn={jan:1,feb:2,mar:3,apr:4,may:5,mei:5,jun:6,jul:7,aug:8,agu:8,sep:9,oct:10,okt:10,nov:11,dec:12,des:12};
+            const _sp=dateRaw.split(" ").filter(x=>x);
+            if(_sp.length>=3&&isNaN(_sp[1])){
+                d=parseInt(_sp[0],10); m=_mn[_sp[1].toLowerCase().slice(0,3)]||0; y=parseInt(_sp[2],10);
+            } else {
+                const tglPart=dateRaw.split(" ")[0];
+                const parts=tglPart.split(/[\/\-]/); if(parts.length<3) continue;
+                if(parts[0].length===4){ y=parseInt(parts[0],10); m=parseInt(parts[1],10); d=parseInt(parts[2],10); }
+                else { d=parseInt(parts[0],10); m=parseInt(parts[1],10); y=parseInt(parts[2],10); }
+            }
+            if(!d||!m||!y) continue;
+            if(y!==tahun||m!==bulan) continue;
+            const approvedStr=cells[idxApproved].replace(/\./g,"").replace(/,/g,"").trim();
+            const approved=parseFloat(approvedStr)||0;
+            if(!approved) continue;
+            if(!mapProduk.has(nama)) mapProduk.set(nama,new Array(daysInMonth).fill(0));
+            const arr=mapProduk.get(nama);
+            if(d-1>=0&&d-1<daysInMonth) arr[d-1]+=approved;
+        }
+    }
+
+    if(!mapProduk.size){ hasilDiv.innerHTML="<div class='placeholder-text' style='color:#C05050;'>Tidak ada data Finish Good OK di bulan ini dari seluruh file.</div>"; return; }
+
+    let headerRow=`<tr><th>No</th><th>Nama Produk</th>`;
+    for(let day=1; day<=daysInMonth; day++){ const d=new Date(tahun,bulan-1,day); headerRow+=`<th>${formatHeaderDate(d)}</th>`; }
+    headerRow+="</tr>";
+
+    let bodyRows=""; let no=1;
+    for(const [nama,arr] of Array.from(mapProduk.entries()).sort((a,b)=>a[0].localeCompare(b[0]))){
+        bodyRows+=`<tr><td>${no++}</td><td>${nama}</td>`;
+        for(let day=0; day<daysInMonth; day++){
+            const val=arr[day]||0;
+            if(val>0){ bodyRows+=`<td class="val-has">${val}</td>`; }
+            else bodyRows+=`<td class="val-empty">0</td>`;
+        }
+        bodyRows+="</tr>";
+    }
+
+    hasilDiv.innerHTML=`<div class="stat-badge">Total FG Produksi: <span class="hi">${totalRows.toLocaleString()}</span> &nbsp;|&nbsp; <span class="warn">Warehouse Dibuang: ${warehouseSkipped} baris</span></div><div class="table-wrapper"><table class="rekap-table"><thead>${headerRow}</thead><tbody>${bodyRows}</tbody></table></div>`;
+    info.innerHTML="Alhamdulillah rekap semua file selesai. Silakan copy ke Excel 😊";
+}
+
+function copyTable(){
+    const el=document.querySelector('.rekap-table');
+    if(!el){ alert("Belum ada data tabel yang bisa dicopy!"); return; }
+    let range,sel;
+    if(document.createRange&&window.getSelection){
+        range=document.createRange(); sel=window.getSelection(); sel.removeAllRanges();
+        try{ range.selectNodeContents(el); sel.addRange(range); }
+        catch(e){ range.selectNode(el); sel.addRange(range); }
+    }
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+    alert("Tabel berhasil dicopy! Silakan Paste (Ctrl+V) di Excel.");
+}
+</script>
+
+<script>
+    /* ── THEME ENGINE ── */
+    (function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('tigerTheme')||'light'); })();
+    function _applyTheme(t){
+        document.documentElement.setAttribute('data-theme',t);
+        localStorage.setItem('tigerTheme',t);
+        var ic=document.getElementById('themeIcon');
+        if(ic) ic.className = t==='dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    function toggleTheme(){ _applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+    window.addEventListener('DOMContentLoaded',function(){
+        _applyTheme(localStorage.getItem('tigerTheme')||'light');
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Tiger Production System</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1C1814">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tiger System">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --cream:#FAF8F4; --amber:#C2550A; --amber-dark:#8B3A06; --amber-light:#E8874A;
+            --charcoal:#1C1814; --charcoal-2:#2E2822; --sage:#4A6741; --gold:#C8961E;
+            --sand:#D4B896; --warm-gray:#E8E2D9; --warm-gray-2:#D5CCBF; --text-muted:#8A7E72;
+            --card-bg: white;
+            --install-bg: white;
+            --header-bg: #1C1814;
+            --footer-bg: #2E2822;
+            --text-primary: #1C1814;
+        }
+
+        /* ── DARK MODE OVERRIDE ── */
+        [data-theme="dark"] {
+            --cream:       #0D0C1A;
+            --warm-gray:   #2A2848;
+            --warm-gray-2: #3A3860;
+            --text-muted:  #8B8FAD;
+            --sand:        #A5B4FC;
+            --card-bg:     #13122A;
+            --install-bg:  #13122A;
+            --header-bg:   #0F0E24;
+            --footer-bg:   #080714;
+            --text-primary:#EDE9FF;
+        }
+        [data-theme="dark"] body {
+            background-image:
+                radial-gradient(ellipse 70% 50% at 15% 10%, rgba(99,102,241,0.12) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 85% 90%, rgba(67,56,202,0.10) 0%, transparent 50%);
+        }
+        [data-theme="dark"] body::before { opacity: 0.25; }
+        [data-theme="dark"] .app-card { background: var(--card-bg); }
+        [data-theme="dark"] .app-card:hover { box-shadow: 0 8px 24px rgba(99,102,241,0.15); }
+        [data-theme="dark"] .section-title h2 { color: var(--text-primary); }
+        [data-theme="dark"] .section-title::after { background: var(--warm-gray); }
+        [data-theme="dark"] .section-badge { background: var(--warm-gray); color: var(--text-muted); }
+        [data-theme="dark"] .card-title { color: var(--text-primary); }
+        [data-theme="dark"] #installBanner { background: var(--install-bg); border-color: var(--warm-gray); }
+        [data-theme="dark"] #installBanner .install-text,
+        [data-theme="dark"] #installBanner .install-text strong { color: var(--text-primary); }
+
+        /* Smooth transitions */
+        body, header, footer, .app-card, .card-icon, main, #installBanner {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        /* Theme toggle button */
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: transparent; color: var(--sand);
+            font-size: 0.8rem; cursor: pointer;
+            transition: all 0.2s; border-radius: 6px;
+        }
+        .btn-theme:hover { border-color: var(--amber); color: var(--amber-light); background: rgba(194,85,10,0.1); }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:var(--cream);font-family:'Plus Jakarta Sans',sans-serif;color:var(--charcoal);min-height:100vh;display:flex;flex-direction:column}
+        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+        .fade-out{opacity:0;visibility:hidden;transition:opacity 0.4s ease,visibility 0.4s ease}
+
+        /* HEADER */
+        header{background:var(--header-bg);border-bottom:4px solid var(--amber);position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(28,24,20,0.3)}
+        .header-inner{max-width:1400px;margin:0 auto;padding:0.9rem 2rem;display:flex;justify-content:space-between;align-items:center}
+        .header-brand{display:flex;align-items:center;gap:14px}
+        .header-brand img{height:52px;width:auto;object-fit:contain;animation:float 3s ease-in-out infinite}
+        .header-brand h1{font-family:'DM Serif Display',serif;font-size:1.35rem;color:white;line-height:1.1}
+        .header-brand h1 span{color:var(--amber-light)}
+        .header-brand p{font-size:0.65rem;color:var(--sand);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px;font-weight:600}
+        .header-right{display:flex;align-items:center;gap:1rem}
+        .status-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--sand)}
+        .pulse-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        .header-clock{text-align:right;border-left:1px solid rgba(255,255,255,0.1);padding-left:1rem}
+        #clock{font-size:0.9rem;font-weight:700;color:white}
+        #date{font-size:0.62rem;color:var(--sand);text-transform:uppercase;letter-spacing:0.08em}
+        .btn-logout{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--sand);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+        .btn-logout:hover{border-color:var(--amber);color:var(--amber-light)}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+        /* MAIN */
+        main{flex-grow:1;max-width:1400px;margin:0 auto;width:100%;padding:2.5rem 2rem 4rem;position:relative;z-index:1}
+        .section-title{display:flex;align-items:center;gap:12px;margin-bottom:1.75rem}
+        .section-title h2{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--text-primary);white-space:nowrap}
+        .section-title::after{content:'';flex:1;height:1px;background:var(--warm-gray)}
+        .section-badge{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);background:var(--warm-gray);padding:3px 10px;white-space:nowrap}
+
+        /* CARDS */
+        .cards-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
+        @media(max-width:1100px){.cards-grid{grid-template-columns:repeat(3,1fr)}}
+        @media(max-width:640px){.cards-grid{grid-template-columns:1fr}}
+
+        .app-card{background:var(--card-bg);border:1px solid var(--warm-gray);border-left:4px solid var(--warm-gray-2);padding:1.25rem;display:flex;flex-direction:column;min-height:200px;text-decoration:none;position:relative;overflow:hidden;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);animation:fadeUp 0.4s ease both}
+        .app-card:nth-child(1){animation-delay:.05s}.app-card:nth-child(2){animation-delay:.10s}.app-card:nth-child(3){animation-delay:.15s}.app-card:nth-child(4){animation-delay:.20s}.app-card:nth-child(5){animation-delay:.25s}.app-card:nth-child(6){animation-delay:.30s}.app-card:nth-child(7){animation-delay:.35s}.app-card:nth-child(8){animation-delay:.40s}.app-card:nth-child(9){animation-delay:.45s}
+        .app-card:hover{transform:translateY(-4px);border-left-color:var(--amber);box-shadow:0 8px 24px rgba(194,85,10,0.12)}
+        .card-bg{position:absolute;top:0;right:0;padding:1rem;font-size:3.5rem;color:var(--amber);opacity:0.06;transition:opacity 0.25s;line-height:1}
+        .app-card:hover .card-bg{opacity:0.12}
+        .card-icon{width:38px;height:38px;background:var(--cream);border:1px solid var(--warm-gray);display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;font-size:0.95rem;color:var(--amber);transition:all 0.25s;flex-shrink:0}
+        .app-card:hover .card-icon{background:var(--amber);color:white;border-color:var(--amber)}
+        .card-body{flex:1}
+        .card-title{font-size:0.82rem;font-weight:700;color:var(--text-primary);line-height:1.3;margin-bottom:5px;transition:color 0.2s}
+        .app-card:hover .card-title{color:var(--amber)}
+        .card-desc{font-size:0.71rem;color:var(--text-muted);line-height:1.5}
+        .card-cta{display:flex;align-items:center;gap:5px;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);margin-top:0.85rem}
+        .card-cta i{transition:transform 0.2s}
+        .app-card:hover .card-cta i{transform:translateX(3px)}
+
+        .card-gold{border-left-color:var(--gold)}.card-gold .card-icon{color:var(--gold)}.card-gold:hover{border-left-color:var(--gold);box-shadow:0 8px 24px rgba(200,150,30,0.12)}.card-gold:hover .card-icon{background:var(--gold);border-color:var(--gold)}.card-gold .card-cta{color:var(--gold)}.card-gold:hover .card-title{color:var(--gold)}
+        .card-sage{border-left-color:var(--sage)}.card-sage .card-icon{color:var(--sage)}.card-sage:hover{border-left-color:var(--sage);box-shadow:0 8px 24px rgba(74,103,65,0.12)}.card-sage:hover .card-icon{background:var(--sage);border-color:var(--sage)}.card-sage .card-cta{color:var(--sage)}.card-sage:hover .card-title{color:var(--sage)}
+
+        /* FOOTER */
+        footer{background:var(--footer-bg);border-top:4px solid var(--amber);padding:1rem 2rem;position:sticky;bottom:0;z-index:50}
+        .footer-inner{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.5rem}
+        .footer-left p,.footer-right p{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+        .footer-left p:first-child,.footer-right p:first-child{color:var(--sand)}
+        .footer-left p:last-child,.footer-right p:last-child{color:var(--text-muted);font-weight:500}
+        .footer-right{text-align:right}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+        /* INSTALL BANNER */
+        #installBanner {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 1.5rem;
+            z-index: 100;
+            background: var(--install-bg);
+            border: 1px solid var(--warm-gray);
+            border-left: 4px solid var(--gold);
+            padding: 12px 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            align-items: center;
+            gap: 12px;
+            max-width: 320px;
+            animation: fadeUp 0.3s ease both;
+        }
+        #installBanner .install-text { font-size: 0.78rem; color: var(--charcoal); flex: 1; }
+        #installBanner .install-text strong { display: block; font-size: 0.82rem; color: var(--charcoal); }
+        #installBanner .install-text span { color: var(--text-muted); font-size: 0.72rem; }
+        .btn-install {
+            background: var(--amber);
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .btn-install:hover { background: var(--amber-dark); }
+        .btn-dismiss { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 2px 4px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="header-brand">
+            <img src="logo.png" alt="Tiger Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>PT TIGERMANDIRI <span>PRATAMA</span></h1>
+                <p>Integrated Production System</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="status-badge"><div class="pulse-dot"></div> System Online</div>
+            <div class="header-clock"><div id="clock">00:00:00</div><div id="date">Senin, 01 Jan 2024</div></div>
+            <button class="btn-theme" id="btnTheme" onclick="toggleTheme()" title="Toggle Dark Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            <button class="btn-logout" onclick="logout()"><i class="fas fa-power-off"></i> Logout</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="section-title">
+        <h2>Menu Aplikasi</h2>
+        <span class="section-badge">9 Tools</span>
+    </div>
+    <div class="cards-grid">
+
+        <a href="inputdkbt.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-flask"></i></div>
+            <div class="card-icon"><i class="fas fa-vial"></i></div>
+            <div class="card-body"><div class="card-title">Input DKBT (Mixing)</div><div class="card-desc">Laporan kekurangan bahan & request mixing.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="narikreject.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-magnet"></i></div>
+            <div class="card-icon"><i class="fas fa-file-import"></i></div>
+            <div class="card-body"><div class="card-title">Sistem Narik Reject</div><div class="card-desc">Konversi data Finac & Rapikan HTML.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="kiloanproduk.html" class="app-card card-sage">
+            <div class="card-bg"><i class="fas fa-balance-scale"></i></div>
+            <div class="card-icon"><i class="fas fa-weight-hanging"></i></div>
+            <div class="card-body"><div class="card-title">Kiloan Assembling</div><div class="card-desc">Kalkulator konversi Pcs ke Kg otomatis.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="mps.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-calendar-alt"></i></div>
+            <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+            <div class="card-body"><div class="card-title">Rekap Bulanan (MPS)</div><div class="card-desc">Laporan produksi harian ke bulanan.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="cekfinacinjection.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-syringe"></i></div>
+            <div class="card-icon"><i class="fas fa-check-double"></i></div>
+            <div class="card-body"><div class="card-title">Checker Injection</div><div class="card-desc">Cek selisih Manual vs Sistem (Mesin).</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="cekfinacdecorasi.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-paint-brush"></i></div>
+            <div class="card-icon"><i class="fas fa-list-ol"></i></div>
+            <div class="card-body"><div class="card-title">Checker Decorasi</div><div class="card-desc">Cek bundel WC (Stamping/Assy).</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="daftarmesin.html" class="app-card">
+            <div class="card-bg"><i class="fas fa-cogs"></i></div>
+            <div class="card-icon"><i class="fas fa-industry"></i></div>
+            <div class="card-body"><div class="card-title">Daftar Mesin Harian</div><div class="card-desc">Daftar mesin & generator gambar laporan.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="rekaptahunan.html" class="app-card card-gold">
+            <div class="card-bg"><i class="fas fa-file-invoice"></i></div>
+            <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
+            <div class="card-body"><div class="card-title">Rekap Reject Semua Work Center Tahunan</div><div class="card-desc">Versi Excel/Data biasa.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="rekaprejectinjectiontahunan.html" class="app-card card-gold">
+            <div class="card-bg"><i class="fas fa-chart-line"></i></div>
+            <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
+            <div class="card-body"><div class="card-title">Rekap Reject Injection Tahunan</div><div class="card-desc">Analisa Pareto 80/20 & Sortir Otomatis.</div></div>
+            <div class="card-cta">Buka Aplikasi <i class="fas fa-arrow-right"></i></div>
+        </a>
+
+    </div>
+</main>
+
+
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner">
+    <div class="install-text">
+        <strong><i class="fas fa-download" style="color:var(--gold);margin-right:6px"></i> Install Aplikasi</strong>
+        <span>Pasang di PC / HP untuk akses offline</span>
+    </div>
+    <button class="btn-install" onclick="installPWA()">Install</button>
+    <button class="btn-dismiss" onclick="document.getElementById('installBanner').style.display='none'" title="Tutup">✕</button>
+</div>
+
+<footer>
+    <div class="footer-inner">
+        <div class="footer-left">
+            <p>Production Tools V2.0</p>
+            <p>Private Asset · Developer: Diyan Nurpriyanto</p>
+        </div>
+        <div class="footer-right">
+            <p>Tiger Production System</p>
+            <p id="copyright">© 2026 All Rights Reserved</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Auth guard — redirect ke login kalau belum login
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.replace('index.html');
+    }
+
+    // ── THEME ──
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('tigerTheme', theme);
+    }
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme');
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+    // Apply saved theme immediately (before paint)
+    (function() {
+        const saved = localStorage.getItem('tigerTheme') || 'light';
+        document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('date').innerText = now.toLocaleDateString('id-ID', {weekday:'long',year:'numeric',month:'short',day:'numeric'});
+        document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID');
+    }
+
+    window.onload = function() {
+        // Sync icon after DOM ready
+        const saved = localStorage.getItem('tigerTheme') || 'light';
+        applyTheme(saved);
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
+
+    function logout() {
+        sessionStorage.removeItem('isLoggedIn');
+        window.location.replace('index.html');
+    }
+</script>
+    <script>
+        // Register Service Worker (PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('[PWA] Service Worker registered:', reg.scope))
+                    .catch(err => console.warn('[PWA] SW registration failed:', err));
+            });
+        }
+
+        // Tombol Install PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').style.display = 'flex';
+        });
+        function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(() => {
+                deferredPrompt = null;
+                document.getElementById('installBanner').style.display = 'none';
+            });
+        }
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installBanner').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
