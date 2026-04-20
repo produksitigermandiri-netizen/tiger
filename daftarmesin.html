@@ -397,7 +397,21 @@
             from { opacity: 0; transform: translateY(16px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-    </style>
+    
+        /* daftarmesin extra dark selectors */
+        [data-theme="dark"] .mesin-card,
+        [data-theme="dark"] .controls-card,
+        [data-theme="dark"] .info-card { background: #13122A !important; }
+        [data-theme="dark"] .mesin-table thead th { background: #0F0E24 !important; }
+        [data-theme="dark"] .mesin-table tbody tr td { background: #13122A !important; }
+        [data-theme="dark"] .mesin-table tbody tr:hover td { background: #1A1836 !important; }
+        [data-theme="dark"] .error-row td,
+        [data-theme="dark"] tr.error-row td { background: #1F0D10 !important; }
+        [data-theme="dark"] .info-row td { background: #0D1525 !important; }
+        [data-theme="dark"] .header-row td,
+        [data-theme="dark"] .subheader-row td { background: #0F0E24 !important; }
+
+        </style>
 </head>
 <body>
 <div class="wrapper">
