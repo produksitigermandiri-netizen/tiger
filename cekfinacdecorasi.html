@@ -24,125 +24,6 @@
             --sand: #D4B896;
             --slate: #3B4E6B;
         }
-
-        /* ═══════════════════════════════════════════
-           DARK MODE — TIGER SYSTEM
-           Toggle: data-theme="dark" on <html>
-        ═══════════════════════════════════════════ */
-        [data-theme="dark"] {
-            --cream:       #0D0C1A;
-            --parchment:   #13122A;
-            --warm-gray:   #2A2848;
-            --warm-gray-2: #3A3860;
-            --stone:       #8B8FAD;
-            --charcoal:    #EDE9FF;
-            --ink:         #C8C4E8;
-            --text-muted:  #8B8FAD;
-            --sand:        #A5B4FC;
-            --amber-pale:  #1E1628;
-            --sage-light:  #0D1F18;
-            --rose-light:  #1F0D10;
-            --slate-light: #0D1525;
-        }
-        [data-theme="dark"] body {
-            background-image:
-                radial-gradient(ellipse 70% 50% at 15% 10%, rgba(99,102,241,0.10) 0%, transparent 55%),
-                radial-gradient(ellipse 50% 40% at 85% 90%, rgba(67,56,202,0.08) 0%, transparent 50%) !important;
-        }
-        [data-theme="dark"] body::before { opacity: 0.15 !important; }
-
-        /* Surfaces */
-        [data-theme="dark"] .card,
-        [data-theme="dark"] .wc-card,
-        [data-theme="dark"] .wc-body,
-        [data-theme="dark"] .main-card,
-        [data-theme="dark"] .header-card,
-        [data-theme="dark"] .control-panel,
-        [data-theme="dark"] .result-card,
-        [data-theme="dark"] .topbar,
-        [data-theme="dark"] .back-btn,
-        [data-theme="dark"] .btn-back { background: #13122A !important; }
-
-        [data-theme="dark"] .wc-header,
-        [data-theme="dark"] .result-wc-header { background: #0F0E24 !important; }
-
-        [data-theme="dark"] thead th { background: #0F0E24 !important; }
-        [data-theme="dark"] tbody td { background: #13122A !important; }
-        [data-theme="dark"] tbody tr:hover td,
-        [data-theme="dark"] tbody tr:hover { background: #1A1836 !important; }
-        [data-theme="dark"] tr.row-green td { background: #0D1F18 !important; }
-        [data-theme="dark"] tr.row-red td   { background: #1F0D10 !important; }
-        [data-theme="dark"] tr.row-yellow td { background: #1E1510 !important; }
-
-        /* Inputs */
-        [data-theme="dark"] input[type="text"],
-        [data-theme="dark"] input[type="number"],
-        [data-theme="dark"] input[type="date"],
-        [data-theme="dark"] input[type="month"],
-        [data-theme="dark"] input[type="file"],
-        [data-theme="dark"] select,
-        [data-theme="dark"] .field-input,
-        [data-theme="dark"] .file-btn { background: #1A1836 !important; color: var(--ink) !important; border-color: var(--warm-gray) !important; }
-        [data-theme="dark"] td input[type="number"],
-        [data-theme="dark"] td input[type="text"] { background: #1A1836 !important; color: var(--ink) !important; }
-
-        /* CTA / action buttons — indigo in dark mode */
-        [data-theme="dark"] .cta-btn,
-        [data-theme="dark"] .btn-generate,
-        [data-theme="dark"] .btn-process { background: #4F46E5 !important; color: white !important; }
-        [data-theme="dark"] .cta-btn:hover:not(:disabled),
-        [data-theme="dark"] .btn-generate:hover,
-        [data-theme="dark"] .btn-process:hover { background: #4338CA !important; }
-        [data-theme="dark"] .cta-btn:disabled { background: #2A2848 !important; color: var(--stone) !important; }
-
-        /* Version / info badges */
-        [data-theme="dark"] .version-badge { background: #1A1836 !important; color: var(--sand) !important; }
-
-        /* Suggestion dropdown */
-        [data-theme="dark"] #suggestionBox { background: #13122A !important; border-color: var(--warm-gray) !important; }
-        [data-theme="dark"] #suggestionBox li { color: var(--ink) !important; border-color: var(--warm-gray) !important; }
-
-        /* WC Nav bar (cekfinacdecorasi) */
-        [data-theme="dark"] #wcNav { background: rgba(13,12,26,0.92) !important; border-color: var(--warm-gray) !important; }
-        [data-theme="dark"] .wcnav-btn { background: #13122A !important; border-color: var(--warm-gray) !important; color: var(--stone) !important; }
-
-        /* Stat cards, rekap, misc light surfaces */
-        [data-theme="dark"] .stat-card,
-        [data-theme="dark"] .summary-card,
-        [data-theme="dark"] .tab-content,
-        [data-theme="dark"] .rekap-section { background: #13122A !important; }
-        [data-theme="dark"] .tab-btn:not(.active) { background: #2A2848 !important; color: var(--text-muted) !important; }
-        [data-theme="dark"] .rekap-table thead th { background: #0F0E24 !important; }
-        [data-theme="dark"] .mesin-table tbody tr:hover { background: #1A1836 !important; }
-
-        /* File selector button */
-        [data-theme="dark"] input[type="file"]::file-selector-button {
-            background: #2A2848 !important; color: var(--sand) !important;
-            border-color: var(--warm-gray) !important;
-        }
-
-        /* Smooth transitions on key elements */
-        .card, .wc-card, .main-card, .header-card, .control-panel,
-        .topbar, .back-btn, .btn-back, thead th, tbody td,
-        input, select, .field-input, .file-btn, .cta-btn,
-        .btn-generate, .btn-process, body {
-            transition: background-color 0.3s ease, border-color 0.3s ease,
-                        color 0.2s ease, box-shadow 0.25s ease !important;
-        }
-
-        /* Theme toggle button */
-        .btn-theme {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 30px; height: 30px; border-radius: 6px;
-            border: 1.5px solid var(--warm-gray);
-            background: transparent; cursor: pointer;
-            font-size: 0.78rem; color: var(--stone);
-            transition: all 0.2s; flex-shrink: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            vertical-align: middle;
-        }
-        .btn-theme:hover { border-color: var(--amber); color: var(--amber); }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -368,8 +249,7 @@
     <!-- HEADER -->
     <header class="site-header">
         <div>
-            <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
-    <button class="btn-theme" id="themeIcon" onclick="toggleTheme()" title="Toggle Dark/Light"><i class="fas fa-moon"></i></button>
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
             <p class="app-eyebrow">Production Control · Decorasi</p>
             <h1 class="app-title">Checker <em>Decorasi</em></h1>
             <p class="app-subtitle">By Dyansg8 · Trinity Visual Creative</p>
@@ -985,21 +865,5 @@
 
     initPage();
 </script>
-
-<script>
-    /* ── THEME ENGINE ── */
-    (function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('tigerTheme')||'light'); })();
-    function _applyTheme(t){
-        document.documentElement.setAttribute('data-theme',t);
-        localStorage.setItem('tigerTheme',t);
-        var ic=document.getElementById('themeIcon');
-        if(ic) ic.className = t==='dark' ? 'fas fa-sun' : 'fas fa-moon';
-    }
-    function toggleTheme(){ _applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
-    window.addEventListener('DOMContentLoaded',function(){
-        _applyTheme(localStorage.getItem('tigerTheme')||'light');
-    });
-</script>
-
 </body>
 </html>
