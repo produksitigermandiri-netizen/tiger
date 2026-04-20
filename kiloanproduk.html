@@ -533,7 +533,20 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         .hidden { display: none !important; }
-    </style>
+    
+        /* kiloanproduk extra dark selectors */
+        [data-theme="dark"] .topbar { background: #0F0E24 !important; }
+        [data-theme="dark"] .brand-card { background: #13122A !important; }
+        [data-theme="dark"] .brand-card-header { background: #1A1836 !important; }
+        [data-theme="dark"] .brand-card td { background: #13122A !important; }
+        [data-theme="dark"] .brand-card tbody tr:hover td { background: #1A1836 !important; }
+        [data-theme="dark"] .mode-btn.active { background: #2A2848 !important; color: var(--amber) !important; box-shadow: none !important; }
+        [data-theme="dark"] .modal-box { background: #13122A !important; }
+        [data-theme="dark"] .modal-overlay { background: rgba(0,0,0,0.7) !important; }
+        [data-theme="dark"] .btn-add { background: #1A1836 !important; }
+        [data-theme="dark"] input[type="text"]#searchInput { background: #1A1836 !important; color: var(--ink) !important; }
+
+        </style>
 </head>
 <body>
 
