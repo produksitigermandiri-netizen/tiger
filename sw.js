@@ -1,6 +1,6 @@
 // Tiger Production System - Service Worker
 // Update versi ini setiap kali ada perubahan file biar cache refresh
-const CACHE_NAME = 'tiger-system-v3';
+const CACHE_NAME = 'tiger-system-v4';
 
 // File-file yang akan dicache untuk bisa jalan offline
 const ASSETS = [
@@ -45,30 +45,47 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch: cache-first strategy
-// Ambil dari cache dulu, kalau tidak ada baru ke network
+// Fetch: Kombinasi Network-First (untuk HTML) & Cache-First (untuk Assets)
 self.addEventListener('fetch', event => {
-  // Skip non-GET dan chrome-extension requests
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
 
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
+  // Cek apakah request-nya untuk file HTML
+  const isHtml = event.request.headers.get('accept').includes('text/html');
 
-      // Tidak ada di cache, ambil dari network lalu simpan
-      return fetch(event.request).then(response => {
-        // Hanya cache response yang valid
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+  if (isHtml) {
+    // 1. NETWORK-FIRST untuk HTML
+    // Selalu ambil versi paling baru dari server dulu biar UI dan Logic selalu up-to-date
+    event.respondWith(
+      fetch(event.request).then(networkResponse => {
+        // Kalau sukses dari server, simpan/update ke cache
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
         }
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
-        return response;
+        return networkResponse;
       }).catch(() => {
-        // Offline dan tidak ada cache - tampilkan index sebagai fallback
-        return caches.match('/dashboard.html');
-      });
-    })
-  );
+        // Kalau offline/gagal fetch, baru ambil dari cache
+        return caches.match(event.request).then(cachedResponse => {
+          return cachedResponse || caches.match('./dashboard.html');
+        });
+      })
+    );
+  } else {
+    // 2. CACHE-FIRST untuk Assets (Gambar, CSS, JS eksternal)
+    // Biar loading tetap ngebut
+    event.respondWith(
+      caches.match(event.request).then(cachedResponse => {
+        if (cachedResponse) return cachedResponse;
+
+        return fetch(event.request).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        });
+      })
+    );
+  }
 });
