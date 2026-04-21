@@ -10,34 +10,42 @@
 
     <style>
         :root {
-            --cream: #FAF8F4;
-            --parchment: #F0EBE1;
-            --warm-gray: #E8E2D9;
-            --stone: #8C7B6B;
-            --charcoal: #1C1814;
-            --ink: #2D2520;
-            --amber: #C2550A;
-            --amber-light: #F97316;
-            --amber-pale: #FEF3E2;
-            --sage: #4A6741;
-            --sage-light: #EEF4ED;
-            --rose: #9B2335;
-            --rose-light: #FDF2F4;
-            --slate: #3B4E6B;
-            --slate-light: #EFF3F9;
-            --sand: #D4B896;
+            /* Backgrounds & Surfaces (Dark Indigo / Slate) */
+            --app-bg: #0B0F19;        
+            --card-bg: #131A2B;       
+            --parchment: #1A2235;     
+            --warm-gray: #2A344A;     
+            
+            /* Text Colors */
+            --charcoal: #F1F5F9;      
+            --ink: #CBD5E1;           
+            --stone: #8B9BB4;         
+            --sand: #0B0F19;          
+            
+            /* Accents (Indigo) */
+            --amber: #6366F1;         
+            --amber-light: #818CF8;   
+            --amber-pale: rgba(99, 102, 241, 0.15); 
+            
+            /* Status Colors (Optimized for Dark Mode) */
+            --sage: #34D399;
+            --sage-light: rgba(16, 185, 129, 0.15);
+            --rose: #F87171;
+            --rose-light: rgba(239, 68, 68, 0.15);
+            --slate: #94A3B8;
+            --slate-light: rgba(148, 163, 184, 0.15);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: var(--cream);
+            background: var(--app-bg);
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--ink);
             min-height: 100vh;
             background-image: 
-                radial-gradient(ellipse at 20% 0%, rgba(194,85,10,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 100%, rgba(74,103,65,0.05) 0%, transparent 50%);
+                radial-gradient(ellipse at 20% 0%, rgba(99,102,241,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(139,92,246,0.08) 0%, transparent 50%);
         }
 
         /* Grain texture overlay */
@@ -75,7 +83,7 @@
             border: 1.5px solid var(--warm-gray);
             padding: 8px 16px;
             border-radius: 4px;
-            background: white;
+            background: var(--card-bg);
             transition: all 0.2s;
             margin-bottom: 24px;
         }
@@ -110,7 +118,7 @@
             font-family: 'DM Serif Display', serif;
             font-style: italic;
             color: var(--stone);
-            background: white;
+            background: var(--card-bg);
             border: 1.5px solid var(--warm-gray);
             padding: 5px 14px;
             border-radius: 100px;
@@ -131,12 +139,12 @@
 
         /* ─── CARDS ─── */
         .card {
-            background: white;
+            background: var(--card-bg);
             border: 1.5px solid var(--warm-gray);
             border-radius: 12px;
             padding: 28px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 16px rgba(28,24,20,0.04);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
         }
         .card-title {
             font-family: 'DM Serif Display', serif;
@@ -175,15 +183,19 @@
             padding: 0 14px;
             border: 1.5px solid var(--warm-gray);
             border-radius: 8px;
-            background: var(--cream);
+            background: var(--app-bg);
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 13px;
             font-weight: 600;
-            color: var(--ink);
+            color: var(--charcoal);
             transition: all 0.2s;
             appearance: none;
         }
-        .field-input:focus { outline: none; border-color: var(--amber); background: white; box-shadow: 0 0 0 3px rgba(194,85,10,0.1); }
+        .field-input:focus { 
+            outline: none; border-color: var(--amber); 
+            background: var(--card-bg); 
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15); 
+        }
         .file-wrap { position: relative; }
         .file-input {
             position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
@@ -196,7 +208,7 @@
             padding: 0 14px;
             border: 1.5px dashed var(--warm-gray);
             border-radius: 8px;
-            background: var(--cream);
+            background: var(--app-bg);
             font-size: 12px;
             font-weight: 600;
             color: var(--stone);
@@ -245,7 +257,7 @@
             background: var(--amber);
             color: white;
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(194,85,10,0.3);
+            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
         }
         .cta-btn:disabled {
             background: var(--warm-gray);
@@ -278,11 +290,11 @@
         thead th:nth-child(3) { text-align: left; }
 
         tbody tr { transition: background 0.15s; }
-        tbody tr:hover td { background: rgba(194,85,10,0.02); }
+        tbody tr:hover td { background: rgba(99,102,241,0.05); }
         tbody td {
             padding: 6px 8px;
             border-bottom: 1px solid var(--warm-gray);
-            background: white;
+            background: var(--card-bg);
         }
         .row-num {
             font-size: 11px;
@@ -295,13 +307,13 @@
         td input[type="text"] {
             width: 100%;
             padding: 7px 10px;
-            background: var(--cream);
+            background: var(--app-bg);
             border: 1.5px solid transparent;
             border-radius: 6px;
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 12px;
             font-weight: 600;
-            color: var(--ink);
+            color: var(--charcoal);
             text-align: center;
             transition: all 0.2s;
         }
@@ -309,8 +321,8 @@
         td input:focus {
             outline: none;
             border-color: var(--amber);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(194,85,10,0.1);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
         }
 
         .add-row-btn {
@@ -350,18 +362,18 @@
         }
 
         #resultBody_injection tr { transition: filter 0.15s; }
-        #resultBody_injection tr:hover { filter: brightness(0.97); }
+        #resultBody_injection tr:hover { filter: brightness(1.15); }
 
         #resultBody_injection td {
             padding: 9px 10px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             font-size: 12px;
             vertical-align: middle;
         }
 
         #resultBody_injection thead th {
-            background: var(--charcoal);
-            color: rgba(255,255,255,0.7);
+            background: var(--parchment);
+            color: var(--stone);
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.1em;
@@ -372,11 +384,11 @@
             z-index: 10;
         }
 
-        /* Row backgrounds */
-        tr.row-green { background: #F0FAF0; }
-        tr.row-red   { background: #FEF4F4; }
-        tr.row-yellow{ background: #FFFBF0; }
-        tr.row-gray  { background: #F9F9F9; }
+        /* Row backgrounds - Adjusted for dark mode */
+        tr.row-green { background: rgba(16, 185, 129, 0.06) !important; }
+        tr.row-red   { background: rgba(239, 68, 68, 0.06) !important; }
+        tr.row-yellow{ background: rgba(245, 158, 11, 0.06) !important; }
+        tr.row-gray  { background: rgba(148, 163, 184, 0.06) !important; }
 
         /* Status badges */
         .badge {
@@ -391,10 +403,10 @@
             letter-spacing: 0.07em;
             white-space: nowrap;
         }
-        .badge-match   { background: #D1FAE5; color: #065F46; }
-        .badge-warning { background: #FEF3C7; color: #92400E; }
-        .badge-error   { background: #FEE2E2; color: #991B1B; }
-        .badge-gray    { background: #F3F4F6; color: #6B7280; }
+        .badge-match   { background: rgba(16, 185, 129, 0.15); color: #34D399; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #FBBF24; }
+        .badge-error   { background: rgba(239, 68, 68, 0.15); color: #F87171; }
+        .badge-gray    { background: rgba(148, 163, 184, 0.15); color: #CBD5E1; }
 
         .lot-mono {
             font-family: 'DM Serif Display', serif;
@@ -419,8 +431,9 @@
         #suggestionBox {
             border: 1.5px solid var(--warm-gray);
             border-radius: 10px;
-            box-shadow: 0 20px 60px rgba(28,24,20,0.15);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             overflow: hidden;
+            background: var(--card-bg) !important;
         }
         #suggestionBox li {
             padding: 10px 16px;
@@ -434,7 +447,7 @@
         }
         #suggestionBox li:hover { background: var(--amber); color: white; }
         #suggestionBox::-webkit-scrollbar { width: 6px; }
-        #suggestionBox::-webkit-scrollbar-track { background: var(--cream); }
+        #suggestionBox::-webkit-scrollbar-track { background: var(--app-bg); }
         #suggestionBox::-webkit-scrollbar-thumb { background: var(--warm-gray); border-radius: 4px; }
 
         /* ─── ANIMATIONS ─── */
@@ -451,7 +464,6 @@
 <body>
 <div class="layout">
 
-    <!-- HEADER -->
     <header class="site-header">
         <div class="header-left">
             <a href="index.html" class="back-btn">
@@ -469,7 +481,6 @@
         <div class="version-badge">Logic V5</div>
     </header>
 
-    <!-- PANEL UPLOAD -->
     <div class="card">
         <div class="card-title"><span class="dot"></span> Parameter & Data Source</div>
 
@@ -509,7 +520,6 @@
         </button>
     </div>
 
-    <!-- PANEL MANUAL INPUT -->
     <div class="card" id="manualContainer">
         <div class="card-title"><span class="dot"></span> Input Manual Mesin</div>
 
@@ -533,7 +543,6 @@
         </button>
     </div>
 
-    <!-- PANEL HASIL -->
     <div class="card">
         <div class="card-title"><span class="dot"></span> Hasil Analisa</div>
 
@@ -566,8 +575,7 @@
 
 </div>
 
-<!-- SUGGESTION DROPDOWN -->
-<ul id="suggestionBox" class="hidden" style="position:fixed;z-index:9999;background:white;max-height:240px;overflow-y:auto;min-width:280px;"></ul>
+<ul id="suggestionBox" class="hidden" style="position:fixed;z-index:9999;max-height:240px;overflow-y:auto;min-width:280px;"></ul>
 
 <script>
     // ═══════════════════════════════════════════════════════
