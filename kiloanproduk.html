@@ -751,6 +751,55 @@
         }
         .form-field label { color: #CBD5E1 !important; }
 
+    
+        /* ═══════════════════════════════════════════
+           FIX INPUT KILOAN PRODUK
+           Samakan input angka dengan skin dark indigo + cegah browser password hint.
+        ═══════════════════════════════════════════ */
+        .td-input input,
+        input[type="number"],
+        input#pin-input,
+        .form-field input {
+            background: rgba(2, 6, 23, 0.38) !important;
+            color: #E2E8F0 !important;
+            border: 1.5px solid rgba(129, 140, 248, 0.24) !important;
+            border-radius: 999px !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04) !important;
+            caret-color: #C7D2FE !important;
+            outline: none !important;
+        }
+        .td-input input:focus,
+        input[type="number"]:focus,
+        input#pin-input:focus,
+        .form-field input:focus {
+            background: rgba(15, 23, 42, 0.72) !important;
+            border-color: #A5B4FC !important;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.22), 0 0 24px rgba(99,102,241,0.18) !important;
+        }
+        .td-input input::placeholder,
+        input[type="number"]::placeholder,
+        input#pin-input::placeholder,
+        .form-field input::placeholder {
+            color: rgba(203, 213, 225, 0.42) !important;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield !important;
+            appearance: textfield !important;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none !important;
+            margin: 0 !important;
+        }
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-text-fill-color: #E2E8F0 !important;
+            -webkit-box-shadow: 0 0 0 1000px #0B1024 inset !important;
+            transition: background-color 9999s ease-in-out 0s !important;
+        }
+
     </style>
 </head>
 <body>
@@ -809,7 +858,7 @@
             </div>
             <div class="form-field">
                 <label>Berat Satuan (Gram)</label>
-                <input id="m-weight" type="number" step="0.01" placeholder="0.00">
+                <input id="m-weight" type="number" step="0.01" inputmode="decimal" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="0.00">
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeModal()">Batal</button>
@@ -822,7 +871,7 @@
     <div id="pin-overlay" class="modal-overlay">
         <div class="modal-box pin-modal-box">
             <h3>🔒 Masukkan PIN Admin</h3>
-            <input type="password" id="pin-input" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter') submitPin()">
+            <input type="password" id="pin-input" maxlength="4" inputmode="numeric" autocomplete="new-password" data-lpignore="true" data-form-type="other" placeholder="••••" onkeydown="if(event.key==='Enter') submitPin()">
             <div class="modal-footer" style="justify-content:center">
                 <button class="btn-cancel" onclick="closePin()">Batal</button>
                 <button class="btn-confirm" onclick="submitPin()">OK</button>
@@ -895,7 +944,7 @@
                                 <span class="part-weight">${part.weight} gr</span>
                             </td>
                             <td class="td-input" style="width:32%">
-                                <input type="number" oninput="calc('${brand}', ${index}, this.value)">
+                                <input type="number" inputmode="decimal" autocomplete="off" data-lpignore="true" data-form-type="other" oninput="calc('${brand}', ${index}, this.value)">
                             </td>
                             <td class="td-result" style="width:25%">
                                 <div class="res-value" id="res-${brand}-${index}">0</div>
