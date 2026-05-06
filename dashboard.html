@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard — Tiger Production System</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1C1814">
+    <meta name="theme-color" content="#080B1E">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -44,25 +44,27 @@
 
         /* ── DARK MODE INDIGO OVERRIDE ── */
         [data-theme="dark"] {
-            --cream:       #0B0F19; /* Deep Indigo Main BG */
-            --warm-gray:   #1E293B;
-            --warm-gray-2: #334155;
-            --text-muted:  #94A3B8;
-            --sand:        #CBD5E1;
-            --card-bg:     rgba(21, 28, 44, 0.85); /* Glassy dark card */
-            --card-border: rgba(255, 255, 255, 0.08);
-            --install-bg:  #151C2C;
-            --header-bg:   #080B12;
-            --footer-bg:   #06080D;
+            color-scheme: dark;
+            --cream:       #080B1E; /* Dark Indigo Main BG */
+            --warm-gray:   #18213A;
+            --warm-gray-2: #273455;
+            --text-muted:  #9AA8C7;
+            --sand:        #C7D2FE;
+            --card-bg:     rgba(15, 23, 42, 0.86); /* Indigo glass card */
+            --card-border: rgba(199, 210, 254, 0.12);
+            --install-bg:  #0F172A;
+            --header-bg:   #050817;
+            --footer-bg:   #040613;
             --text-primary:#F8FAFC;
         }
         
         [data-theme="dark"] body {
             background-image:
-                radial-gradient(ellipse 60% 50% at 15% 10%, rgba(99,102,241,0.15) 0%, transparent 55%),
-                radial-gradient(ellipse 50% 40% at 85% 90%, rgba(16,185,129,0.08) 0%, transparent 50%);
+                radial-gradient(ellipse 65% 55% at 12% 8%, rgba(99, 102, 241, 0.22) 0%, transparent 58%),
+                radial-gradient(ellipse 45% 38% at 85% 88%, rgba(59, 130, 246, 0.13) 0%, transparent 54%),
+                linear-gradient(180deg, #080B1E 0%, #0B1026 48%, #070A19 100%);
         }
-        [data-theme="dark"] body::before { opacity: 0.15; }
+        [data-theme="dark"] body::before { opacity: 0.12; }
         
         /* Smooth transitions */
         body, header, footer, main, #installBanner {
@@ -81,7 +83,7 @@
         .btn-theme:hover { border-color: var(--amber); color: white; background: var(--amber); box-shadow: 0 0 12px rgba(194,85,10,0.4); }
         
         *{box-sizing:border-box;margin:0;padding:0}
-        body{background:var(--cream);font-family:'Plus Jakarta Sans',sans-serif;color:var(--charcoal);min-height:100vh;display:flex;flex-direction:column}
+        body{background:var(--cream);font-family:'Plus Jakarta Sans',sans-serif;color:var(--text-primary);min-height:100vh;display:flex;flex-direction:column}
         body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
 
         /* HEADER */
@@ -300,6 +302,19 @@
         .btn-install:hover { background: #b08218; transform: scale(1.05); }
         .btn-dismiss { background: rgba(138,126,114,0.1); border-radius: 50%; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;}
         .btn-dismiss:hover { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+
+        [data-theme="dark"] .app-card {
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        [data-theme="dark"] .app-card:hover {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 76, 0.84));
+            box-shadow: 0 18px 45px rgba(var(--card-accent-rgb), 0.16), inset 0 0 0 1px rgba(199,210,254,0.08);
+        }
+        [data-theme="dark"] .section-badge,
+        [data-theme="dark"] .status-badge {
+            background: rgba(199, 210, 254, 0.08);
+            border-color: rgba(199, 210, 254, 0.12);
+        }
     </style>
 </head>
 <body>
@@ -441,7 +456,12 @@
     }
     // Apply saved theme immediately (before paint)
     (function() {
-        const saved = localStorage.getItem('tigerTheme') || 'light';
+        const themeVersion = 'dark-indigo-v1';
+        if (localStorage.getItem('tigerThemeVersion') !== themeVersion) {
+            localStorage.setItem('tigerTheme', 'dark');
+            localStorage.setItem('tigerThemeVersion', themeVersion);
+        }
+        const saved = localStorage.getItem('tigerTheme') || 'dark';
         document.documentElement.setAttribute('data-theme', saved);
     })();
 
@@ -453,7 +473,7 @@
 
     window.onload = function() {
         // Sync icon after DOM ready
-        const saved = localStorage.getItem('tigerTheme') || 'light';
+        const saved = localStorage.getItem('tigerTheme') || 'dark';
         applyTheme(saved);
         updateClock();
         setInterval(updateClock, 1000);
