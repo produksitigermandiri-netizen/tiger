@@ -248,23 +248,11 @@
             max-width:1400px;
             margin:0 auto;
             width:100%;
-            padding:2.5rem 2rem 4rem;
+            padding:1.6rem 2rem 4rem;
             position:relative;
             z-index:1;
         }
-        .section-title{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            margin-bottom:2rem;
-            padding:1.25rem 1.5rem;
-            background:rgba(15,23,42,0.45);
-            border:1px solid rgba(129,140,248,0.14);
-            border-radius:22px;
-            box-shadow:0 20px 60px rgba(2,6,23,0.22), inset 0 1px 0 rgba(255,255,255,0.04);
-            backdrop-filter:blur(14px);
-            -webkit-backdrop-filter:blur(14px);
-        }
+        .section-title{display:none !important;}
         .section-title h2{
             font-family:'DM Serif Display',serif;
             font-size:1.35rem;
@@ -304,25 +292,46 @@
 
         /* CARDS GRID */
         .cards-grid{
-            display:grid;
-            grid-template-columns:repeat(5,1fr);
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:center;
+            align-items:stretch;
             gap:1.25rem;
+            width:100%;
+            margin:0 auto;
         }
-        @media(max-width:1200px){.cards-grid{grid-template-columns:repeat(3,1fr)}}
+        .cards-grid > .app-card{
+            flex:0 1 calc((100% - 4 * 1.25rem) / 5);
+            max-width:calc((100% - 4 * 1.25rem) / 5);
+        }
+        @media(max-width:1200px){
+            .cards-grid > .app-card{
+                flex-basis:calc((100% - 2 * 1.25rem) / 3);
+                max-width:calc((100% - 2 * 1.25rem) / 3);
+            }
+        }
         @media(max-width:768px){
             .header-inner{padding:0.85rem 1rem;align-items:flex-start;flex-direction:column}
             .header-right{flex-wrap:wrap;width:100%}
-            .cards-grid{grid-template-columns:repeat(2,1fr)}
-            main{padding:1.5rem 1rem 7rem}
-            .section-title{align-items:flex-start;flex-direction:column}
+            .cards-grid > .app-card{
+                flex-basis:calc((100% - 1.25rem) / 2);
+                max-width:calc((100% - 1.25rem) / 2);
+            }
+            main{padding:1.1rem 1rem 7rem}
             .section-title::after{width:100%}
         }
-        @media(max-width:500px){.cards-grid{grid-template-columns:1fr}}
+        @media(max-width:500px){
+            .cards-grid > .app-card{
+                flex-basis:100%;
+                max-width:100%;
+            }
+        }
 
         /* App Card Base Theme System */
         .app-card {
             --card-accent: var(--amber);
             --card-accent-rgb: var(--amber-rgb);
+            min-width:0;
 
             background:linear-gradient(145deg, rgba(15,23,42,0.88), rgba(11,16,36,0.78));
             border:1px solid var(--card-border);
@@ -589,11 +598,6 @@
 </header>
 
 <main>
-    <div class="section-title">
-        <h2>Menu Aplikasi</h2>
-        <span class="section-badge">9 Tools</span>
-    </div>
-    
     <div class="cards-grid">
 
         <a href="inputdkbt.html" class="app-card">
