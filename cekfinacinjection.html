@@ -827,7 +827,7 @@
                 <span class="shift-tag">S3: 22:00–22:30</span>
             </div>
         </div>
-        <div class="version-badge">Logic V5</div>
+        <div class="version-badge">V6.2 · Startup 0</div>
     </header>
 
     <div class="card">
@@ -1347,6 +1347,8 @@
 
     // ═══════════════════════════════════════════════════════
     // MAIN CHECK LOGIC (V5 + FIXES)
+    // Catatan V6.2: input manual bernilai 0 tetap dianggap valid untuk start-up.
+    // Kosong = belum input, isi 0 = data manual sah.
     // ═══════════════════════════════════════════════════════
     btnCheck.addEventListener("click", ()=>{
         if(!tglInput.value){ alert("Pilih tanggal dulu!"); return; }
