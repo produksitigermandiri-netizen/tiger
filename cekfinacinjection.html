@@ -632,6 +632,182 @@
             border-radius: 16px !important;
         }
 
+
+        /* ─── PROBLEM NOTIFICATION PANEL ─── */
+        .problem-notif {
+            margin-bottom: 18px;
+            border: 1px solid rgba(129,140,248,0.24);
+            border-radius: 20px;
+            background: rgba(2,6,23,0.22);
+            overflow: hidden;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .problem-notif.ok {
+            border-color: rgba(52,211,153,0.32);
+            background: rgba(16,185,129,0.08);
+        }
+        .problem-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(148,163,184,0.12);
+        }
+        .problem-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #F8FAFC;
+        }
+        .problem-title i { color: #FBBF24; }
+        .problem-notif.ok .problem-title i { color: #34D399; }
+        .problem-summary {
+            font-size: 11px;
+            color: var(--stone);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+        .problem-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .mini-action-btn {
+            border: 1px solid rgba(129,140,248,0.28);
+            background: rgba(99,102,241,0.12);
+            color: #C7D2FE;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .mini-action-btn:hover,
+        .mini-action-btn.active {
+            background: #6366F1;
+            color: white;
+            transform: translateY(-1px);
+        }
+        .problem-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            padding: 14px 18px 0;
+        }
+        .problem-stat {
+            background: rgba(15,23,42,0.56);
+            border: 1px solid rgba(148,163,184,0.12);
+            border-radius: 16px;
+            padding: 12px;
+        }
+        .problem-stat strong {
+            display: block;
+            font-size: 24px;
+            color: #F8FAFC;
+            line-height: 1;
+        }
+        .problem-stat span {
+            display: block;
+            margin-top: 6px;
+            font-size: 10px;
+            color: var(--stone);
+            font-weight: 800;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+        .problem-list {
+            display: grid;
+            gap: 10px;
+            padding: 14px 18px 18px;
+            max-height: 260px;
+            overflow: auto;
+        }
+        .problem-card {
+            display: grid;
+            grid-template-columns: 86px 1fr auto;
+            gap: 12px;
+            align-items: center;
+            background: rgba(15,23,42,0.62);
+            border: 1px solid rgba(148,163,184,0.12);
+            border-radius: 16px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .problem-card:hover {
+            transform: translateY(-1px);
+            border-color: rgba(129,140,248,0.38);
+            background: rgba(99,102,241,0.14);
+        }
+        .problem-card.red { border-left: 4px solid #F87171; }
+        .problem-card.yellow { border-left: 4px solid #FBBF24; }
+        .problem-card.gray { border-left: 4px solid #CBD5E1; }
+        .machine-pill {
+            text-align: center;
+            border-radius: 14px;
+            padding: 8px 10px;
+            background: rgba(99,102,241,0.16);
+            color: #E0E7FF;
+            font-weight: 900;
+            font-size: 12px;
+        }
+        .machine-pill small {
+            display: block;
+            margin-top: 2px;
+            color: var(--stone);
+            font-size: 9px;
+            letter-spacing: 0.08em;
+        }
+        .problem-desc strong {
+            display: block;
+            color: #F8FAFC;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        .problem-desc span {
+            display: block;
+            color: var(--stone);
+            font-size: 11px;
+            line-height: 1.45;
+        }
+        .problem-go {
+            color: #C7D2FE;
+            font-size: 12px;
+            font-weight: 900;
+        }
+        .row-focus td {
+            background: rgba(251,191,36,0.18) !important;
+            box-shadow: inset 0 0 0 1px rgba(251,191,36,0.18);
+        }
+        .copy-toast {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 99999;
+            background: #0F172A;
+            color: #E0E7FF;
+            border: 1px solid rgba(129,140,248,0.35);
+            border-radius: 999px;
+            padding: 11px 16px;
+            font-size: 12px;
+            font-weight: 800;
+            box-shadow: 0 18px 50px rgba(2,6,23,0.45);
+        }
+        @media (max-width: 760px) {
+            .problem-head { align-items: flex-start; flex-direction: column; }
+            .problem-actions { justify-content: flex-start; }
+            .problem-card { grid-template-columns: 74px 1fr; }
+            .problem-go { display: none; }
+        }
+
     </style>
 </head>
 <body>
@@ -718,6 +894,22 @@
 
     <div class="card">
         <div class="card-title"><span class="dot"></span> Hasil Analisa</div>
+
+        <div id="problemNotif" class="problem-notif hidden">
+            <div class="problem-head">
+                <div>
+                    <div class="problem-title" id="problemNotifTitle"><i class="fas fa-bell"></i> Belum ada analisa</div>
+                    <div class="problem-summary" id="problemNotifSummary">Masalah mesin akan muncul di sini setelah analisa.</div>
+                </div>
+                <div class="problem-actions">
+                    <button type="button" class="mini-action-btn active" id="btnProblemOnly"><i class="fas fa-filter"></i> Masalah Saja</button>
+                    <button type="button" class="mini-action-btn" id="btnShowAllRows"><i class="fas fa-table"></i> Semua</button>
+                    <button type="button" class="mini-action-btn" id="btnCopyWa"><i class="fab fa-whatsapp"></i> Copy WA</button>
+                </div>
+            </div>
+            <div class="problem-stats" id="problemStats"></div>
+            <div class="problem-list" id="problemList"></div>
+        </div>
 
         <div id="resultHint" class="result-empty">
             <div class="big-icon"><i class="fas fa-clipboard-list"></i></div>
@@ -817,9 +1009,18 @@
     const resultBody = document.getElementById("resultBody_injection");
     const btnAddRow  = document.getElementById("btnAddRow_injection");
     const suggestionBox = document.getElementById("suggestionBox");
+    const problemNotif = document.getElementById("problemNotif");
+    const problemNotifTitle = document.getElementById("problemNotifTitle");
+    const problemNotifSummary = document.getElementById("problemNotifSummary");
+    const problemStats = document.getElementById("problemStats");
+    const problemList = document.getElementById("problemList");
+    const btnProblemOnly = document.getElementById("btnProblemOnly");
+    const btnShowAllRows = document.getElementById("btnShowAllRows");
+    const btnCopyWa = document.getElementById("btnCopyWa");
 
     let rowCounter=0, csvLoaded=false, systemMap={};
     let machineMemory={}, productDatabase=[], activeInput=null;
+    let lastAnalysisRows=[], lastWaReport="";
 
     // File button label update
     document.getElementById("csv").addEventListener("change", e => {
@@ -994,6 +1195,157 @@
     });
 
     // ═══════════════════════════════════════════════════════
+    // PROBLEM NOTIFICATION HELPERS
+    // ═══════════════════════════════════════════════════════
+    function escapeHTML(str){
+        return String(str ?? "").replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    }
+
+    function isProblemRow(row){
+        return row && row.txt !== "MATCH";
+    }
+
+    function problemTone(txt){
+        if(txt === "WARNING" || txt === "CEK") return "yellow";
+        if(txt === "MATCH") return "green";
+        if(txt === "SYS ONLY" || txt === "BLM INPUT" || txt === "SUPV LUPA" || txt === "BEDA LOT") return "red";
+        return "gray";
+    }
+
+    function countByStatus(rows, status){
+        return rows.filter(r => r.txt === status).length;
+    }
+
+    function buildWaReport(rows){
+        const problems = rows.filter(isProblemRow);
+        const tanggal = tglInput.value ? tglInput.value.split('-').reverse().join('/') : '-';
+        const lines = [];
+        lines.push(`Laporan Checker Injection - ${tanggal}`);
+        lines.push(`Total Data: ${rows.length}`);
+        lines.push(`MATCH: ${countByStatus(rows,'MATCH')}`);
+        lines.push(`WARNING: ${countByStatus(rows,'WARNING')}`);
+        lines.push(`SUPV LUPA LOT: ${countByStatus(rows,'SUPV LUPA')}`);
+        lines.push(`BEDA LOT: ${countByStatus(rows,'BEDA LOT')}`);
+        lines.push(`SYS ONLY: ${countByStatus(rows,'SYS ONLY')}`);
+        lines.push(`BLM INPUT: ${countByStatus(rows,'BLM INPUT')}`);
+        lines.push('');
+
+        if(!problems.length){
+            lines.push('Status: Semua aman. Tidak ada mesin bermasalah.');
+            return lines.join('\n');
+        }
+
+        lines.push('Detail Mesin Bermasalah:');
+        problems.slice(0,60).forEach(r => {
+            lines.push(`- M${pad2(r.m)} S${r.sh}: ${r.txt} | ${r.nts || '-'} | Manual: ${r.qMan} | Sistem: ${r.qSys}`);
+        });
+        if(problems.length > 60) lines.push(`...dan ${problems.length-60} masalah lain.`);
+        return lines.join('\n');
+    }
+
+    function renderProblemNotification(rows){
+        lastAnalysisRows = rows;
+        const problems = rows.filter(isProblemRow);
+        const matchCount = countByStatus(rows, 'MATCH');
+        lastWaReport = buildWaReport(rows);
+
+        problemNotif.classList.remove('hidden');
+        problemNotif.classList.toggle('ok', problems.length === 0);
+
+        const totalMachines = new Set(rows.map(r => r.m).filter(Boolean)).size;
+        const warningCount = countByStatus(rows, 'WARNING') + countByStatus(rows, 'CEK');
+        const lotCount = countByStatus(rows, 'SUPV LUPA') + countByStatus(rows, 'BEDA LOT');
+        const sysOnlyCount = countByStatus(rows, 'SYS ONLY');
+        const belumInputCount = countByStatus(rows, 'BLM INPUT');
+
+        if(problems.length === 0){
+            problemNotifTitle.innerHTML = `<i class="fas fa-circle-check"></i> Aman, tidak ada mesin bermasalah`;
+            problemNotifSummary.textContent = `${matchCount} data cocok. Kamu nggak perlu nyisir tabel satu-satu.`;
+        } else {
+            problemNotifTitle.innerHTML = `<i class="fas fa-bell"></i> ${problems.length} masalah perlu dicek`;
+            problemNotifSummary.textContent = `Dari ${totalMachines || 36} mesin, aplikasi menemukan masalah yang perlu kamu lihat dulu.`;
+        }
+
+        problemStats.innerHTML = `
+            <div class="problem-stat"><strong>${matchCount}</strong><span>Match</span></div>
+            <div class="problem-stat"><strong>${warningCount}</strong><span>Warning</span></div>
+            <div class="problem-stat"><strong>${lotCount}</strong><span>Lot Error</span></div>
+            <div class="problem-stat"><strong>${sysOnlyCount}</strong><span>Sys Only</span></div>
+            <div class="problem-stat"><strong>${belumInputCount}</strong><span>Blm Input</span></div>`;
+
+        if(problems.length === 0){
+            problemList.innerHTML = `
+                <div class="problem-card green">
+                    <div class="machine-pill"><i class="fas fa-check"></i><small>DONE</small></div>
+                    <div class="problem-desc">
+                        <strong>Semua data aman</strong>
+                        <span>Tidak ada selisih qty, LOT kosong, LOT beda, SYS ONLY, atau manual kosong.</span>
+                    </div>
+                    <div class="problem-go">OK</div>
+                </div>`;
+            return;
+        }
+
+        problemList.innerHTML = problems.map((r, idx) => `
+            <div class="problem-card ${problemTone(r.txt)}" data-target-row="row-${idx}">
+                <div class="machine-pill">M${pad2(r.m)}<small>SHIFT ${escapeHTML(r.sh)}</small></div>
+                <div class="problem-desc">
+                    <strong>${escapeHTML(r.txt)} · ${escapeHTML(r.nts || '-')}</strong>
+                    <span>${escapeHTML(r.nMan && r.nMan !== '-' ? r.nMan : r.nSys)} · Manual ${escapeHTML(r.qMan)} vs Sistem ${escapeHTML(r.qSys)} · Jam ${escapeHTML(r.tSys)}</span>
+                </div>
+                <div class="problem-go"><i class="fas fa-arrow-down"></i></div>
+            </div>`).join('');
+    }
+
+    function applyProblemFilter(onlyProblem){
+        resultBody.querySelectorAll('tr').forEach(tr => {
+            tr.style.display = onlyProblem && tr.dataset.problem !== '1' ? 'none' : '';
+        });
+        btnProblemOnly.classList.toggle('active', onlyProblem);
+        btnShowAllRows.classList.toggle('active', !onlyProblem);
+    }
+
+    function showToast(msg){
+        const old = document.querySelector('.copy-toast');
+        if(old) old.remove();
+        const t = document.createElement('div');
+        t.className = 'copy-toast';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2200);
+    }
+
+    btnProblemOnly.addEventListener('click', () => applyProblemFilter(true));
+    btnShowAllRows.addEventListener('click', () => applyProblemFilter(false));
+    btnCopyWa.addEventListener('click', async () => {
+        if(!lastWaReport) return;
+        try{
+            await navigator.clipboard.writeText(lastWaReport);
+            showToast('Laporan WA disalin');
+        }catch(e){
+            const ta=document.createElement('textarea');
+            ta.value=lastWaReport; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+            showToast('Laporan WA disalin');
+        }
+    });
+
+    problemList.addEventListener('click', (e) => {
+        const card = e.target.closest('.problem-card');
+        if(!card) return;
+        const m = card.querySelector('.machine-pill')?.textContent?.match(/M(\d+)/)?.[1];
+        const sh = card.querySelector('.machine-pill small')?.textContent?.match(/(\d+)/)?.[1];
+        if(!m || !sh) return;
+        applyProblemFilter(false);
+        const row = resultBody.querySelector(`tr[data-machine="${parseInt(m,10)}"][data-shift="${sh}"][data-problem="1"]`);
+        if(row){
+            resultBody.querySelectorAll('tr').forEach(r => r.classList.remove('row-focus'));
+            row.classList.add('row-focus');
+            row.scrollIntoView({behavior:'smooth', block:'center'});
+            setTimeout(() => row.classList.remove('row-focus'), 2400);
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════
     // MAIN CHECK LOGIC (V5 + FIXES)
     // ═══════════════════════════════════════════════════════
     btnCheck.addEventListener("click", ()=>{
@@ -1088,6 +1440,8 @@
             return sA-sB;
         });
 
+        renderProblemNotification(sorted);
+
         const badgeClass = txt => {
             if(txt==="MATCH") return "badge-match";
             if(txt==="WARNING"||txt==="CEK") return "badge-warning";
@@ -1101,8 +1455,8 @@
             return '<i class="fas fa-xmark"></i>';
         };
 
-        resultBody.innerHTML=sorted.map(r=>`
-            <tr class="${r.rowClass}">
+        resultBody.innerHTML=sorted.map((r,idx)=>`
+            <tr class="${r.rowClass}" data-index="${idx}" data-problem="${r.txt==='MATCH'?'0':'1'}" data-machine="${r.m}" data-shift="${r.sh}">
                 <td style="text-align:center;font-weight:800;font-size:13px">${r.m}</td>
                 <td style="text-align:center;font-weight:700">${r.sh}</td>
                 <td><span class="lot-mono">${r.lotExp}</span></td>
@@ -1120,6 +1474,7 @@
 
         resultHint.style.display="none";
         resultTableWrap.style.display="block";
+        applyProblemFilter(true);
         document.querySelector('.card:last-child').scrollIntoView({ behavior:"smooth", block:"start" });
     });
 
