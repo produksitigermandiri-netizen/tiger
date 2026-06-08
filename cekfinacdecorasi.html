@@ -466,6 +466,192 @@
             border-radius: 16px !important;
         }
 
+
+        /* ─── PROBLEM NOTIFICATION PANEL — V6 NOTIF ─── */
+        .problem-panel {
+            display: none;
+            margin-bottom: 24px;
+            padding: 20px;
+            border: 1px solid rgba(129,140,248,0.22);
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 10% 0%, rgba(99,102,241,0.18), transparent 34%),
+                rgba(2,6,23,0.22);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .problem-panel.visible { display: block; }
+        .problem-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .problem-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'DM Serif Display', serif;
+            font-size: 21px;
+            color: #F8FAFC;
+        }
+        .problem-title .alarm {
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(248,113,113,0.16);
+            color: #FCA5A5;
+            box-shadow: 0 0 24px rgba(248,113,113,0.10);
+        }
+        .problem-subtitle {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 600;
+        }
+        .problem-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .mini-action-btn {
+            border: 1px solid rgba(129,140,248,0.28);
+            background: rgba(15,23,42,0.58);
+            color: #CBD5E1;
+            border-radius: 999px;
+            padding: 8px 13px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mini-action-btn:hover,
+        .mini-action-btn.active {
+            background: rgba(99,102,241,0.22);
+            border-color: #A5B4FC;
+            color: white;
+            transform: translateY(-1px);
+        }
+        .problem-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .summary-pill {
+            padding: 12px 13px;
+            border: 1px solid rgba(129,140,248,0.18);
+            border-radius: 16px;
+            background: rgba(15,23,42,0.52);
+        }
+        .summary-pill strong {
+            display: block;
+            font-size: 22px;
+            line-height: 1;
+            color: #F8FAFC;
+        }
+        .summary-pill span {
+            display: block;
+            margin-top: 5px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #94A3B8;
+        }
+        .summary-pill.good strong { color: #6EE7B7; }
+        .summary-pill.warn strong { color: #FCD34D; }
+        .summary-pill.bad strong { color: #FCA5A5; }
+        .problem-list {
+            display: grid;
+            gap: 9px;
+            max-height: 330px;
+            overflow: auto;
+            padding-right: 4px;
+        }
+        .problem-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid rgba(248,113,113,0.18);
+            border-radius: 16px;
+            background: rgba(239,68,68,0.075);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .problem-item.warning {
+            border-color: rgba(245,158,11,0.18);
+            background: rgba(245,158,11,0.075);
+        }
+        .problem-item:hover {
+            transform: translateY(-1px);
+            border-color: rgba(165,180,252,0.54);
+            background: rgba(99,102,241,0.13);
+        }
+        .problem-machine {
+            min-width: 74px;
+            text-align: center;
+            padding: 8px 10px;
+            border-radius: 14px;
+            background: rgba(2,6,23,0.36);
+            border: 1px solid rgba(129,140,248,0.18);
+            font-weight: 900;
+            color: #F8FAFC;
+            font-size: 13px;
+        }
+        .problem-machine small {
+            display: block;
+            margin-top: 2px;
+            font-size: 9px;
+            color: #94A3B8;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .problem-main {
+            min-width: 0;
+        }
+        .problem-main strong {
+            display: block;
+            color: #F8FAFC;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        .problem-main span {
+            display: block;
+            color: #94A3B8;
+            font-size: 11px;
+            line-height: 1.35;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .problem-status {
+            justify-self: end;
+        }
+        .decor-result-row-highlight td {
+            animation: decorPulse 1.35s ease 1;
+        }
+        @keyframes decorPulse {
+            0% { box-shadow: inset 0 0 0 999px rgba(165,180,252,0.28); }
+            100% { box-shadow: inset 0 0 0 999px rgba(165,180,252,0); }
+        }
+        @media (max-width: 720px) {
+            .problem-head { flex-direction: column; }
+            .problem-actions { justify-content: flex-start; }
+            .problem-item { grid-template-columns: 1fr; }
+            .problem-status { justify-self: start; }
+            .problem-main span { white-space: normal; }
+        }
+
     </style>
 </head>
 <body>
@@ -650,6 +836,31 @@
         <div id="resultHint" class="result-empty">
             <div class="big-icon"><i class="fas fa-clipboard-list"></i></div>
             <p>Upload CSV Sistem lalu klik <strong>Analisa Data</strong> untuk memulai.</p>
+        </div>
+
+        <div id="problemPanelDecor" class="problem-panel">
+            <div class="problem-head">
+                <div>
+                    <div class="problem-title">
+                        <span class="alarm"><i class="fas fa-bell"></i></span>
+                        Notifikasi Mesin Bermasalah
+                    </div>
+                    <div id="problemSubtitleDecor" class="problem-subtitle">Masalah akan muncul otomatis setelah analisa.</div>
+                </div>
+                <div class="problem-actions">
+                    <button type="button" id="btnProblemOnlyDecor" class="mini-action-btn active">
+                        <i class="fas fa-filter"></i> Masalah Saja
+                    </button>
+                    <button type="button" id="btnShowAllDecor" class="mini-action-btn">
+                        <i class="fas fa-table-list"></i> Tampilkan Semua
+                    </button>
+                    <button type="button" id="btnCopyWaDecor" class="mini-action-btn">
+                        <i class="fab fa-whatsapp"></i> Copy WA
+                    </button>
+                </div>
+            </div>
+            <div id="problemSummaryDecor" class="problem-summary"></div>
+            <div id="problemListDecor" class="problem-list"></div>
         </div>
 
         <!-- Result blocks per WC -->
@@ -928,6 +1139,197 @@
         const r=new FileReader(); r.onload=e=>saveProductDb(bundleSelect.value,e.target.result); r.readAsText(file);
     });
 
+
+    // ═══════════════════════════════════════════════════════
+    // PROBLEM NOTIFICATION PANEL — V6 NOTIF (UI ONLY)
+    // ═══════════════════════════════════════════════════════
+    const problemPanelDecor    = document.getElementById("problemPanelDecor");
+    const problemSubtitleDecor = document.getElementById("problemSubtitleDecor");
+    const problemSummaryDecor  = document.getElementById("problemSummaryDecor");
+    const problemListDecor     = document.getElementById("problemListDecor");
+    const btnProblemOnlyDecor  = document.getElementById("btnProblemOnlyDecor");
+    const btnShowAllDecor      = document.getElementById("btnShowAllDecor");
+    const btnCopyWaDecor       = document.getElementById("btnCopyWaDecor");
+    let decorLastRowsByWC = {};
+    let decorProblemOnly = true;
+
+    function escapeHtml(str){
+        return String(str ?? "")
+            .replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;")
+            .replace(/"/g,"&quot;")
+            .replace(/'/g,"&#039;");
+    }
+
+    function resetDecorNotification(){
+        decorLastRowsByWC = {};
+        decorProblemOnly = true;
+        if(problemPanelDecor) problemPanelDecor.classList.remove("visible");
+        if(problemSummaryDecor) problemSummaryDecor.innerHTML = "";
+        if(problemListDecor) problemListDecor.innerHTML = "";
+        if(btnProblemOnlyDecor) btnProblemOnlyDecor.classList.add("active");
+        if(btnShowAllDecor) btnShowAllDecor.classList.remove("active");
+    }
+
+    function getAllDecorRows(){
+        const rows=[];
+        activeBundleWCs().forEach(wcKey=>{
+            (decorLastRowsByWC[wcKey]||[]).forEach(r=>rows.push(r));
+        });
+        return rows;
+    }
+
+    function applyDecorProblemFilter(onlyProblems){
+        decorProblemOnly = onlyProblems;
+        if(btnProblemOnlyDecor) btnProblemOnlyDecor.classList.toggle("active", onlyProblems);
+        if(btnShowAllDecor) btnShowAllDecor.classList.toggle("active", !onlyProblems);
+
+        activeBundleWCs().forEach(wcKey=>{
+            const block=resultBlocks[wcKey];
+            const tbody=resultBodies[wcKey];
+            if(!block||!tbody) return;
+
+            let visibleCount=0;
+            tbody.querySelectorAll("tr").forEach(tr=>{
+                const isProblem=tr.dataset.problem==="1";
+                const shouldShow=!onlyProblems || isProblem;
+                tr.style.display=shouldShow ? "" : "none";
+                if(shouldShow) visibleCount++;
+            });
+
+            block.classList.toggle("hidden", visibleCount===0 && onlyProblems);
+        });
+    }
+
+    function renderDecorProblemNotification(rowsByWC){
+        decorLastRowsByWC = rowsByWC;
+        const allRows = getAllDecorRows();
+        const problems = allRows.filter(r=>r.txt!=="MATCH");
+        const counts = {
+            total: allRows.length,
+            match: allRows.filter(r=>r.txt==="MATCH").length,
+            warning: allRows.filter(r=>r.txt==="WARNING"||r.txt==="CEK").length,
+            lot: allRows.filter(r=>r.txt==="ERROR LOT").length,
+            manual: allRows.filter(r=>r.txt==="MANUAL ONLY").length,
+            nama: allRows.filter(r=>r.txt==="NAMA BEDA").length,
+            sys: allRows.filter(r=>r.txt==="SYS ONLY").length
+        };
+
+        if(!problemPanelDecor) return;
+        problemPanelDecor.classList.add("visible");
+
+        if(problems.length===0){
+            problemSubtitleDecor.textContent = `Aman, ${counts.match} data MATCH. Tidak ada mesin bermasalah di bundel ini.`;
+            problemListDecor.innerHTML = `
+                <div class="problem-item" style="border-color:rgba(16,185,129,0.22);background:rgba(16,185,129,0.08);cursor:default">
+                    <div class="problem-machine"><i class="fas fa-check"></i><small>Aman</small></div>
+                    <div class="problem-main">
+                        <strong>Semua data aman</strong>
+                        <span>Tidak ada WARNING, ERROR LOT, NAMA BEDA, MANUAL ONLY, atau SYS ONLY.</span>
+                    </div>
+                    <div class="problem-status"><span class="badge badge-match"><i class="fas fa-check"></i> MATCH</span></div>
+                </div>`;
+        } else {
+            problemSubtitleDecor.textContent = `${problems.length} masalah ditemukan. Klik kartu masalah untuk lompat ke baris detail.`;
+            problemListDecor.innerHTML = problems.map(r=>{
+                const wcLabel = WC_CONFIG[r.wc]?.label || r.wc;
+                const itemClass = (r.txt==="WARNING"||r.txt==="CEK") ? "problem-item warning" : "problem-item";
+                const note = r.nts || "-";
+                const prod = r.nMan && r.nMan !== "-" ? r.nMan : r.nSys;
+                return `
+                    <div class="${itemClass}" data-row-target="${escapeHtml(r.rowId)}">
+                        <div class="problem-machine">
+                            ${escapeHtml(WC_CONFIG[r.wc]?.prefix || "")}${pad2(r.m)}
+                            <small>Shift ${escapeHtml(r.sh)}</small>
+                        </div>
+                        <div class="problem-main">
+                            <strong>${escapeHtml(wcLabel)} · ${escapeHtml(r.txt)}</strong>
+                            <span>${escapeHtml(note)} · Qty Man ${escapeHtml(r.qMan)} vs Qty Sys ${escapeHtml(r.qSys)} · ${escapeHtml(prod || "-")}</span>
+                        </div>
+                        <div class="problem-status"><span class="badge ${r.txt==="WARNING"||r.txt==="CEK" ? "badge-warning" : "badge-error"}">${r.txt==="WARNING"||r.txt==="CEK" ? '<i class="fas fa-triangle-exclamation"></i>' : '<i class="fas fa-xmark"></i>'} ${escapeHtml(r.txt)}</span></div>
+                    </div>`;
+            }).join("");
+
+            problemListDecor.querySelectorAll("[data-row-target]").forEach(item=>{
+                item.addEventListener("click", ()=>{
+                    scrollToDecorProblemRow(item.dataset.rowTarget);
+                });
+            });
+        }
+
+        problemSummaryDecor.innerHTML = `
+            <div class="summary-pill good"><strong>${counts.match}</strong><span>Match</span></div>
+            <div class="summary-pill warn"><strong>${counts.warning}</strong><span>Warning</span></div>
+            <div class="summary-pill bad"><strong>${counts.lot}</strong><span>Error LOT</span></div>
+            <div class="summary-pill bad"><strong>${counts.nama}</strong><span>Nama Beda</span></div>
+            <div class="summary-pill bad"><strong>${counts.manual}</strong><span>Manual Only</span></div>
+            <div class="summary-pill bad"><strong>${counts.sys}</strong><span>Sys Only</span></div>
+        `;
+
+        applyDecorProblemFilter(true);
+    }
+
+    function scrollToDecorProblemRow(rowId){
+        if(!rowId) return;
+        const target=document.querySelector(`[data-row-id="${CSS.escape(rowId)}"]`);
+        if(!target) return;
+        applyDecorProblemFilter(false);
+        target.scrollIntoView({ behavior:"smooth", block:"center" });
+        target.classList.remove("decor-result-row-highlight");
+        void target.offsetWidth;
+        target.classList.add("decor-result-row-highlight");
+    }
+
+    function buildDecorWaReport(){
+        const rows = getAllDecorRows();
+        const problems = rows.filter(r=>r.txt!=="MATCH");
+        const bundleLabel = BUNDLES[bundleSelect.value]?.label || bundleSelect.value;
+        const tanggal = tglInput.value || "-";
+        const lines = [
+            `Laporan Checker Decorasi - ${tanggal}`,
+            `${bundleLabel}`,
+            ``,
+            `Total Data: ${rows.length}`,
+            `MATCH: ${rows.filter(r=>r.txt==="MATCH").length}`,
+            `Masalah: ${problems.length}`,
+            ``
+        ];
+
+        if(problems.length===0){
+            lines.push("Status: Semua aman / MATCH.");
+        } else {
+            lines.push("Detail Masalah:");
+            problems.forEach(r=>{
+                const wcLabel = WC_CONFIG[r.wc]?.label || r.wc;
+                const code = `${WC_CONFIG[r.wc]?.prefix || ""}${pad2(r.m)}`;
+                lines.push(`- ${wcLabel} ${code} S${r.sh}: ${r.txt} | ${r.nts || "-"} | Man ${r.qMan} vs Sys ${r.qSys}`);
+            });
+        }
+        return lines.join("\n");
+    }
+
+    async function copyDecorWaReport(){
+        const report = buildDecorWaReport();
+        try{
+            await navigator.clipboard.writeText(report);
+            alert("Laporan WA berhasil dicopy.");
+        }catch(e){
+            const ta=document.createElement("textarea");
+            ta.value=report;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            alert("Laporan WA berhasil dicopy.");
+        }
+    }
+
+    btnProblemOnlyDecor?.addEventListener("click", ()=>applyDecorProblemFilter(true));
+    btnShowAllDecor?.addEventListener("click", ()=>applyDecorProblemFilter(false));
+    btnCopyWaDecor?.addEventListener("click", copyDecorWaReport);
+
+
     // ═══════════════════════════════════════════════════════
     // MAIN CHECK LOGIC V4 STRICT + FIXES
     // ═══════════════════════════════════════════════════════
@@ -1011,9 +1413,12 @@
 
         activeBundleWCs().forEach(k=>{
             const rows=resultRowsByWC[k].sort((a,b)=>a.m-b.m||a.sh-b.sh);
+            rows.forEach((r,idx)=>{ r.wc=k; r.rowId=`decor-${k}-${idx}`; });
+            resultRowsByWC[k]=rows;
+
             resultBlocks[k].classList.remove("hidden");
             resultBodies[k].innerHTML=rows.map(r=>`
-                <tr class="${r.rowClass}">
+                <tr class="${r.rowClass}" data-row-id="${r.rowId}" data-problem="${r.txt==='MATCH'?'0':'1'}" data-wc="${k}" data-machine="${r.m}" data-shift="${r.sh}">
                     <td style="text-align:center;font-weight:800;font-size:13px">${r.m}</td>
                     <td style="text-align:center;font-weight:700">${r.sh}</td>
                     <td><span class="lot-mono">${r.lotExp}</span></td>
@@ -1028,6 +1433,7 @@
                 </tr>`).join("");
         });
 
+        renderDecorProblemNotification(resultRowsByWC);
         document.getElementById("resultSection").scrollIntoView({ behavior:"smooth", block:"start" });
     });
 
@@ -1041,6 +1447,7 @@
         updateCheckButton();
         resultHint.innerHTML=`<div class="big-icon"><i class="fas fa-clipboard-list"></i></div><p>Upload CSV Sistem lalu klik <strong>Analisa Data</strong> untuk memulai.</p>`;
         resultHint.style.display="";
+        resetDecorNotification();
         showHideBlocks();
         resetManualTables();
         loadProductDb(bundleSelect.value);
