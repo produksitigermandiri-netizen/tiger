@@ -304,6 +304,29 @@
             flex:0 1 calc((100% - 4 * 1.25rem) / 5);
             max-width:calc((100% - 4 * 1.25rem) / 5);
         }
+        /* Center the complete menu group within the available header-to-footer area. */
+        @media (min-width:769px) and (min-height:720px){
+            main{
+                display:flex;
+                align-items:center;
+                padding-top:1.6rem;
+                padding-bottom:1.6rem;
+            }
+        }
+        @media (min-width:1201px){
+            .cards-grid{
+                display:grid;
+                grid-template-columns:repeat(5,minmax(0,1fr));
+                align-items:stretch;
+                max-width:100%;
+                margin-left:auto;
+                margin-right:auto;
+            }
+            .cards-grid > .app-card{
+                max-width:none;
+                min-width:0;
+            }
+        }
         @media(max-width:1200px){
             .cards-grid > .app-card{
                 flex-basis:calc((100% - 2 * 1.25rem) / 3);
