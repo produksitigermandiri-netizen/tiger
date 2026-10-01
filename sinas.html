@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SINAS Auto — Tiger Production System</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#021B2D">
+<link rel="apple-touch-icon" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="ocean-theme.css">
+<script src="ocean-scene.js" defer></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding-bottom:48px;color:var(--text-primary)}
+.sinas-topbar{position:sticky;top:0;z-index:40;background:rgba(2,22,36,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--ocean-border-strong);box-shadow:0 14px 40px rgba(0,10,24,.28)}
+.sinas-topbar::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,transparent,var(--ocean-aqua),var(--ocean-mint),transparent);opacity:.85}
+.sinas-topbar-inner{max-width:1400px;margin:auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.sinas-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.sinas-logo{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(34,211,197,.18))}
+.sinas-brand h1{font-family:'DM Serif Display',serif;font-size:1.16rem;margin:0;color:var(--ocean-foam)}
+.sinas-brand p{margin:3px 0 0;font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:#92bdc3;font-weight:700}
+.sinas-actions{display:flex;gap:8px;align-items:center}
+.icon-btn,.back-btn{height:38px;border:1px solid var(--ocean-border);background:rgba(5,35,55,.72);color:var(--ocean-foam);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:inherit;font-weight:800;transition:.2s}
+.icon-btn{width:38px} .back-btn{padding:0 14px;font-size:.72rem}
+.icon-btn:hover,.back-btn:hover{border-color:var(--ocean-aqua);background:rgba(8,124,167,.25);transform:translateY(-1px)}
+.sinas-wrap{max-width:1400px;margin:0 auto;padding:26px 24px;position:relative;z-index:2}
+.hero{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(4,45,69,.9),rgba(5,83,107,.74));border:1px solid var(--ocean-border-strong);color:white;padding:28px 30px;border-radius:24px;box-shadow:var(--ocean-shadow)}
+.hero::after{content:'Σ';position:absolute;right:28px;bottom:-38px;font-family:'DM Serif Display',serif;font-size:10rem;color:rgba(119,244,232,.055);transform:rotate(-8deg);pointer-events:none}
+.hero-kicker{font-size:.66rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--ocean-mint);margin-bottom:8px}
+.hero h2{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.7rem);margin:0 0 9px;line-height:1.05}
+.hero p{margin:0;max-width:850px;color:#bfe5e7;line-height:1.7;font-size:.83rem;font-weight:500}
+.workflow{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-top:18px}
+.card{background:rgba(5,35,55,.78)!important;border:1px solid var(--ocean-border)!important;border-radius:20px;padding:19px;box-shadow:0 16px 44px rgba(0,10,24,.24)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.card-head h3{margin:0;font-size:.88rem;font-weight:800;color:var(--ocean-foam)}
+.step{width:28px;height:28px;border-radius:10px;display:grid;place-items:center;background:rgba(34,211,197,.12);border:1px solid rgba(34,211,197,.22);color:var(--ocean-mint);font-size:.72rem;font-weight:900}
+.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.upload-box{padding:14px;border:1px dashed rgba(119,244,232,.34);border-radius:15px;background:rgba(4,31,49,.52)}
+.upload-box label{display:block;font-size:.72rem;font-weight:800;margin-bottom:8px;color:var(--ocean-foam)}
+.file{width:100%;padding:8px;background:rgba(2,22,36,.65);color:var(--text-primary);border:1px solid var(--ocean-border);border-radius:11px;font-family:inherit;font-size:.72rem}
+.file::file-selector-button{border:0;border-radius:8px;background:rgba(34,211,197,.14);color:var(--ocean-mint);padding:7px 10px;margin-right:8px;font-family:inherit;font-weight:800;cursor:pointer}
+.file-status{margin-top:8px;color:var(--text-muted);font-size:.65rem;line-height:1.45;min-height:30px}
+.file-status.ready{color:#77f4e8}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.control label{display:block;font-size:.65rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px}
+.control input{width:100%;height:42px;padding:0 11px;border:1px solid var(--ocean-border);border-radius:11px;background:rgba(2,22,36,.68);color:var(--text-primary);font-family:inherit}
+.action-row{display:flex;gap:10px;margin-top:12px}
+button.primary,button.success{border:0;border-radius:12px;padding:11px 15px;font-family:inherit;font-weight:900;font-size:.72rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s;flex:1}
+button.primary{background:linear-gradient(135deg,#087ca7,#22d3c5);color:#02121f} button.success{background:linear-gradient(135deg,#43d7a4,#77f4e8);color:#05251e}
+button.primary:hover:not(:disabled),button.success:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
+button:disabled{opacity:.42;cursor:not-allowed}
+.rule-note{margin-top:11px;padding:10px 12px;border:1px solid rgba(255,212,154,.18);background:rgba(255,212,154,.07);border-radius:12px;color:#d6c5a9;font-size:.65rem;line-height:1.55}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
+.stat{background:rgba(5,35,55,.78);border:1px solid var(--ocean-border);border-radius:17px;padding:15px;box-shadow:0 12px 34px rgba(0,10,24,.2)}
+.stat b{font-size:1.4rem;display:block;color:var(--ocean-foam);font-variant-numeric:tabular-nums} .stat span{font-size:.62rem;color:var(--text-muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.notice{margin-top:14px;padding:13px 15px;border-radius:14px;border:1px solid rgba(255,212,154,.3);background:rgba(255,212,154,.09);color:#f3d9b8;font-size:.74rem;line-height:1.55}
+.notice.ok{border-color:rgba(67,215,164,.32);background:rgba(67,215,164,.09);color:#98f1cf}
+.section{margin-top:22px} .section-title{display:flex!important;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px!important}
+.section-title h2{margin:0!important;font-family:'DM Serif Display',serif;font-size:1.15rem!important;color:var(--ocean-foam)!important}
+.badge{font-size:.62rem;font-weight:900;padding:5px 10px;border-radius:999px;background:rgba(34,211,197,.1);color:var(--ocean-mint);border:1px solid rgba(34,211,197,.2)}
+.table-wrap{overflow:auto;border:1px solid var(--ocean-border);border-radius:17px;background:rgba(3,28,47,.78);box-shadow:0 18px 42px rgba(0,10,24,.22)}
+table{width:100%;border-collapse:collapse;min-width:920px} th,td{padding:10px 11px;border-bottom:1px solid rgba(91,226,218,.12);vertical-align:middle;font-size:.72rem} th{position:sticky;top:0;background:#0b697d;color:#efffff;font-size:.65rem;text-align:center;border-right:1px solid rgba(255,255,255,.12);text-transform:uppercase;letter-spacing:.04em} td{background:rgba(5,35,55,.58);color:#c8e8e9} tbody tr:hover td{background:rgba(8,124,167,.16)} .name{text-align:left;min-width:520px} .num{text-align:right;font-variant-numeric:tabular-nums} .issue td,.issue{background:rgba(255,128,106,.10)!important;color:#ffd0c6} .status-ok{color:#77f4c9;font-weight:800} .status-bad{color:#ffad9e;font-weight:800}
+.weight-select,.weight-input{padding:7px 9px;border:1px solid var(--ocean-border);border-radius:8px;min-width:125px;background:#062a40;color:#e9ffff;font-family:inherit} .total-row td{font-weight:900;background:rgba(34,211,197,.13)!important;color:var(--ocean-mint);border-top:1px solid rgba(119,244,232,.32)}
+.hidden{display:none!important}
+.sinas-footer{text-align:center;color:var(--text-muted);font-size:.62rem;padding:28px 0 4px;letter-spacing:.08em;text-transform:uppercase}
+html[data-theme="light"] .sinas-topbar{background:rgba(3,48,72,.88)}
+html[data-theme="light"] .card,html[data-theme="light"] .stat{background:rgba(255,255,255,.82)!important}
+html[data-theme="light"] .card-head h3,html[data-theme="light"] .stat b,html[data-theme="light"] .section-title h2{color:#07354a!important}
+html[data-theme="light"] .upload-box,html[data-theme="light"] .control input,html[data-theme="light"] .file{background:rgba(238,253,252,.92);color:#07354a}
+html[data-theme="light"] td{background:rgba(255,255,255,.88);color:#16475b}
+html[data-theme="light"] tbody tr:hover td{background:#e4f9f7}
+html[data-theme="light"] .table-wrap{background:white}
+html[data-theme="light"] .weight-select,html[data-theme="light"] .weight-input{background:white;color:#07354a}
+@media(max-width:900px){.workflow{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.sinas-wrap{padding:18px 14px}.sinas-topbar-inner{padding:10px 14px}.sinas-brand p{display:none}}
+@media(max-width:620px){.upload-grid,.controls{grid-template-columns:1fr}.hero{padding:23px 20px}.back-btn span{display:none}.back-btn{width:38px;padding:0}.stats{grid-template-columns:1fr 1fr}.action-row{flex-direction:column}}
+</style>
+</head>
+<body class="ocean-page--workspace">
+<header class="sinas-topbar">
+  <div class="sinas-topbar-inner">
+    <div class="sinas-brand">
+      <img src="logo.png" class="sinas-logo" alt="Tiger Logo" onerror="this.style.display='none'">
+      <div><h1>SINAS Auto</h1><p>Tiger Production System · Production Reporting</p></div>
+    </div>
+    <div class="sinas-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Ganti tema"><i id="themeIcon" class="fas fa-sun"></i></button>
+      <button class="back-btn" onclick="goDashboard()"><i class="fas fa-arrow-left"></i><span>Dashboard</span></button>
+    </div>
+  </div>
+</header>
+<main class="sinas-wrap">
+  <section class="hero">
+    <div class="hero-kicker"><i class="fas fa-wave-square"></i> Automated SINAS Processing</div>
+    <h2>Data produksi masuk, laporan SINAS keluar.</h2>
+    <p>Sistem mengambil data APPROVED Finished Good, membuang Warehouse otomatis, menggabungkan Qty produk, mengambil Berat Satuan dari database, menghitung Total Kg, lalu menyiapkan Excel mengikuti format SINAS.</p>
+  </section>
+
+  <section class="workflow">
+    <div class="card">
+      <div class="card-head"><h3>File Sumber</h3><span class="step">01</span></div>
+      <div class="upload-grid">
+        <div class="upload-box">
+          <label><i class="fas fa-file-csv"></i> Data SINAS Olahan</label>
+          <input id="productionFile" class="file" type="file" accept=".csv,text/csv">
+          <div id="productionStatus" class="file-status">Upload file olahan. Kolom: Name, Date, Approved, Status.</div>
+        </div>
+        <div class="upload-box">
+          <label><i class="fas fa-database"></i> Database Produk <span style="opacity:.55">(opsional)</span></label>
+          <input id="databaseFile" class="file" type="file" accept=".csv,text/csv">
+          <div id="databaseStatus" class="file-status">Mencoba memuat database bawaan...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Periode & Proses</h3><span class="step">02</span></div>
+      <div class="controls">
+        <div class="control"><label>Dari tanggal</label><input id="dateFrom" type="date"></div>
+        <div class="control"><label>Sampai tanggal</label><input id="dateTo" type="date"></div>
+      </div>
+      <div class="action-row">
+        <button id="processBtn" class="primary" disabled><i class="fas fa-gears"></i> Proses Data</button>
+        <button id="exportBtn" class="success" disabled><i class="fas fa-file-excel"></i> Download Excel</button>
+      </div>
+      <div class="rule-note"><b>Mapping:</b> LP / Loose Powder + Sifter → <b>Pot</b>. Lip Cream + Deo Stick → <b>Lipstik</b>. Semua nama mengandung <b>Warehouse</b> otomatis tidak dihitung.</div>
+    </div>
+  </section>
+
+  <div id="stats" class="stats hidden"></div>
+  <div id="notice" class="notice hidden"></div>
+  <div id="results"></div>
+  <div class="sinas-footer">SINAS Auto · Tiger Production System · File sumber tidak diubah</div>
+</main>
+<script>
+
+const state={production:[],database:[],result:[],overrides:new Map(),minDate:null,maxDate:null};
+const $=id=>document.getElementById(id);
+const fmtInt=new Intl.NumberFormat('id-ID',{maximumFractionDigits:0});
+const fmt2=new Intl.NumberFormat('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+function norm(s){return String(s??'').trim().replace(/\s+/g,' ').toLocaleLowerCase('id-ID')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function parseNumber(v){let s=String(v??'').trim();if(!s)return 0;s=s.replace(/\s/g,'');if(s.includes(',')&&!s.includes('.'))s=s.replace(',','.');else if(s.includes(',')&&s.includes('.'))s=s.replace(/\./g,'').replace(',','.');const n=Number(s);return Number.isFinite(n)?n:0}
+function detectDelimiter(text){const line=(text.split(/\r?\n/)[0]||'');const semi=(line.match(/;/g)||[]).length, comma=(line.match(/,/g)||[]).length;return semi>=comma?';':','}
+function parseCSV(text){const d=detectDelimiter(text);const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){cell+='"';i++}else if(c==='"')q=false;else cell+=c}else{if(c==='"')q=true;else if(c===d){row.push(cell);cell=''}else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell=''}else if(c!=='\r')cell+=c}}if(cell.length||row.length){row.push(cell);rows.push(row)}if(!rows.length)return[];const headers=rows.shift().map(h=>h.replace(/^\uFEFF/,'').trim());return rows.filter(r=>r.some(x=>String(x).trim()!=='')).map(r=>Object.fromEntries(headers.map((h,i)=>[h,String(r[i]??'').trim()]))) }
+function parseDate(s){const m=String(s||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(!m)return null;const d=new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));return Number.isNaN(d.getTime())?null:d}
+function isoDate(d){return d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`:''}
+function idDate(d){return d?`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`:''}
+function categoryOf(name){const s=norm(name);if(/\blip\s*cream\b|\bdeo(?:dorant)?\s*stick\b/.test(s))return 'Lipstik';const m=String(name).trim().match(/^([A-Za-z]+)/);const code=(m?m[1]:'').toUpperCase();return ({CM:'Compact',PT:'Pot',LP:'Pot',ST:'Pot',SC:'Lipstik'})[code]||'Lainnya'}
+function weightMap(){const map=new Map();for(const r of state.database){const name=r['Nama Produk']??r['nama produk']??'';if(!String(name).trim())continue;const k=norm(name);const w=parseNumber(r['Berat Satuan']??r['berat satuan']);if(!map.has(k))map.set(k,[]);if(Number.isFinite(w)&&w>0&&!map.get(k).includes(w))map.get(k).push(w)}return map}
+function updateReady(){$('processBtn').disabled=!(state.production.length&&state.database.length)}
+$('productionFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;state.production=parseCSV(await f.text());const ds=state.production.map(r=>parseDate(r.Date??r.date)).filter(Boolean).sort((a,b)=>a-b);state.minDate=ds[0]||null;state.maxDate=ds.at(-1)||null;$('dateFrom').value=isoDate(state.minDate);$('dateTo').value=isoDate(state.maxDate);$('productionStatus').innerHTML=`<i class=\"fas fa-check-circle\"></i> ${esc(f.name)} · ${fmtInt.format(state.production.length)} baris`;$('productionStatus').classList.add('ready');updateReady()});
+$('databaseFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;state.database=parseCSV(await f.text());$('databaseStatus').innerHTML=`<i class=\"fas fa-check-circle\"></i> Database manual: ${esc(f.name)} · ${fmtInt.format(state.database.length)} baris`;$('databaseStatus').classList.add('ready');updateReady()});
+$('processBtn').addEventListener('click',processData);
+$('exportBtn').addEventListener('click',exportXlsx);
+function processData(){
+  const wm=weightMap(),from=$('dateFrom').value?new Date($('dateFrom').value+'T00:00:00'):null,to=$('dateTo').value?new Date($('dateTo').value+'T23:59:59'):null;
+  const grouped=new Map();let rawApproved=0,warehouseRemoved=0,usedRows=0;
+  for(const r of state.production){
+    if(String(r.Status??r.status??'').trim().toUpperCase()!=='APPROVED')continue;rawApproved++;
+    const name=String(r.Name??r.name??'').trim();if(!/finished\s*good\s*ok/i.test(name))continue;
+    if(/warehouse/i.test(name)){warehouseRemoved++;continue}
+    const dt=parseDate(r.Date??r.date);if(from&&dt&&dt<from)continue;if(to&&dt&&dt>to)continue;
+    const qty=parseNumber(r.Approved??r.approved);const k=norm(name);if(!grouped.has(k))grouped.set(k,{key:k,name,qty:0,category:categoryOf(name)});grouped.get(k).qty+=qty;usedRows++;
+  }
+  const out=[];for(const rec of grouped.values()){
+    const opts=(wm.get(rec.key)||[]).slice().sort((a,b)=>a-b);const override=state.overrides.get(rec.key);
+    let weight=null,status='OK';if(Number.isFinite(override)&&override>0){weight=override;status='MANUAL'}else if(opts.length===1)weight=opts[0];else if(opts.length===0)status='TIDAK DITEMUKAN';else status='BERAT GANDA';
+    out.push({...rec,options:opts,weight,status,totalKg:weight?rec.qty*weight/1000:null});
+  }
+  state.result=out.sort((a,b)=>a.category.localeCompare(b.category)||a.name.localeCompare(b.name));
+  render(rawApproved,warehouseRemoved,usedRows);$('exportBtn').disabled=!state.result.length;
+}
+function render(rawApproved,warehouseRemoved,usedRows){
+  const unresolved=state.result.filter(r=>!r.weight).length;const totalQty=state.result.reduce((s,r)=>s+r.qty,0);const validKg=state.result.reduce((s,r)=>s+(r.totalKg||0),0);
+  $('stats').classList.remove('hidden');$('stats').innerHTML=[['Produk unik',state.result.length],['Qty produksi',fmtInt.format(totalQty)],['Total Kg valid',fmt2.format(validKg)],['Warehouse dibuang',fmtInt.format(warehouseRemoved)],['Perlu dicek',unresolved]].map(([a,b])=>`<div class="stat"><b>${b}</b><span>${a}</span></div>`).join('');
+  $('notice').classList.remove('hidden');$('notice').className='notice '+(unresolved?'':'ok');$('notice').innerHTML=unresolved?`Ada <b>${unresolved}</b> produk yang beratnya belum final. Pilih/isi berat pada baris merah. Excel tetap bisa diunduh, tetapi Total Kg pada produk itu dibiarkan kosong sampai diselesaikan.`:`Semua produk sudah punya berat yang valid. Hasil siap diekspor.`;
+  const cats=['Compact','Pot','Lipstik','Lainnya'];let html='';
+  for(const cat of cats){const rows=state.result.filter(r=>r.category===cat);if(!rows.length)continue;const tq=rows.reduce((s,r)=>s+r.qty,0),kg=rows.reduce((s,r)=>s+(r.totalKg||0),0);html+=`<section class="section"><div class="section-title"><h2>Total Produksi ${esc(cat)}</h2><span class="badge">${rows.length} produk</span></div><div class="table-wrap"><table><thead><tr><th class="name">Nama Produk</th><th>Qty Produksi</th><th>Berat Kg</th><th>Total Kg</th><th>Status</th></tr></thead><tbody>`;
+    for(const r of rows){const issue=!r.weight;let w='';if(r.options.length>1){w=`<select class="weight-select" data-key="${esc(r.key)}"><option value="">Pilih berat</option>${r.options.map(x=>`<option value="${x}" ${r.weight===x?'selected':''}>${fmt2.format(x)}</option>`).join('')}</select>`}else if(!r.options.length){w=`<input class="weight-input" data-key="${esc(r.key)}" type="number" step="0.0001" min="0" value="${r.weight||''}" placeholder="Isi berat">`}else w=fmt2.format(r.weight);
+      html+=`<tr class="${issue?'issue':''}"><td class="name">${esc(r.name)}</td><td class="num">${fmtInt.format(r.qty)}</td><td class="num">${w}</td><td class="num">${r.totalKg==null?'':fmt2.format(r.totalKg)}</td><td class="${issue?'status-bad':'status-ok'}">${esc(r.status)}</td></tr>`}
+    html+=`<tr class="total-row"><td>Total</td><td class="num">${fmtInt.format(tq)}</td><td></td><td class="num">${fmt2.format(kg)}</td><td></td></tr></tbody></table></div></section>`}
+  $('results').innerHTML=html;
+  document.querySelectorAll('.weight-select').forEach(el=>el.addEventListener('change',e=>{const v=parseNumber(e.target.value);if(v>0)state.overrides.set(e.target.dataset.key,v);else state.overrides.delete(e.target.dataset.key);processData()}));
+  document.querySelectorAll('.weight-input').forEach(el=>el.addEventListener('change',e=>{const v=parseNumber(e.target.value);if(v>0)state.overrides.set(e.target.dataset.key,v);else state.overrides.delete(e.target.dataset.key);processData()}));
+}
+
+// ===== XLSX writer, self-contained, no internet/library needed =====
+function xmlEsc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function colName(n){let s='';while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s}
+function cell(ref,value,style=0,formula=null,cached=null){if(formula!=null)return `<c r="${ref}" s="${style}"><f>${xmlEsc(formula)}</f>${cached!=null?`<v>${cached}</v>`:''}</c>`;if(value==null||value==='')return `<c r="${ref}" s="${style}"/>`;if(typeof value==='number')return `<c r="${ref}" s="${style}"><v>${value}</v></c>`;return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${xmlEsc(value)}</t></is></c>`}
+function sheetXmlMain(){let rows=[],merges=[],r=1;const cats=['Compact','Pot','Lipstik','Lainnya'];const from=$('dateFrom').value?new Date($('dateFrom').value+'T00:00:00'):state.minDate,to=$('dateTo').value?new Date($('dateTo').value+'T00:00:00'):state.maxDate;const label=`Periode ${idDate(from)} - ${idDate(to)}`;
+ for(const cat of cats){const data=state.result.filter(x=>x.category===cat);if(!data.length)continue;rows.push(`<row r="${r}" ht="28" customHeight="1">${cell(`B${r}`,`Total Produksi ${cat} ${label}`,1)}</row>`);merges.push(`B${r}:E${r}`);r++;
+ rows.push(`<row r="${r}">${cell(`B${r}`,'Nama Produk',2)}${cell(`C${r}`,'Qty Produksi',2)}${cell(`D${r}`,'Berat Kg',2)}${cell(`E${r}`,'Total Kg',2)}</row>`);r++;const start=r;let totalKg=0,totalQty=0;
+ for(const x of data){const issue=!x.weight;const stText=issue?10:3,stQty=issue?11:4,stW=issue?12:5,stKg=issue?12:6;totalQty+=x.qty;if(x.totalKg)totalKg+=x.totalKg;let cells=cell(`B${r}`,x.name,stText)+cell(`C${r}`,x.qty,stQty)+cell(`D${r}`,x.weight,stW);if(x.weight)cells+=cell(`E${r}`,null,stKg,`C${r}*D${r}/1000`,x.totalKg);else cells+=cell(`E${r}`,null,stKg);rows.push(`<row r="${r}">${cells}</row>`);r++}
+ const end=r-1;rows.push(`<row r="${r}">${cell(`B${r}`,'Total',7)}${cell(`C${r}`,null,8,`SUM(C${start}:C${end})`,totalQty)}${cell(`D${r}`,null,7)}${cell(`E${r}`,null,9,`SUM(E${start}:E${end})`,totalKg)}</row>`);r+=2}
+ const max=r-1;return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:E${max}"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><cols><col min="1" max="1" width="3" customWidth="1"/><col min="2" max="2" width="90" customWidth="1"/><col min="3" max="3" width="18" customWidth="1"/><col min="4" max="4" width="14" customWidth="1"/><col min="5" max="5" width="18" customWidth="1"/></cols><sheetData>${rows.join('')}</sheetData><mergeCells count="${merges.length}">${merges.map(x=>`<mergeCell ref="${x}"/>`).join('')}</mergeCells></worksheet>`}
+function sheetXmlValidation(){const issueSource=state.result.filter(x=>x.status!=='OK');let rows=[`<row r="1">${cell('A1','Nama Produk',13)}${cell('B1','Qty Produksi',13)}${cell('C1','Masalah',13)}${cell('D1','Berat di Database',13)}${cell('E1','Berat Dipakai',13)}${cell('F1','Catatan',13)}</row>`];let r=2;if(!issueSource.length){rows.push(`<row r="2">${cell('A2','Tidak ada masalah validasi.',3)}</row>`);r=3}else for(const x of issueSource){const note=x.weight?'Berat dipilih manual saat proses':'Selesaikan berat lalu proses ulang';rows.push(`<row r="${r}">${cell(`A${r}`,x.name,3)}${cell(`B${r}`,x.qty,4)}${cell(`C${r}`,x.status,3)}${cell(`D${r}`,x.options.join(', '),3)}${cell(`E${r}`,x.weight,5)}${cell(`F${r}`,note,3)}</row>`);r++}return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:F${r-1}"/><sheetViews><sheetView workbookViewId="0"/></sheetViews><cols><col min="1" max="1" width="75" customWidth="1"/><col min="2" max="2" width="18" customWidth="1"/><col min="3" max="3" width="20" customWidth="1"/><col min="4" max="5" width="22" customWidth="1"/><col min="6" max="6" width="42" customWidth="1"/></cols><sheetData>${rows.join('')}</sheetData></worksheet>`}
+function stylesXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="5"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="18"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><sz val="11"/><color rgb="FF9C0006"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts><fills count="5"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFF200"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFE5E5"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1F4E78"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border/><border><left style="thin"><color rgb="FF000000"/></left><right style="thin"><color rgb="FF000000"/></right><top style="thin"><color rgb="FF000000"/></top><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="14"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/><xf numFmtId="4" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/><xf numFmtId="4" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1"/><xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="3" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1"/><xf numFmtId="4" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1"/><xf numFmtId="0" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/><xf numFmtId="3" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1"/><xf numFmtId="4" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1"/><xf numFmtId="0" fontId="4" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment horizontal="center"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`}
+function crc32(bytes){let c=0xffffffff;for(const b of bytes){c^=b;for(let k=0;k<8;k++)c=(c>>>1)^((c&1)?0xedb88320:0)}return (c^0xffffffff)>>>0}
+function u16(n){return new Uint8Array([n&255,(n>>>8)&255])}function u32(n){return new Uint8Array([n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255])}function concat(parts){const len=parts.reduce((s,p)=>s+p.length,0),o=new Uint8Array(len);let at=0;for(const p of parts){o.set(p,at);at+=p.length}return o}
+function zipStore(files){const enc=new TextEncoder(),locals=[],centrals=[];let offset=0;const now=new Date(),dosTime=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1),dosDate=((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();for(const [name,content] of files){const nb=enc.encode(name),data=typeof content==='string'?enc.encode(content):content,crc=crc32(data);const local=concat([u32(0x04034b50),u16(20),u16(0),u16(0),u16(dosTime),u16(dosDate),u32(crc),u32(data.length),u32(data.length),u16(nb.length),u16(0),nb,data]);locals.push(local);const central=concat([u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(dosTime),u16(dosDate),u32(crc),u32(data.length),u32(data.length),u16(nb.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset),nb]);centrals.push(central);offset+=local.length}const centralSize=centrals.reduce((s,p)=>s+p.length,0),end=concat([u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(centralSize),u32(offset),u16(0)]);return concat([...locals,...centrals,end])}
+function exportXlsx(){if(!state.result.length)return;const files=[['[Content_Types].xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`],['_rels/.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`],['xl/workbook.xml',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Hasil SINAS" sheetId="1" r:id="rId1"/><sheet name="Validasi" sheetId="2" r:id="rId2"/></sheets><calcPr calcId="191029" calcMode="auto"/></workbook>`],['xl/_rels/workbook.xml.rels',`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`],['xl/styles.xml',stylesXml()],['xl/worksheets/sheet1.xml',sheetXmlMain()],['xl/worksheets/sheet2.xml',sheetXmlValidation()]];const bytes=zipStore(files),blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);const year=($('dateTo').value||'').slice(0,4)||new Date().getFullYear();a.download=`HASIL_SINAS_${year}.xlsx`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+
+
+async function loadDefaultDatabase(){
+  const el=$('databaseStatus');
+  try{
+    const res=await fetch('database-sinas.csv',{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    state.database=parseCSV(await res.text());
+    el.innerHTML=`<i class="fas fa-database"></i> Database bawaan aktif · ${fmtInt.format(state.database.length)} baris`;
+    el.classList.add('ready');
+  }catch(err){
+    el.innerHTML='<i class="fas fa-triangle-exclamation"></i> Database bawaan belum termuat. Pilih Database CSV di atas.';
+    el.classList.remove('ready');
+  }
+  updateReady();
+}
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme',theme);
+  const icon=$('themeIcon');
+  if(icon) icon.className=theme==='dark'?'fas fa-sun':'fas fa-moon';
+  localStorage.setItem('tigerTheme',theme);
+}
+function toggleTheme(){
+  const current=document.documentElement.getAttribute('data-theme')||'dark';
+  applyTheme(current==='dark'?'light':'dark');
+}
+function goDashboard(){ window.location.href='dashboard.html'; }
+
+(function initTigerPage(){
+  if(sessionStorage.getItem('isLoggedIn')!=='true'){
+    window.location.replace('index.html');
+    return;
+  }
+  applyTheme(localStorage.getItem('tigerTheme')||'dark');
+  loadDefaultDatabase();
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+})();
+
+</script>
+</body>
+</html>

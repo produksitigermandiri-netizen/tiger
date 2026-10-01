@@ -1,6 +1,6 @@
 // Tiger Production System - Service Worker
 // Update versi ini setiap kali ada perubahan file biar cache refresh
-const CACHE_NAME = 'tiger-ocean-v5';
+const CACHE_NAME = 'tiger-ocean-v6';
 
 // File-file yang akan dicache untuk bisa jalan offline
 const ASSETS = [
@@ -9,6 +9,8 @@ const ASSETS = [
   './inputdkbt.html',
   './narikreject.html',
   './kiloanproduk.html',
+  './sinas.html',
+  './database-sinas.csv',
   './mps.html',
   './cekfinacinjection.html',
   './cekfinacdecorasi.html',
